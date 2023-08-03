@@ -1,0 +1,96 @@
+import { useContractReads } from "wagmi"
+import stakingABI from "../../public/ABI/staking.json";
+import { numberWithCommas, numberWithLetter } from "../../util/stringUtility";
+import { useState, useEffect } from "react";
+
+const stakingContract = {
+    address: process.env.WAGON_STAKING_PROXY,
+    abi: stakingABI,
+}
+
+export default function GeneralCard(props) {
+    const [totalSupply, setTotalSupply] = useState(0);
+    const [rewardRate, setRewarRate] = useState(0);
+
+    const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
+        contracts: [
+            {
+                ...stakingContract,
+                functionName: 'totalSupply',
+                watch: true
+            },
+            {
+                ...stakingContract,
+                functionName: 'rewardRate',
+                watch: true
+            }
+        ],
+        onSuccess: (data)=>{
+            console.log(data[0])
+            if(data != null) {
+                if(data[0] != null) {
+                    setTotalSupply(data[0]);
+                }
+    
+                if(data[1] != null) {
+                    setRewarRate(data[1]);
+                }
+            }
+        }
+    })
+
+    useEffect(()=> {
+        refetch();
+    }, [props.fetch])
+
+    function getAPY() {
+        if(totalSupply == 0) return 0;
+        return rewardRate / totalSupply * 31536000 * 100;
+    }
+
+    return (
+        <>
+            <div className="card mb-4 grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-2">
+                <div className="">
+                    <h6 className="text-sm font-medium text-gray-500">Total Value Stacked</h6>
+                    <h2 className="mt-1">
+                        {
+                            "~"
+                        }
+                        <span className="text-2xl font-medium"> USD</span>
+                    </h2>
+                </div>
+                <div className="">
+                    <h6 className="text-sm font-medium text-gray-500">Staking APY</h6>
+                    <h2 className="mt-1">
+                        {
+                            isSuccess
+                            ? numberWithCommas(getAPY())
+                            : "~"
+                        }
+                        <span className="text-2xl font-medium"> %</span>
+                    </h2>
+                </div>
+                <div className="flex-1 flex flex-col gap-1">
+                    <h6 className="text-sm font-light text-gray-500">Circulating Supply: <span className="font-medium">
+                        {
+                            "~"
+                        }
+                    </span></h6>
+                    <h6 className="text-sm font-light text-gray-500">Total WAG Staked: <span className="font-medium">
+                        {
+                            isSuccess
+                            ? numberWithLetter(data[0] / 1e18)
+                            : "~"
+                        }
+                    </span></h6>
+                    <h6 className="text-sm font-light text-gray-500">% of WAG Supply Staked: <span className="font-medium">
+                        {
+                            "~"
+                        }
+                    </span></h6>
+                </div>
+            </div>
+        </>
+    )
+  }

@@ -1,0 +1,45 @@
+{
+  "name": "dapps_staking",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "buildexport": "next build && next export",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@hcaptcha/react-hcaptcha": "^1.8.0",
+    "@headlessui/react": "^1.7.11",
+    "@popperjs/core": "^2.11.6",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@web3modal/ethereum": "^2.2.0",
+    "@web3modal/react": "^2.2.0",
+    "alchemy-sdk": "^2.7.0",
+    "axios": "^0.27.2",
+    "chart.js": "^4.2.1",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
+    "flowbite": "^1.5.3",
+    "flowbite-react": "^0.1.11",
+    "mysql2": "^3.2.0",
+    "next": "12.3.1",
+    "react": "18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
+    "uuid": "^9.0.0",
+    "wagmi": "^0.12.1",
+    "web3": "^1.8.0",
+    "web3-eth": "^1.9.0",
+    "web3modal": "^1.9.12"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.12",
+    "eslint": "8.23.1",
+    "eslint-config-next": "12.3.1",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.1.8"
+  }
+}

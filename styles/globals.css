@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: #F8F9FD;
+}
+
+h1 {
+  @apply text-5xl font-bold;
+}
+
+h2 {
+  @apply text-4xl font-bold;
+}
+
+h4 {
+  @apply text-2xl font-bold;
+}
+
+h5 {
+  @apply text-xl font-bold;
+}
+
+h6 {
+  @apply text-lg font-bold;
+}
+
+p {
+  @apply text-base;
+}
+
+.button-connect {
+  @apply text-white bg-gray-800 hover:bg-gray-600 font-medium rounded-lg text-base px-5 py-2 text-center flex gap-4 justify-center items-center w-40;
+}
+
+.button-light {
+  @apply text-white font-bold text-sm bg-gray-800 hover:bg-gray-700 rounded-lg px-5 py-2 flex justify-center w-full hover:cursor-pointer;
+}
+
+.button-max {
+  @apply text-black font-bold text-sm border-2 bg-white hover:bg-gray-900 hover:text-white rounded-lg px-3 py-1 flex justify-center;
+}
+
+.button-dark {
+  @apply text-black font-bold text-sm bg-white hover:bg-gray-200 rounded-lg px-4 py-2 flex justify-center w-32;
+}
+
+.button-dark-disable {
+  @apply text-white font-bold text-sm bg-gray-300 rounded-lg px-4 py-2 flex justify-center w-full;
+}
+
+.button-danger {
+  @apply text-red-500 font-bold text-sm bg-white hover:bg-gray-200 rounded-lg px-5 py-2 flex justify-center w-full;
+}
+
+.card {
+  @apply bg-white rounded-md drop-shadow-md p-4;
+}
+
+.mining {
+  background-image: url('../public/mining.jpg');
+  background-repeat: no-repeat;
+  background-position: center start;
+  background-size: cover;
+}
+
+.fmcg {
+  background-image: url('../public/FMCG.jpg');
+  background-repeat: no-repeat;
+  background-position: center start;
+  background-size: cover;
+}
+
+.agriculture {
+  background-image: url('../public/agriculture.jpg');
+  background-repeat: no-repeat;
+  background-position: center start;
+  background-size: cover;
+}
+
+.construction {
+  background-image: url('../public/construction.jpg');
+  background-repeat: no-repeat;
+  background-position: center start;
+  background-size: cover;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
