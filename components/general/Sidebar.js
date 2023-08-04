@@ -2,7 +2,6 @@ import { Web3Button } from '@web3modal/react'
 import { BsCoin, BsBank2 } from 'react-icons/bs'
 import {MdHowToVote, MdOutlineQueryStats} from 'react-icons/md'
 import {FaCoins} from 'react-icons/fa'
-import {BiSolidNetworkChart} from 'react-icons/bi'
 import {AiFillDatabase} from 'react-icons/ai'
 
 import Link from 'next/link'
@@ -42,7 +41,7 @@ export default function Sidebar(props) {
                     <ul className="space-y-2 font-medium mt-2">
                         <li>
                             <Link href="/faucet">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <BsCoin className='w-6 h-6 text-gray-500 '/>
                                     <span className="flex-1 ml-3 whitespace-nowrap">Faucet</span>
                                 </div>
@@ -52,7 +51,7 @@ export default function Sidebar(props) {
                     <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                         <li>
                             <Link href="/">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <FaCoins className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Stake</span>
                                 </div>
@@ -60,7 +59,7 @@ export default function Sidebar(props) {
                         </li>
                         <li>
                             <Link href="/lend">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <BsBank2 className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Lend</span>
                                 </div>
@@ -68,7 +67,7 @@ export default function Sidebar(props) {
                         </li>
                         <li>
                             <Link href="/dataNetwork">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <AiFillDatabase className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Data Network</span>
                                 </div>
@@ -76,7 +75,7 @@ export default function Sidebar(props) {
                         </li>
                         <li>
                             <Link href="/dataAnalytics">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <MdOutlineQueryStats className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Data Analytics</span>
                                 </div>
@@ -84,7 +83,7 @@ export default function Sidebar(props) {
                         </li>
                         <li>
                             <Link href="/governance">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <MdHowToVote className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Governance</span>
                                 </div>

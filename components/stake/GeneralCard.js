@@ -11,6 +11,7 @@ const stakingContract = {
 export default function GeneralCard(props) {
     const [totalSupply, setTotalSupply] = useState(0);
     const [rewardRate, setRewarRate] = useState(0);
+    const [finishAt, setFinishAt] = useState(null);
 
     const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
         contracts: [
@@ -23,7 +24,12 @@ export default function GeneralCard(props) {
                 ...stakingContract,
                 functionName: 'rewardRate',
                 watch: true
-            }
+            },
+            {
+                ...stakingContract,
+                functionName: 'finishAt',
+                watch: true
+            },
         ],
         onSuccess: (data)=>{
             console.log(data[0])
@@ -35,6 +41,10 @@ export default function GeneralCard(props) {
                 if(data[1] != null) {
                     setRewarRate(data[1]);
                 }
+
+                if(data[2] != null) {
+                    setFinishAt(new Date(data[2] * 1000));
+                }
             }
         }
     })
@@ -45,6 +55,9 @@ export default function GeneralCard(props) {
 
     function getAPY() {
         if(totalSupply == 0) return 0;
+        if(finishAt == null) return 0;
+        if(finishAt < new Date()) return 0;
+
         return rewardRate / totalSupply * 31536000 * 100;
     }
 
