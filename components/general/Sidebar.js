@@ -1,8 +1,10 @@
 import { Web3Button } from '@web3modal/react'
-import { BsCoin } from 'react-icons/bs'
-import {MdHowToVote} from 'react-icons/md'
+import { BsCoin, BsBank2 } from 'react-icons/bs'
+import {MdHowToVote, MdOutlineQueryStats} from 'react-icons/md'
 import {FaCoins} from 'react-icons/fa'
-import {BsBank2} from 'react-icons/bs'
+import {BiSolidNetworkChart} from 'react-icons/bi'
+import {AiFillDatabase} from 'react-icons/ai'
+
 import Link from 'next/link'
 
 export default function Sidebar(props) {
@@ -13,7 +15,7 @@ export default function Sidebar(props) {
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-between">
                     <div className="flex items-center justify-start">
-                        <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                        <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" className="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:focus:ring-gray-600">
                             <span className="sr-only">Open sidebar</span>
                             <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
@@ -40,7 +42,7 @@ export default function Sidebar(props) {
                     <ul className="space-y-2 font-medium mt-2">
                         <li>
                             <Link href="/faucet">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
                                     <BsCoin className='w-6 h-6 text-gray-500 '/>
                                     <span className="flex-1 ml-3 whitespace-nowrap">Faucet</span>
                                 </div>
@@ -50,7 +52,7 @@ export default function Sidebar(props) {
                     <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
                         <li>
                             <Link href="/">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
                                     <FaCoins className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Stake</span>
                                 </div>
@@ -58,15 +60,31 @@ export default function Sidebar(props) {
                         </li>
                         <li>
                             <Link href="/lend">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
                                     <BsBank2 className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Lend</span>
                                 </div>
                             </Link>
                         </li>
                         <li>
+                            <Link href="/dataNetwork">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                    <AiFillDatabase className='w-6 h-6 text-gray-500'/>
+                                    <span className="ml-3">Data Network</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/dataAnalytics">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
+                                    <MdOutlineQueryStats className='w-6 h-6 text-gray-500'/>
+                                    <span className="ml-3">Data Analytics</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
                             <Link href="/governance">
-                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 hover:cursor-pointer">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 hover:cursor-pointer">
                                     <MdHowToVote className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Governance</span>
                                 </div>
