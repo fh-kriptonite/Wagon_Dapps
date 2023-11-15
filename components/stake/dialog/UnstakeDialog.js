@@ -1,18 +1,20 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { ImCross } from "react-icons/im"
-import { useAccount, useContractReads, useContractWrite, useWaitForTransaction, usePrepareContractWrite } from 'wagmi'
+import { useAccount, useContractReads, useContractWrite, useWaitForTransaction, usePrepareContractWrite, useNetwork } from 'wagmi'
 import stakingABI from "../../../public/ABI/staking.json";
 import { numberWithCommas } from "../../../util/stringUtility";
-
-const stakingContract = {
-    address: process.env.WAGON_STAKING_PROXY,
-    abi: stakingABI,
-}
 
 export default function UnstakeDialog(props) {
   let [isOpen, setIsOpen] = useState(false)
   const [number, setNumber] = useState("")
+
+  const { chain } = useNetwork()
+
+  const stakingContract = {
+    address: (chain?.id == 1) ? process.env.WAGON_STAKING_PROXY : process.env.WAGON_STAKING_PROXY_BASE_GOERLI,
+    abi: stakingABI,
+  }
 
   function closeModal() {
     setIsOpen(false)

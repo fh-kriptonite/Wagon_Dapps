@@ -1,16 +1,18 @@
-import { useAccount, useContractReads } from "wagmi"
+import { useAccount, useContractReads, useNetwork } from "wagmi"
 import { numberWithCommas } from "../../util/stringUtility";
 import stakingABI from "../../public/ABI/staking.json";
 import { useEffect } from "react";
 
-const stakingContract = {
-    address: process.env.WAGON_STAKING_PROXY,
-    abi: stakingABI,
-}
-
 export default function StakingStatsSummary(props) {
 
     const { address } = useAccount();
+
+    const { chain } = useNetwork()
+
+    const stakingContract = {
+        address: (chain?.id == 1) ? process.env.WAGON_STAKING_PROXY : process.env.WAGON_STAKING_PROXY_BASE_GOERLI,
+        abi: stakingABI,
+    }
 
     const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
         contracts: [

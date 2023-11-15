@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { useContractReads } from 'wagmi'
 
 import erc20ABI from "../../public/ABI/erc20.json";
@@ -8,15 +8,17 @@ import { numberWithCommas } from "../../util/stringUtility";
 import StakeDialog from "./dialog/StakeDialog";
 import UnstakeDialog from "./dialog/UnstakeDialog";
 
-const wagonContract = {
-    address: process.env.WAG_ADDRESS,
-    abi: erc20ABI,
-}
-
 export default function StakeSection(props) {
     const { address } = useAccount();
 
     const [totalBalance, setTotalBalance] = useState(0)
+    
+    const { chain } = useNetwork()
+
+    const wagonContract = {
+        address: (chain?.id == 1) ? process.env.WAG_ADDRESS : process.env.WAG_ADDRESS_BASE_GOERLI,
+        abi: erc20ABI,
+    }
     
     var command = [{
         ...wagonContract,

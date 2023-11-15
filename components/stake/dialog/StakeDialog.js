@@ -6,6 +6,7 @@ import {
   useAccount, 
   useContractReads, 
   useContractWrite, 
+  useNetwork, 
   usePrepareContractWrite, 
   useWaitForTransaction } from 'wagmi'
 
@@ -13,19 +14,21 @@ import erc20ABI from "../../../public/ABI/erc20.json";
 import stakingABI from "../../../public/ABI/staking.json";
 import { numberWithCommas } from "../../../util/stringUtility";
 
-const stakingContract = {
-    address: process.env.WAGON_STAKING_PROXY,
-    abi: stakingABI,
-}
-
-const wagonContract = {
-  address: process.env.WAG_ADDRESS,
-  abi: erc20ABI,
-}
-
 export default function StakeDialog(props) {
   const [isOpen, setIsOpen] = useState(false)
   const [number,setNumber] = useState("")
+
+  const { chain } = useNetwork()
+
+  const stakingContract = {
+    address: (chain?.id == 1) ? process.env.WAGON_STAKING_PROXY : process.env.WAGON_STAKING_PROXY_BASE_GOERLI,
+    abi: stakingABI,
+}
+
+  const wagonContract = {
+    address: (chain?.id == 1) ? process.env.WAG_ADDRESS : process.env.WAG_ADDRESS_BASE_GOERLI,
+    abi: erc20ABI,
+  }
 
   function closeModal() {
     setIsOpen(false)

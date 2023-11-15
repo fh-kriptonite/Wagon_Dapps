@@ -1,13 +1,8 @@
-import { useAccount, useContractReads, useContractWrite, usePrepareContractWrite, useWaitForTransaction } from "wagmi"
+import { useAccount, useContractReads, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from "wagmi"
 import { numberWithCommas } from "../../util/stringUtility";
 import stakingABI from "../../public/ABI/staking.json";
 import { useEffect, useState } from "react";
 import { Spinner } from "flowbite-react";
-
-const stakingContract = {
-    address: process.env.WAGON_STAKING_PROXY,
-    abi: stakingABI,
-}
 
 export default function WithdrawCard(props) {
     const [claimTime, setClaimTime] = useState(null);
@@ -15,6 +10,12 @@ export default function WithdrawCard(props) {
     const [readyToWithdraw, setReadyToWithdraw] = useState(null);
     
     const { address } = useAccount();
+    const { chain } = useNetwork()
+
+    const stakingContract = {
+        address: (chain?.id == 1) ? process.env.WAGON_STAKING_PROXY : process.env.WAGON_STAKING_PROXY_BASE_GOERLI,
+        abi: stakingABI,
+    }
 
     const currentDate = new Date();
 
