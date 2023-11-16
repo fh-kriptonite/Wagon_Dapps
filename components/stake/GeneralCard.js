@@ -97,18 +97,22 @@ export default function GeneralCard(props) {
     })
 
     async function getPrice(priceWAG_ETH) {
-        const ethereumApiEndpoint = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+        try {
+            const ethereumApiEndpoint = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
 
-        const response = await fetch(ethereumApiEndpoint, {
-            method: 'get'
-        });
-        const data = await response.json();
-        
-        if(response.status == 200){
-            const ethereumPriceUSD = data.ethereum.usd;
-            setPrice(ethereumPriceUSD * priceWAG_ETH)
-        } else {
-            console.log("error")
+            const response = await fetch(ethereumApiEndpoint, {
+                method: 'get'
+            });
+            const data = await response.json();
+            
+            if(response.status == 200){
+                const ethereumPriceUSD = data.ethereum.usd;
+                setPrice(ethereumPriceUSD * priceWAG_ETH)
+            } else {
+                console.log("error")
+            }   
+        } catch (error) {
+            console.log(error)
         }
     }
 
