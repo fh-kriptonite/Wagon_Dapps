@@ -197,7 +197,7 @@ export default function GeneralCard(props) {
                     <h6 className="text-sm font-light text-gray-500">% of WAG Supply Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithCommas(totalSupply / totalCirculation * 100, 1)
+                            ? numberWithCommas(totalSupply / data[3] * 100, 1)
                             : "~"
                         }%
                     </span></h6>
