@@ -98,15 +98,41 @@ export default function GeneralCard(props) {
 
     async function getPrice(priceWAG_ETH) {
         try {
-            const ethereumApiEndpoint = 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd';
+            const ethereumApiEndpoint = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
 
+            const query = `
+                        {
+                            pools(where: { id: "${process.env.ETH_USDC_UNISWAP_PAIR}" }) {
+                              token0 {
+                                id
+                              }
+                              token1 {
+                                id
+                              }
+                              token0Price
+                              token1Price
+                            }
+                          }
+                        `;
+            
             const response = await fetch(ethereumApiEndpoint, {
-                method: 'get'
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                  },
+                body: JSON.stringify({ query: query }),
             });
+            
             const data = await response.json();
             
+            console.log(data)
             if(response.status == 200){
-                const ethereumPriceUSD = data.ethereum.usd;
+                const pool = data.data.pools[0];
+                const token0Price = pool.token0Price;
+
+                // Assuming ETH is token0 and USDC is token1
+                const ethereumPriceUSD = parseInt(token0Price);
+
                 setPrice(ethereumPriceUSD * priceWAG_ETH)
             } else {
                 console.log("error")
@@ -136,7 +162,7 @@ export default function GeneralCard(props) {
                     <h2 className="mt-1">
                         {
                             isSuccess
-                            ? numberWithLetter(totalSupply * price, 2)
+                            ? numberWithLetter(totalSupply / 1e18 * price, 2)
                             : "~"
                         }
                         <span className="text-2xl font-medium"> USD</span>
@@ -164,7 +190,7 @@ export default function GeneralCard(props) {
                     <h6 className="text-sm font-light text-gray-500">Total WAG Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithLetter(totalSupply / 1e18)
+                            ? numberWithCommas(totalSupply / 1e18)
                             : "~"
                         }
                     </span></h6>
