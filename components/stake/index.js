@@ -33,7 +33,7 @@ export default function StakeComponent(props) {
                         The stkWAG tokens are tradable and transferable. 
                     </p>
                     <p className="text-sm mt-2">
-                        You can use the stkWAG tokens to participate in Wagon's governance and approve or reject individual loan applications.
+                        You can use the stkWAG tokens to participate in Wagon&apos;s governance and approve or reject individual loan applications.
                     </p>
                     <p className="text-sm mt-4">
                         StkWAG contract:
