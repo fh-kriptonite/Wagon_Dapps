@@ -6,6 +6,7 @@ import { numberWithCommas, numberWithLetter } from "../../util/stringUtility";
 import { useState, useEffect } from "react";
 
 export default function GeneralCard(props) {
+    const [totalStaked, setTotalStaked] = useState(0);
     const [totalSupply, setTotalSupply] = useState(0);
     const [rewardRate, setRewarRate] = useState(0);
     const [finishAt, setFinishAt] = useState(null);
@@ -29,51 +30,67 @@ export default function GeneralCard(props) {
         abi: uniswapPairABI,
     }
 
-    const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
+    const { refetch: refetchStats } = useContractReads({
         contracts: [
-            {
-                ...stakingContract,
-                functionName: 'totalSupply',
-                watch: true
-            },
-            {
-                ...stakingContract,
-                functionName: 'rewardRate',
-                watch: true
-            },
-            {
-                ...stakingContract,
-                functionName: 'finishAt',
-                watch: true
-            },
             {
                 ...wagonContract,
                 functionName: 'totalSupply',
-                watch: true,
             },
             {
                 ...wagonContract,
                 functionName: 'balanceOf',
                 args: [process.env.WAGON_TEAM_FINANCE_LOCK],
-                watch: true,
             },
             {
                 ...wagonContract,
                 functionName: 'balanceOf',
                 args: [process.env.WAGON_STAKING_PROXY],
-                watch: true,
             },
             {
                 ...uniswapPairContract,
                 functionName: 'getReserves',
-                watch: true,
             },
 
         ],
+        watch: true,
         onSuccess: (data)=>{
             if(data != null) {
                 if(data[0] != null) {
-                    setTotalSupply(data[0]);
+                    setTotalSupply(data[0])
+                }
+                
+                if(data[0] != null && data[1] != null && data[2] != null) {
+                    setTotalCirculation(data[0] - data[1] - data[2])
+                }
+
+                if(data[3] != null) {
+                    getPrice(data[3][0] / data[3][1])
+                }
+
+            }
+        }
+    })
+
+    const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
+        contracts: [
+            {
+                ...stakingContract,
+                functionName: 'totalSupply',
+            },
+            {
+                ...stakingContract,
+                functionName: 'rewardRate',
+            },
+            {
+                ...stakingContract,
+                functionName: 'finishAt',
+            },
+        ],
+        watch: true,
+        onSuccess: (data)=>{
+            if(data != null) {
+                if(data[0] != null) {
+                    setTotalStaked(data[0]);
                 }
     
                 if(data[1] != null) {
@@ -82,14 +99,6 @@ export default function GeneralCard(props) {
 
                 if(data[2] != null) {
                     setFinishAt(new Date(data[2] * 1000));
-                }
-
-                if(data[3] != null && data[4] != null && data[5] != null) {
-                    setTotalCirculation(data[3] - data[4] - data[5])
-                }
-
-                if(data[6] != null) {
-                    getPrice(data[6][0] / data[6][1])
                 }
 
             }
@@ -125,7 +134,6 @@ export default function GeneralCard(props) {
             
             const data = await response.json();
             
-            console.log(data)
             if(response.status == 200){
                 const pool = data.data.pools[0];
                 const token0Price = pool.token0Price;
@@ -144,14 +152,15 @@ export default function GeneralCard(props) {
 
     useEffect(()=> {
         refetch();
+        refetchStats();
     }, [props.fetch])
 
     function getAPY() {
-        if(totalSupply == 0) return 0;
+        if(totalStaked == 0) return 0;
         if(finishAt == null) return 0;
         if(finishAt < new Date()) return 0;
 
-        return rewardRate / totalSupply * 31536000 * 100;
+        return rewardRate / totalStaked * 31536000 * 100;
     }
 
     return (
@@ -162,7 +171,7 @@ export default function GeneralCard(props) {
                     <h2 className="mt-1">
                         {
                             isSuccess
-                            ? numberWithLetter(totalSupply / 1e18 * price, 2)
+                            ? numberWithLetter(totalStaked / 1e18 * price, 2)
                             : "~"
                         }
                         <span className="text-2xl font-medium"> USD</span>
@@ -190,14 +199,14 @@ export default function GeneralCard(props) {
                     <h6 className="text-sm font-light text-gray-500">Total WAG Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithCommas(totalSupply / 1e18)
+                            ? numberWithCommas(totalStaked / 1e18)
                             : "~"
                         }
                     </span></h6>
                     <h6 className="text-sm font-light text-gray-500">% of WAG Supply Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithCommas(totalSupply / data[3] * 100, 1)
+                            ? numberWithCommas(totalStaked / totalSupply * 100, 1)
                             : "~"
                         }%
                     </span></h6>
