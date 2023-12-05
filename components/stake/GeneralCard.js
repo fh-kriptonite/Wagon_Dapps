@@ -203,10 +203,10 @@ export default function GeneralCard(props) {
                             : "~"
                         }
                     </span></h6>
-                    <h6 className="text-sm font-light text-gray-500">% of WAG Supply Staked: <span className="font-medium">
+                    <h6 className="text-sm font-light text-gray-500">% of WAG Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithCommas(totalStaked / totalSupply * 100, 1)
+                            ? numberWithCommas(totalStaked / totalCirculation * 100, 1)
                             : "~"
                         }%
                     </span></h6>
