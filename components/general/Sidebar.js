@@ -29,7 +29,9 @@ export default function Sidebar(props) {
                         </div>
                         <div className="flex items-center">
                             <div className="flex items-center ml-3 gap-2">
-                                <Web3NetworkSwitch/>
+                                <div className='hidden md:block'>
+                                    <Web3NetworkSwitch/>
+                                </div>
                                 <Web3Button icon="show" label="Connect Wallet" balance="hide" />
                             </div>
                         </div>
