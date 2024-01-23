@@ -6,14 +6,14 @@ import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/react'
 import { useEffect, useState } from 'react'
 import { configureChains, createClient, WagmiConfig } from 'wagmi'
-import { baseGoerli, mainnet } from 'wagmi/chains'
+import { baseGoerli, mainnet, sepolia, bscTestnet, bsc } from 'wagmi/chains'
 import Sidebar from '../components/general/Sidebar'
 
 // 1. Get projectID at https://cloud.walletconnect.com
 const projectId = process.env.WALLET_PROJECT_ID
 
 // 2. Configure wagmi client
-const chains = [ mainnet, baseGoerli]
+const chains = [ mainnet, baseGoerli, sepolia, bsc, bscTestnet]
 
 const { provider } = configureChains(chains, [w3mProvider({ projectId })])
 const wagmiClient = createClient({
@@ -58,9 +58,11 @@ function MyApp({ Component, pageProps }) {
 
       {ready ? (
         <WagmiConfig client={wagmiClient}>
-          <Sidebar/>
-          <div className="p-2 mt-20 md:ml-64">
-            <Component {...pageProps} provider={provider} />
+          <div className='h-screen flex flex-col'>
+            <Sidebar/>
+            <div className="p-2 mt-20 md:ml-56 grow">
+              <Component {...pageProps} provider={provider} />
+            </div>
           </div>
         </WagmiConfig>
       ) : null}

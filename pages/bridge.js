@@ -1,8 +1,8 @@
 import { useAccount } from 'wagmi'
-import StakeComponent from '../components/stake/index';
 import Disconnected from '../components/general/Disconnected';
+import BridgeCard from '../components/bridge/BridgeCard';
 
-export default function Home(props) {
+export default function Bridge(props) {
   const { isConnected } = useAccount();
 
   return (
@@ -13,7 +13,7 @@ export default function Home(props) {
                 <Disconnected {...props}/>
               </div>
             : <div>
-                <StakeComponent {...props}/>
+                <BridgeCard {...props}/>
             </div>
         }
     </div>

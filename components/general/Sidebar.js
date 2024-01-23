@@ -1,6 +1,7 @@
 import { Web3Button, Web3NetworkSwitch } from '@web3modal/react'
 import { BsCoin, BsBank2 } from 'react-icons/bs'
 import {MdHowToVote, MdOutlineQueryStats} from 'react-icons/md'
+import { BiTransferAlt } from "react-icons/bi";
 import {FaCoins} from 'react-icons/fa'
 import {AiFillDatabase} from 'react-icons/ai'
 
@@ -39,7 +40,7 @@ export default function Sidebar(props) {
                 </div>
             </nav>
 
-            <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
+            <aside id="logo-sidebar" className="fixed top-0 left-0 z-40 w-56 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
                     {
                         // base goerli
@@ -93,6 +94,14 @@ export default function Sidebar(props) {
                                 <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
                                     <MdHowToVote className='w-6 h-6 text-gray-500'/>
                                     <span className="ml-3">Governance</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/bridge">
+                                <div className="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer">
+                                    <BiTransferAlt className='w-6 h-6 text-gray-500'/>
+                                    <span className="ml-3">Bridge</span>
                                 </div>
                             </Link>
                         </li>
