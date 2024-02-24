@@ -33,9 +33,9 @@ export default function LendHome(props) {
       <h2 className="mt-10 font-semibold">Wagon Lending Pools</h2>
         
       <div className="flex items-center gap-1 text-blue-500 hover:text-blue-800 hover:cursor-pointer mt-2 w-full md:w-fit"
-        onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB_TESTNET, '_blank');}}
+        onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
       >
-        <p className="text-sm truncate overflow-hidden">{process.env.LENDING_ADDRESS_BNB_TESTNET}</p>
+        <p className="text-sm truncate overflow-hidden">{process.env.LENDING_ADDRESS_BNB}</p>
         <MdOpenInNew size={16} className=""/>
       </div>
       

@@ -16,10 +16,10 @@ const startService = () => {
     console.log('Starting listener service...');
 
     // Set up Ethereum provider (e.g., Infura)
-    const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB_TESTNET);
+    const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
 
     // Set up smart contract address and ABI
-    const contractAddress = process.env.LENDING_ADDRESS_BNB_TESTNET;
+    const contractAddress = process.env.LENDING_ADDRESS_BNB;
     const contractABI = lendingAbi;
 
     // Initialize contract instance

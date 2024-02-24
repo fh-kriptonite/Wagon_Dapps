@@ -10,7 +10,7 @@ import LendProcessDialog from './LendprocessDialog';
 import { formatTime } from '../../../util/lendingUtility';
 
 const wagContract = {
-  address: process.env.WAG_ADDRESS_BNB_TESTNET,
+  address: process.env.WAG_ADDRESS_BNB,
   abi: erc20ABI,
 }
 
@@ -77,7 +77,7 @@ export default function LendToPoolDialog(props) {
           functionName: 'allowance',
           args: [
             address,
-            process.env.LENDING_ADDRESS_BNB_TESTNET
+            process.env.LENDING_ADDRESS_BNB
           ]
         },
         {
@@ -85,7 +85,7 @@ export default function LendToPoolDialog(props) {
           functionName: 'allowance',
           args: [
             address,
-            process.env.LENDING_ADDRESS_BNB_TESTNET
+            process.env.LENDING_ADDRESS_BNB
           ]
         },
         {
@@ -140,7 +140,7 @@ export default function LendToPoolDialog(props) {
     ...stableContract,
     functionName: 'approve',
     args:[
-          process.env.LENDING_ADDRESS_BNB_TESTNET,
+          process.env.LENDING_ADDRESS_BNB,
           (dataAllowance == undefined) 
             ? 0
             : ((parseFloat(stableNumber) + getAdminFee()) * Math.pow(10, parseFloat(dataAllowance[2]))).toString()
@@ -170,7 +170,7 @@ export default function LendToPoolDialog(props) {
     ...wagContract,
     functionName: 'approve',
     args:[
-          process.env.LENDING_ADDRESS_BNB_TESTNET,
+          process.env.LENDING_ADDRESS_BNB,
           parseEther(`${wagNumber == "" ? 0 : wagNumber}`).toString()
         ]
   })
@@ -189,7 +189,7 @@ export default function LendToPoolDialog(props) {
   // LEND TO POOL ----- START -----
 
   const { data: dataLendToPool, isLoading: isLoadingLendToPool, write: writeLendToPool } = useContractWrite({
-    address: process.env.LENDING_ADDRESS_BNB_TESTNET,
+    address: process.env.LENDING_ADDRESS_BNB,
     abi: lendingABI,
     functionName: 'lendToPool',
     args:[

@@ -3,11 +3,11 @@ const lendingAbi = require("../public/ABI/lending.json");
 const erc1155Abi = require("../public/ABI/lendingErc1155.json");
 const erc20Abi = require("../public/ABI/erc20.json");
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB_TESTNET);
-const contractAddress = process.env.LENDING_ADDRESS_BNB_TESTNET;
+const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
+const contractAddress = process.env.LENDING_ADDRESS_BNB;
 const contract = new ethers.Contract(contractAddress, lendingAbi, provider);
 
-const contract1155Address = process.env.ERC1155_ADDRESS_BNB_TESTNET;
+const contract1155Address = process.env.ERC1155_ADDRESS_BNB;
 const contract1155 = new ethers.Contract(contract1155Address, erc1155Abi, provider);
 
 // ERC1155 CONTRACT FUNCTIONS

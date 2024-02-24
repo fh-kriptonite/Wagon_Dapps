@@ -14,7 +14,7 @@ import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestD
 import { getOnGoingPoolUserBalanceService, getUserBalanceService } from '../../services/service_lending';
 
 const lendingContract = {
-  address: process.env.LENDING_ADDRESS_BNB_TESTNET,
+  address: process.env.LENDING_ADDRESS_BNB,
   abi: lendingABI,
 }
 

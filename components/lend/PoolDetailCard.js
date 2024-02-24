@@ -110,9 +110,9 @@ export default function PoolDetailCard(props) {
                 </p>
                 
                 <div className="flex items-center gap-1 text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-                    onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB_TESTNET, '_blank');}}
+                    onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
                 >
-                    <p className="text-sm">{process.env.LENDING_ADDRESS_BNB_TESTNET}</p>
+                    <p className="text-sm">{process.env.LENDING_ADDRESS_BNB}</p>
                     <MdOpenInNew size={16} className=""/>
                 </div>
 
