@@ -143,6 +143,22 @@ module.exports = {
                 reject(error);
             }
         })
+    },
+
+    getCoinPriceService : async (name) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                const response = await fetch('../../api/cache/getCoinPrice/?name=' + name);
+                if (!response.ok) {
+                    reject('Failed to fetch data');
+                }
+                const jsonData = await response.json();
+                resolve(jsonData);
+            } catch (error) {
+                console.error('Error fetching JSON:', error);
+                reject(error);
+            }
+        })
     }
 
 }

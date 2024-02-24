@@ -8,7 +8,7 @@ module.exports = {
         const provider = new ethers.providers.JsonRpcProvider(providerUrl, {chainId});
 
         // Instantiate the ERC-20 token contract
-        const sepoliaOFT = new ethers.Contract(OFTAddress, BRIDGE_ABI, provider)
+        const localOFT = new ethers.Contract(OFTAddress, BRIDGE_ABI, provider)
         let defaultAdapterParams = ethers.utils.solidityPack(["uint16", "uint256"], [1, 200000])
         const deployerAddressBytes32 = ethers.utils.defaultAbiCoder.encode(["address"], [walletAddress])
       
@@ -19,7 +19,7 @@ module.exports = {
                 const formattedAmount = weiAmount.toString(); // Convert to string
                 
                 let nativeFee = (
-                    await sepoliaOFT.estimateSendFee(
+                    await localOFT.estimateSendFee(
                         endpointId, 
                         deployerAddressBytes32, 
                         formattedAmount, 

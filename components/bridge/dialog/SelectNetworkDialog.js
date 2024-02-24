@@ -2,12 +2,14 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { IoIosArrowDown } from "react-icons/io";
-import networks from "../../../public/files/bridgeNetworks.json"
+
+import networksTestnet from "../../../public/files/bridgeNetworks-testnet.json"
+import networksMainnet from "../../../public/files/bridgeNetworks.json"
 
 export default function SelectNetworkDialog(props) {
 
   const network = props.network;
-
+  
   const [isOpen, setIsOpen] = useState(false)
 
   function closeModal() {
@@ -16,6 +18,12 @@ export default function SelectNetworkDialog(props) {
 
   function openModal() {
     setIsOpen(true)
+  }
+
+  let networks = networksMainnet;
+
+  if(process.env.BRIDGE_NETWORK_FILE == "testnet") {
+    networks = networksTestnet;
   }
   
   return (
@@ -73,7 +81,9 @@ export default function SelectNetworkDialog(props) {
                       networks.map((network, index) => {
                         if(network != null && network.name == props.otherNetwork?.name) return <></>
                         return (
-                          <div className='px-2 py-3 flex items-center gap-4 hover:cursor-pointer'
+                          <div 
+                            key={network.name}
+                            className='px-2 py-3 flex items-center gap-4 hover:cursor-pointer'
                             onClick={() => {
                               props.setNetwork(network);
                               closeModal();

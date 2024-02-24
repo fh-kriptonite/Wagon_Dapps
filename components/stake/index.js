@@ -14,7 +14,7 @@ export default function StakeComponent(props) {
     }
 
     return (
-        <div className="max-w-5xl mx-auto">  
+        <div className="container mx-auto px-4 md:px-10 max-w-7xl">  
             <div className="p-4 mb-4 rounded-lg bg-blue-50 text-blue-900">
                 <h4 className="font-semibold">Calling all WAG staker!</h4>
                 <p className="mt-2 text-sm">Be part of our governance while gaining rewards</p>

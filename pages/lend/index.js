@@ -1,8 +1,8 @@
 import { useAccount } from 'wagmi'
-import Disconnected from '../components/general/Disconnected';
-import AccountComponent from '../components/account';
+import Disconnected from '../../components/general/Disconnected';
+import LendHome from '../../components/lend/LendHome';
 
-export default function Home(props) {
+export default function Lend(props) {
   const { isConnected } = useAccount();
 
   return (
@@ -13,7 +13,7 @@ export default function Home(props) {
                 <Disconnected {...props}/>
               </div>
             : <div>
-                <AccountComponent {...props}/>
+                <LendHome {...props}/>
             </div>
         }
     </div>

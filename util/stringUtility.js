@@ -20,3 +20,11 @@ export function numberWithLetter(num, digits) {
     });
     return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
   }
+
+export function formatDate(date) {
+  // Format the date object into the desired format "Jan 21, 2024"
+  const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'  };
+  const formattedDate = date.toLocaleDateString('en-US', options);
+
+  return formattedDate;
+}

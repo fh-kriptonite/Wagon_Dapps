@@ -5,6 +5,8 @@ import uniswapPairABI from "../../public/ABI/uniswapPair.json"
 import { numberWithCommas, numberWithLetter } from "../../util/stringUtility";
 import { useState, useEffect } from "react";
 
+import { getCoinPriceService } from "../../services/service_erc20"
+
 export default function GeneralCard(props) {
     const [totalStaked, setTotalStaked] = useState(0);
     const [totalSupply, setTotalSupply] = useState(0);
@@ -25,11 +27,6 @@ export default function GeneralCard(props) {
         abi: erc20ABI,
     }
 
-    const uniswapPairContract = {
-        address: process.env.WAGON_UNISWAP_PAIR,
-        abi: uniswapPairABI,
-    }
-
     const { refetch: refetchStats } = useContractReads({
         contracts: [
             {
@@ -45,11 +42,7 @@ export default function GeneralCard(props) {
                 ...wagonContract,
                 functionName: 'balanceOf',
                 args: [process.env.WAGON_STAKING_PROXY],
-            },
-            {
-                ...uniswapPairContract,
-                functionName: 'getReserves',
-            },
+            }
 
         ],
         watch: true,
@@ -62,11 +55,6 @@ export default function GeneralCard(props) {
                 if(data[0] != null && data[1] != null && data[2] != null) {
                     setTotalCirculation(data[0] - data[1] - data[2])
                 }
-
-                if(data[3] != null) {
-                    getPrice(data[3][0] / data[3][1])
-                }
-
             }
         }
     })
@@ -107,48 +95,16 @@ export default function GeneralCard(props) {
 
     async function getPrice(priceWAG_ETH) {
         try {
-            const ethereumApiEndpoint = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
-
-            const query = `
-                        {
-                            pools(where: { id: "${process.env.ETH_USDC_UNISWAP_PAIR}" }) {
-                              token0 {
-                                id
-                              }
-                              token1 {
-                                id
-                              }
-                              token0Price
-                              token1Price
-                            }
-                          }
-                        `;
-            
-            const response = await fetch(ethereumApiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                  },
-                body: JSON.stringify({ query: query }),
-            });
-            
-            const data = await response.json();
-            
-            if(response.status == 200){
-                const pool = data.data.pools[0];
-                const token0Price = pool.token0Price;
-
-                // Assuming ETH is token0 and USDC is token1
-                const ethereumPriceUSD = parseInt(token0Price);
-
-                setPrice(ethereumPriceUSD * priceWAG_ETH)
-            } else {
-                console.log("error")
-            }   
+            const wagPriceData = await getCoinPriceService("WAG");
+            setPrice(wagPriceData.data[0].usd_price);
         } catch (error) {
             console.log(error)
         }
     }
+
+    useEffect(()=>{
+        getPrice();
+    }, [])
 
     useEffect(()=> {
         refetch();
@@ -206,7 +162,9 @@ export default function GeneralCard(props) {
                     <h6 className="text-sm font-light text-gray-500">% of WAG Staked: <span className="font-medium">
                         {
                             isSuccess
-                            ? numberWithCommas(totalStaked / totalCirculation * 100, 1)
+                            ? totalCirculation == 0 
+                                ? "0"
+                                : numberWithCommas(totalStaked / totalCirculation * 100, 1)
                             : "~"
                         }%
                     </span></h6>

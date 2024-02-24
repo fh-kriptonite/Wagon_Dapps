@@ -20,7 +20,6 @@ export default function BridgeCard(props) {
     const { address } = useAccount();
     
     const { chain } = useNetwork();
-    const { provider } = useClient();
     const { chains, error, isLoading : isLoadingSwitching, pendingChainId, switchNetwork } = useSwitchNetwork({
         onSuccess(data) {
             setIsOpenLoadingSwitchNetwork(false)
@@ -31,7 +30,7 @@ export default function BridgeCard(props) {
         }
     })
 
-    const [number, setNumber] = useState(null);
+    const [number, setNumber] = useState("");
     const [network1, setNetwork1] = useState(null);
     const [network2, setNetwork2] = useState(null);
     const [destinationGas, setDestinationGas] = useState(null);
@@ -88,10 +87,10 @@ export default function BridgeCard(props) {
         let currentChain = chain;
         if(data != null) currentChain = data;
         // check if the network is the main chain
-        if(currentChain.id == process.env.BRIDGE_LOCAL_CHAIN_ID) {
+        if(currentChain.id == process.env.BRIDGE_LOCAL_CHAIN_ID || currentChain.id == process.env.BRIDGE_LOCAL_CHAIN_ID_TESTNET ) {
             try {
                 const allowance = await allowanceErc20Service(network1.wagAddress, address, network1.OFTAddress, network1.rpc, network1.chainId)
-                if(allowance < parseFloat(number)) {
+                if(parseFloat(allowance) < parseFloat(number)) {
                     // call approve
                     approve();
                     setIsOpenLoadingAllowance(false);
@@ -117,9 +116,7 @@ export default function BridgeCard(props) {
         functionName: 'approve',
         args:[
                 network1?.OFTAddress, 
-                (number == null) 
-                    ? (number)
-                    : (number * Math.pow(10,18)).toString()
+                parseEther(`${number == 0 ? 0 : number}`).toString()
             ]
     })
 
@@ -144,8 +141,8 @@ export default function BridgeCard(props) {
             address,
             network2?.lzEndpointId,
             ethers.utils.defaultAbiCoder.encode(["address"], [address]),
-            parseEther(`${number == null ? 0 : number}`).toString(),
-            parseEther(`${number == null ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
             [
                 address, 
                 "0x0000000000000000000000000000000000000000", 
@@ -175,8 +172,8 @@ export default function BridgeCard(props) {
             address,
             network2?.lzEndpointId,
             ethers.utils.defaultAbiCoder.encode(["address"], [address]),
-            parseEther(`${number == null ? 0 : number}`).toString(),
-            parseEther(`${number == null ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
             [
                 address, 
                 "0x0000000000000000000000000000000000000000", 
@@ -205,8 +202,8 @@ export default function BridgeCard(props) {
             address,
             network2?.lzEndpointId,
             ethers.utils.defaultAbiCoder.encode(["address"], [address]),
-            parseEther(`${number == null ? 0 : number}`).toString(),
-            parseEther(`${number == null ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
             [
                 address, 
                 "0x0000000000000000000000000000000000000000", 
@@ -235,8 +232,8 @@ export default function BridgeCard(props) {
             address,
             network2?.lzEndpointId,
             ethers.utils.defaultAbiCoder.encode(["address"], [address]),
-            parseEther(`${number == null ? 0 : number}`).toString(),
-            parseEther(`${number == null ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
+            parseEther(`${number == 0 ? 0 : number}`).toString(),
             [
                 address, 
                 "0x0000000000000000000000000000000000000000", 
@@ -298,7 +295,7 @@ export default function BridgeCard(props) {
                     </div>
                     <div className="flex justify-between">
                         <p className="text-xs">You will receive</p>
-                        <p className="text-xs font-semibold">{number == null ? "--" : number} WAG</p>
+                        <p className="text-xs font-semibold">{number == 0 ? "--" : number} WAG</p>
                     </div>
                     <div className="flex justify-between">
                         <p className="text-xs">Fee</p>
@@ -313,7 +310,7 @@ export default function BridgeCard(props) {
                 <div className="mt-4 w-full">
                     {
                         <Button color="dark" style={{width:"100%"}}
-                            disabled={isLoadingSwitching || number == null || network1 == null || network2 == null}
+                            disabled={isLoadingSwitching || number == 0 || network1 == null || network2 == null}
                             onClick={()=>{
                                 transferBridge();
                             }}

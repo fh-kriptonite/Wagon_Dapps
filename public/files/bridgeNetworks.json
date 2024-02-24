@@ -18,25 +18,5 @@
         "OFTAddress": "0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D",
         "lzEndpointId": 102,
         "priceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
-    },
-    {
-        "name":"Sepolia",
-        "chainId": 11155111,
-        "logo": "/network/logo-eth.png",
-        "wagAddress": "0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D",
-        "rpc": "https://rpc.sepolia.org/",
-        "OFTAddress": "0x2a0304bb9Dd8F50ec04c483ddAA8d586EAe0A2ff",
-        "lzEndpointId": 10161,
-        "priceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
-    },
-    {
-        "name":"BNB Testnet",
-        "chainId": 97,
-        "logo": "/network/logo-bnb.png",
-        "wagAddress": "0x995910F3727c94068436d22291098B8AeC1CBa78",
-        "rpc": "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
-        "OFTAddress": "0x995910F3727c94068436d22291098B8AeC1CBa78",
-        "lzEndpointId": 10102,
-        "priceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
     }
 ]

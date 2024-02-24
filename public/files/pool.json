@@ -1,0 +1,13 @@
+[
+    {
+        "highlights": [
+            {"name":"Use of Proceed", "value": "Working Capital"},
+            {"name":"Loan Amount", "value": "USD 700,000"},
+            {"name":"Interest Rate", "value": "6% / Year"},
+            {"name":"Loan Term", "value": "6 Months"},
+            {"name":"Term Start Date", "value": "Jan 1, 2024"},
+            {"name":"Loan Maturity Date", "value": "June 31, 2024"},
+            {"name":"Payment Frequency", "value": "3 Months"}
+        ]
+    }
+]

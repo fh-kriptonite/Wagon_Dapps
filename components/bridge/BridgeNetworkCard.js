@@ -30,7 +30,7 @@ export default function BridgeNetworkCard(props) {
         if(network != null) {
             getBalance();
         }
-    }, [network])
+    }, [network, address])
 
     return (
         <div className="mt-2 border rounded-xl overflow-hidden">
@@ -68,13 +68,17 @@ export default function BridgeNetworkCard(props) {
                         Max
                     </button>
                 }
-                <input type="number" id="amount" 
+                <input type="number"
                     disabled={!props.primary}
                     min="0"
                     className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
                     value={number}
                     onChange={(e)=>{
-                        props.setNumber(e.target.value)
+                        const inputNumber = e.target.value;
+                         // Check if the input is a valid number
+                        if (!isNaN(inputNumber)) {
+                            props.setNumber(inputNumber); // Update the state only if it's a valid number
+                        }
                     }}
                     placeholder="0" required/>
 
