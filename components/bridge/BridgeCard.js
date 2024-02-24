@@ -7,7 +7,7 @@ import { useAccount, useNetwork, useSwitchNetwork, useClient, useContractWrite, 
 import { tokenToUsd, allowanceErc20Service } from "../../services/service_erc20.js"
 import { numberWithCommas } from "../../util/stringUtility.js";
 import SwitchNetworkDialog from "./dialog/SwitchNetworkDialog.js";
-import AllowanceDialog from "./dialog/allowanceDialog.js";
+import AllowanceDialog from "./dialog/AllowanceDialog.js";
 import BRIDGE_ABI from "../../public/ABI/bridge.json";
 import ERC20_ABI from "../../public/ABI/erc20.json";
 import ApproveDialog from "./dialog/ApproveDialog.js";
