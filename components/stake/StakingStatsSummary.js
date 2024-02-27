@@ -43,7 +43,7 @@ export default function StakingStatsSummary(props) {
     return (
         <div className="flex flex-col h-full">
             <div className="grow">
-                <div className="flex flex-row gap-4 lg:gap-2">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-2">
                     <div className="flex-1">
                         <h6 className="text-sm font-medium text-gray-500">My Total Stake</h6>
                         <h2 className="">

@@ -121,7 +121,7 @@ export default function GeneralCard(props) {
 
     return (
         <>
-            <div className="card mb-4 grid grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-2">
+            <div className="card mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-2">
                 <div className="">
                     <h6 className="text-sm font-medium text-gray-500">Total Value Stacked</h6>
                     <h2 className="mt-1">

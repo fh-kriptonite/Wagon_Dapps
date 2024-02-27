@@ -103,7 +103,7 @@ export default function WithdrawCard(props) {
 
     return (
         <div className="card flex-1">
-            <div className="flex items-center">
+            <div className="flex flex-col sm:flex-row items-start gap-2">
                     <div className="grow">
                         <h6 className="text-sm font-medium text-gray-500">My Reward</h6>
                         <h2 className="mt-1">
@@ -115,7 +115,7 @@ export default function WithdrawCard(props) {
                             <span className="text-2xl font-medium"> WAG</span>
                         </h2>
                     </div>
-                    <div className="flex-none w-36">
+                    <div className="flex-none w-full sm:w-36">
                     {
                         (useContractWriteLoading || useWaitForTransactionLoading)
                         ?   <div className="text-center">
@@ -150,7 +150,7 @@ export default function WithdrawCard(props) {
                     }
                     </div>
             </div>
-            <div className="flex items-center border-t-2 mt-3 pt-3">
+            <div className="flex flex-col sm:flex-row items-start gap-2 border-t-2 mt-3 pt-3">
                 <div className="grow">
                     <h6 className="text-sm font-medium text-gray-500">My Pending Unstake</h6>
                     <h2 className="mt-1">
@@ -162,7 +162,7 @@ export default function WithdrawCard(props) {
                         <span className="text-2xl font-medium"> WAG</span>
                     </h2>
                 </div>
-                <div className="flex-none w-36">
+                <div className="flex-none w-full sm:w-36">
                     {
                         (useContractWriteLoadingWithdraw || useWaitForTransactionLoadingWithdraw)
                         ?   <div className="text-center">
