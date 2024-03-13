@@ -117,8 +117,8 @@ export default function LendToPoolDialog(props) {
 
   function openModal() {
     // switch network
-    if(chain.id != parseFloat(process.env.BNB_CHAIN_ID_TESTNET)) {
-      switchNetwork(parseFloat(process.env.BNB_CHAIN_ID_TESTNET))
+    if(chain.id != parseFloat(process.env.BNB_CHAIN_ID)) {
+      switchNetwork(parseFloat(process.env.BNB_CHAIN_ID))
     } else {
       setStableNumber("")
       setWagNumber("")
@@ -131,6 +131,7 @@ export default function LendToPoolDialog(props) {
   }
 
   function getAdminFee() {
+    if(fees == undefined) return 0
     return (stableNumber * parseFloat(fees.adminFee) / 10000);
   }
 
@@ -171,7 +172,9 @@ export default function LendToPoolDialog(props) {
     functionName: 'approve',
     args:[
           process.env.LENDING_ADDRESS_BNB,
-          parseEther(`${wagNumber == "" ? 0 : wagNumber}`).toString()
+          (wagNumber == "")
+            ? 0
+            : BigInt(Math.round(parseFloat(wagNumber) * Math.pow(10, 18)))
         ]
   })
 
@@ -301,6 +304,7 @@ export default function LendToPoolDialog(props) {
                             onChange={(e)=>{
                               setStableNumber(e.target.value)
                               setWagNumber(e.target.value * ratio)
+                              console.log("test: ", BigInt(Math.round(parseFloat(e.target.value * ratio) * Math.pow(10, 18))))
                             }}
                             placeholder="0" required/>
                         <img src={poolDetailErc1155?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>

@@ -1,5 +1,5 @@
 import { useAccount } from "wagmi"
-import { Button, Spinner } from "flowbite-react"
+import { Button, Dropdown, Spinner } from "flowbite-react"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { FaLongArrowAltDown } from "react-icons/fa";
@@ -109,8 +109,8 @@ export default function AccountComponent(props) {
         labels: ['WAG TVL', 'IDRT TVL', 'IDRT Interest'],
         datasets: [
           {
-            label: 'Balance',
-            data: [tvlWag, tvlIdrt, interestIdrt],
+            label: 'USD',
+            data: [tvlWag * wagPrice, tvlIdrt * idrtPrice, interestIdrt * idrtPrice],
             backgroundColor: [
                 '#3b82f6',
                 '#fb7185',
@@ -158,13 +158,16 @@ export default function AccountComponent(props) {
                 <div className="flex-1">
                     <div className="card w-full h-full !bg-blue-100">
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow w-full">
+                            <div className="grow">
                                 <p className="text-lg font-semibold">Earn your stable interest now!</p>
-                                <p className="text-sm mt-0.5 text-gray-500">Establish a stable foundation for your crypto portfolio</p>
+                                <p className="text-sm mt-0.5 text-gray-500">Buy <span className="font-bold">WAG</span> now and start building your stable portfolio</p>
                             </div>
-                            <div className="w-full xl:w-1/3">
-                                <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"blank"}>
-                                    <Button color="dark" style={{width:"100%"}}>Buy WAG</Button>
+                            <div className="flex flex-col gap-2 w-full xl:w-1/3">
+                                <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Uniswap</Button>
+                                </a>
+                                <a href="https://pancakeswap.finance/swap?inputCurrency=0x66207E39bb77e6B99aaB56795C7c340C08520d83&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>PancakeSwap</Button>
                                 </a>
                             </div>
                         </div>
@@ -175,11 +178,11 @@ export default function AccountComponent(props) {
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
                             <div className="grow w-full">
                                 <p className="text-base font-semibold">Bridge</p>
-                                <p className="text-sm mt-0.5 text-gray-500">Transfer your WAG across network and start gaining</p>
+                                <p className="text-sm mt-0.5 text-gray-500">Transfer your <span className="font-bold">WAG</span> across network and start gaining</p>
                             </div>
                             <div className="w-full xl:w-1/3">
                                 <Link href="/bridge">
-                                    <Button color="dark" style={{width:"100%"}}>Start Bridge</Button>
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Start Bridge</Button>
                                 </Link>
                             </div>
                         </div>
@@ -284,7 +287,7 @@ export default function AccountComponent(props) {
                                 <div className="bg-blue-100 h-24 w-24 flex items-center jutify-center rounded-full border-2 border-dashed border-blue-800 overflow-hidden text-ellipsis">
                                     <div className="w-full">
                                     <p className="text-center text-sm">APY</p>
-                                    <p className="text-center text-xl font-semibold">{numberWithCommas(tvlIdrt == 0 ? 0 : interestIdrtInYear / tvlIdrt * 100, 2)}%</p>
+                                    <p className="text-center text-xl font-semibold">{numberWithCommas(tvlIdrt == 0 ? 0 : interestIdrtInYear / tvlIdrt, 2)}%</p>
                                     </div>
                                 </div>
                             </div>

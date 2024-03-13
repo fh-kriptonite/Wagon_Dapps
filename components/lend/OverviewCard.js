@@ -14,9 +14,10 @@ export default function OverviewCard(props) {
         const lendingOverview = await getLendingOverviewService();
         const responsePrice = await getCoinPriceService("IDRT");
         const idrtPrice = responsePrice.data[0].usd_price;
-        setTotalValueLocked(parseFloat(lendingOverview.tvl) * idrtPrice)
-        setTotalLoanOrigination(parseFloat(lendingOverview.totalLoanOrigination) * idrtPrice)
-        setCurrentLoanOutstanding(parseFloat(lendingOverview.currentLoansOutstanding) * idrtPrice)
+        
+        setTotalValueLocked(parseFloat(lendingOverview.tvl) * idrtPrice / 100)
+        setTotalLoanOrigination(parseFloat(lendingOverview.totalLoanOrigination) * idrtPrice / 100)
+        setCurrentLoanOutstanding(parseFloat(lendingOverview.currentLoansOutstanding) * idrtPrice / 100)
     }
 
     useEffect(()=>{
@@ -27,17 +28,17 @@ export default function OverviewCard(props) {
         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between p-4 mb-4 rounded-lg bg-blue-50 text-blue-900">
             <div className="text-start w-full">
                 <p className="text-sm">Total Value locked</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(totalValueLocked)} USD</p>
+                <p className="text-2xl font-semibold">{numberWithCommas(totalValueLocked, 0)} USD</p>
             </div>
 
             <div className="text-start w-full">
                 <p className="text-sm">Total Loan Originations</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(totalLoanOrigination)} USD</p>
+                <p className="text-2xl font-semibold">{numberWithCommas(totalLoanOrigination, 0)} USD</p>
             </div>
 
             <div className="text-start w-full">
                 <p className="text-sm">Current Loans Outstanding</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(currentLoanOutstanding)} USD</p>
+                <p className="text-2xl font-semibold">{numberWithCommas(currentLoanOutstanding, 0)} USD</p>
             </div>
 
             {/* <div className="">

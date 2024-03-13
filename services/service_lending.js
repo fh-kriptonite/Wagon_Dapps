@@ -206,9 +206,18 @@ module.exports = {
             try {
                 let pool = {};
                 // get Pool Json
-                const response = await fetch(`http://localhost:3000/pools/${poolId}.json`)
+                const headers = new Headers();
+                headers.append('Content-Type', 'application/json');
+
+                const response = await fetch(process.env.BNB_ERC1155_JSON_URI + poolId, {
+                    headers: headers
+                })
+                
                 const jsonData = await response.json();
                 pool.json = jsonData;
+
+                console.log(response)
+                console.log(jsonData)
 
                 // get Pool Detail
                 const poolDetail = await getPoolDetail(poolId);

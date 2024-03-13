@@ -28,3 +28,12 @@ export function formatDate(date) {
 
   return formattedDate;
 }
+
+export function shortenAddress(address) {
+  if (address.length <= 8) return address; // Address is already short
+
+  const prefix = address.slice(0, 4);
+  const suffix = address.slice(-4);
+
+  return `${prefix}...${suffix}`;
+}

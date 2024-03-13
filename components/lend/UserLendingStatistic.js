@@ -59,6 +59,7 @@ export default function UserLendingStatistic(props) {
             const response = await getUserBalanceService(address, poolId);
     
             setStableBalance(parseFloat(response.stableBalance) / Math.pow(10,decimal));
+
             setLockedWag(parseFloat(response.wagLocked) / Math.pow(10,18));
             setFees(response.fees)
             console.log(response)
@@ -87,11 +88,11 @@ export default function UserLendingStatistic(props) {
     }
 
     useEffect(()=>{
-        if(poolId != null) {
+        if(poolId != null && !isLoading) {
             getUserBalance();
             getOnGoingUserBalance();
         }
-    }, [poolId, address])
+    }, [poolId, address, decimal])
 
     useEffect(()=>{
         if(poolDetail != null) {

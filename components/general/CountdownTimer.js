@@ -53,7 +53,7 @@ export default function CountdownTimer({ targetEpoch }){
     <div className="flex justify-between itesm-center">
       <p className="text-sm">Crowdfund end in</p>
       <div className="flex gap-1">
-        {days > 0 && <p className="text-sm font-semibold">{days ? days : "00"} days</p>}
+        {days > 0 && <p className="text-sm font-semibold">{days ? days : "00"} days, </p>}
         <p className="text-sm font-semibold">{hours? hours.toString().padStart(2, '0') : "00"}</p>
         <p className="text-sm font-semibold">:</p>
         <p className="text-sm font-semibold">{minutes ? minutes.toString().padStart(2, '0') : "00"}</p>

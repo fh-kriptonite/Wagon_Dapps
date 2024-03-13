@@ -624,6 +624,11 @@
         "type": "address"
       },
       {
+        "internalType": "address",
+        "name": "_pairingCurrency",
+        "type": "address"
+      },
+      {
         "internalType": "uint256",
         "name": "_stabletoPairRate",
         "type": "uint256"
@@ -657,16 +662,6 @@
         "internalType": "address",
         "name": "_borrower",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_borrowerFee",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_gracePeriodRepayment",
-        "type": "uint256"
       }
     ],
     "name": "createLendingPool",
@@ -683,6 +678,32 @@
       }
     ],
     "name": "currentLoansOutstanding",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultAdminFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultBorrowerFee",
     "outputs": [
       {
         "internalType": "uint256",
@@ -712,6 +733,58 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultGracePeriodDuration",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultLateDuration",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultLateFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "defaultProtocolFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -787,6 +860,11 @@
       {
         "internalType": "uint256",
         "name": "lateDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gracePeriodDuration",
         "type": "uint256"
       }
     ],
@@ -1003,11 +1081,6 @@
         "internalType": "address",
         "name": "erc1155ContractAddress",
         "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "pairingCurrencyAddress",
-        "type": "address"
       }
     ],
     "name": "initialize",
@@ -1059,19 +1132,6 @@
   },
   {
     "inputs": [],
-    "name": "pairingCurrency",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "paused",
     "outputs": [
       {
@@ -1096,6 +1156,11 @@
       {
         "internalType": "contract IERC20",
         "name": "lendingCurrency",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "pairingCurrency",
         "type": "address"
       },
       {
@@ -1146,11 +1211,6 @@
       {
         "internalType": "uint256",
         "name": "latestRepayment",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gracePeriodRepayment",
         "type": "uint256"
       }
     ],
@@ -1334,6 +1394,97 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultAdminFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultBorrowerFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultGracePeriodDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultLateDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultLateFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDefaultProtocolFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      }
+    ],
+    "name": "updateFeeAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_poolId",
         "type": "uint256"
       },
@@ -1360,6 +1511,11 @@
       {
         "internalType": "uint256",
         "name": "_lateDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_gracePeriodDuration",
         "type": "uint256"
       }
     ],
@@ -1390,6 +1546,24 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_address",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "withdrawErc20",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ]

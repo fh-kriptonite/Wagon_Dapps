@@ -42,6 +42,7 @@ const nextConfig = {
     BNB_SCAN_API_KEY: process.env.BNB_SCAN_API_KEY,
     BNB_CHAIN_NAME: process.env.BNB_CHAIN_NAME,
     BNB_EXPLORER: process.env.BNB_EXPLORER,
+    BNB_ERC1155_JSON_URI: process.env.BNB_ERC1155_JSON_URI,
     
     // HCAPTCHA
     HCAPTCHA_SITEKEY: process.env.HCAPTCHA_SITEKEY,

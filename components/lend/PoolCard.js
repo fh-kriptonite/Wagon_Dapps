@@ -120,7 +120,7 @@ export default function PoolCard(props) {
         >
           <div className="flex items-start gap-4 justify-between">
             <div className="card !p-0">
-              <img src={poolDetail?.image} className="h-24" alt="Wagon Logo" />
+              <img src={poolDetail?.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
             </div>
             <div className="flex gap-2">
               <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  

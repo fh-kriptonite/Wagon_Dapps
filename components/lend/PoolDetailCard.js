@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { numberWithCommas } from '../../util/stringUtility';
 import { calculateApy, formatTime } from '../../util/lendingUtility';
 import CountdownTimer from '../../components/general/CountdownTimer';
+import { FaTruck } from "react-icons/fa";
 
 export default function PoolDetailCard(props) {
 
@@ -81,7 +82,7 @@ export default function PoolDetailCard(props) {
             : <div className='card space-y-4 sticky top-20'>
                 <div className='flex-1 flex items-center'>
                     <div className="flex-none card relative !p-2">
-                    <img src={poolDetailErc1155?.image} className="h-32" alt="Project Logo" />
+                    <img src={poolDetailErc1155?.image} className="h-32 w-32 p-2 object-contain" alt="Project Logo" />
                     </div>
                 
                     <div className='flex flex-col ml-6 gap-4'>
@@ -105,15 +106,18 @@ export default function PoolDetailCard(props) {
                     </div>
                 </div>
 
-                <p className='text-sm'>
+                <p className='text-sm whitespace-pre-line'>
                     {poolDetailErc1155?.description}
                 </p>
-                
-                <div className="flex items-center gap-1 text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-                    onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
-                >
-                    <p className="text-sm">{process.env.LENDING_ADDRESS_BNB}</p>
-                    <MdOpenInNew size={16} className=""/>
+
+                <div className="flex items-center gap-1">
+                    <FaTruck size={16} className=""/>
+                    <p 
+                        onClick={()=>{window.open(poolDetailErc1155?.properties.website, poolDetailErc1155?.properties.website);}}
+                        className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
+                    >
+                        {poolDetailErc1155?.properties.website}
+                    </p>
                 </div>
 
                 <div className="border-t"/>

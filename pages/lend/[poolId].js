@@ -105,8 +105,7 @@ export default function Pool() {
 
         <div className='flex-1 space-y-4'>
           <UserLendingStatistic
-            isLoadingDetail={isLoading}
-            isLoadingPool={isLoading}
+            isLoading={isLoading}
             poolDetail={poolDetail}
             poolDetailErc1155={poolDetailErc1155}
             symbol={symbol}
