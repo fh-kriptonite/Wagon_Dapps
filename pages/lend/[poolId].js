@@ -1,13 +1,9 @@
 // pages/[postId].js
 import { useRouter } from 'next/router';
 import { Alert, Breadcrumb } from 'flowbite-react';
-import { erc20ABI, useContractReads } from 'wagmi';
 import { useEffect, useState } from "react";
 
-import erc1155ABI from "../../public/ABI/lendingErc1155.json";
-import lendingABI from "../../public/ABI/lending.json";
-
-import { getPoolCardDetailService, getPoolDetailJson } from "../../services/service_lending";
+import { getPoolCardDetailService } from "../../services/service_lending";
 import PoolDetailCard from '../../components/lend/PoolDetailCard';
 import UserLendingStatistic from '../../components/lend/UserLendingStatistic';
 import PoolOverviewCard from '../../components/lend/PoolOverviewCard';

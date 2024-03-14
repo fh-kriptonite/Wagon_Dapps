@@ -35,7 +35,7 @@ export default function PoolHighlightsCard(props) {
                       return(
                         <div className='card !bg-blue-100 text-slate-800 flex-1' key={`highligh-${index}`}>
                           <p className='text-sm font-bold'>{highlight.title}</p>
-                          <p className='text-sm mt-2'>{highlight.description}</p>
+                          <p className='text-sm mt-2 text-justify'>{highlight.description}</p>
                         </div>
                       )
                     })

@@ -1,5 +1,5 @@
 import { Progress } from 'flowbite-react';
-import { MdOpenInNew, MdSecurity } from "react-icons/md";
+import { MdSecurity } from "react-icons/md";
 import { useEffect, useState } from "react";
 
 import { numberWithCommas } from '../../util/stringUtility';
@@ -32,7 +32,7 @@ export default function PoolDetailCard(props) {
         {
             isLoading
             ? <div className='card space-y-4 sticky animate-pulse top-20'>
-                <div className='flex-1 flex items-center'>
+                <div className='flex-1 flex flex-col md:flex-row items-center gap-4'>
                     <div className="flex-none card !p-2 !bg-gray-300">
                     <div className="h-32 w-32 flex items-center justify-center"> 
                         <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
@@ -42,7 +42,7 @@ export default function PoolDetailCard(props) {
                     </div>
                     </div>
                 
-                    <div className='flex flex-col ml-10 gap-4'>
+                    <div className='flex flex-col md:ml-10 gap-4'>
                         <div className="grow">
                             <div className="bg-gray-300 h-5 w-64 rounded-full"></div>
                             <div className="bg-gray-300 h-3 w-32 rounded-full mt-2"></div>
@@ -80,33 +80,33 @@ export default function PoolDetailCard(props) {
 
                 </div>
             : <div className='card space-y-4 sticky top-20'>
-                <div className='flex-1 flex items-center'>
+                <div className='flex-1 flex flex-col md:flex-row items-center gap-4'>
                     <div className="flex-none card relative !p-2">
-                    <img src={poolDetailErc1155?.image} className="h-32 w-32 p-2 object-contain" alt="Project Logo" />
+                        <img src={poolDetailErc1155?.image} className="h-32 w-32 p-2 object-contain" alt="Project Logo" />
                     </div>
                 
-                    <div className='flex flex-col ml-6 gap-4'>
-                    <div className="grow">
-                        <h2 className="font-semibold">{poolDetailErc1155?.name}</h2>
-                        <h5 className="italic font-light text-gray-500">{poolDetailErc1155?.sub_name}</h5>
-                    </div>
-                    <div className='flex gap-4 items-center'>
-                        <div>
-                        <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-4 py-1 rounded-xl'>
-                            <MdSecurity size={12} />
-                            <p className='text-xs'>Secured by <span className='font-bold'>{poolDetailErc1155?.properties.secured_by}</span></p>
+                    <div className='flex flex-col md:ml-6 gap-4'>
+                        <div className="grow">
+                            <h2 className="text-3xl font-semibold">{poolDetailErc1155?.name}</h2>
+                            <h5 className="italic font-light text-gray-500">{poolDetailErc1155?.sub_name}</h5>
                         </div>
-                        </div>
+                        <div className='flex gap-4 items-center'>
+                            <div>
+                            <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-4 py-1 rounded-xl'>
+                                <MdSecurity size={12} />
+                                <p className='text-xs'>Secured by <span className='font-bold'>{poolDetailErc1155?.properties.secured_by}</span></p>
+                            </div>
+                            </div>
 
-                        <div className="flex gap-2">
-                            <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
-                            <img src={poolDetailErc1155?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
+                            <div className="flex gap-2">
+                                <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
+                                <img src={poolDetailErc1155?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
 
-                <p className='text-sm whitespace-pre-line'>
+                <p className='text-sm whitespace-pre-line text-justify'>
                     {poolDetailErc1155?.description}
                 </p>
 
