@@ -6,7 +6,7 @@ import { erc20ABI, useAccount, useContractReads, useContractWrite, useNetwork, u
 
 import lendingABI from "../../../public/ABI/lending.json"
 import { parseEther } from 'ethers/lib/utils.js';
-import LendProcessDialog from './LendprocessDialog';
+import LendProcessDialog from './LendProcessDialog';
 import { formatTime } from '../../../util/lendingUtility';
 
 const wagContract = {
