@@ -97,7 +97,23 @@ export default function LendToPoolDialog(props) {
           functionName: 'decimals'
         },
         
-    ]
+    ],
+    onSuccess: (dataAllowance) => {
+      // check allowance
+      const stableDecimals = parseFloat(dataAllowance[2])
+      const stableAllowance = parseFloat(dataAllowance[0] / Math.pow(10,stableDecimals));
+
+      const wagDecimals = parseFloat(dataAllowance[3])
+      const wagAllowance = parseFloat(dataAllowance[1] / Math.pow(10,wagDecimals));
+
+      if(parseFloat(stableNumber) + getAdminFee() > stableAllowance) {
+        writeApproveStable();
+      } else if(parseFloat(wagNumber) > wagAllowance) {
+        writeApproveWag();
+      } else {
+        writeLendToPool();
+      }
+    }
   })
 
   const ratio = parseFloat(poolDetail?.stabletoPairRate / Math.pow(10,18));
@@ -218,21 +234,7 @@ export default function LendToPoolDialog(props) {
 
   async function lendToPool() {
     
-    await refetch()
-    // check allowance
-    const stableDecimals = parseFloat(dataAllowance[2])
-    const stableAllowance = parseFloat(dataAllowance[0] / Math.pow(10,stableDecimals));
-
-    const wagDecimals = parseFloat(dataAllowance[3])
-    const wagAllowance = parseFloat(dataAllowance[1] / Math.pow(10,wagDecimals));
-
-    if(parseFloat(stableNumber) + getAdminFee() > stableAllowance) {
-      writeApproveStable();
-    } else if(parseFloat(wagNumber) > wagAllowance) {
-      writeApproveWag();
-    } else {
-      writeLendToPool();
-    }
+    await refetch();
   }
 
   return (
