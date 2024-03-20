@@ -19,7 +19,7 @@ export default function PoolActivityCard(props) {
     }
 
     useEffect(()=>{
-        getPoolActivities()
+        if(poolId != undefined) getPoolActivities()
     }, [poolId])
     
   
