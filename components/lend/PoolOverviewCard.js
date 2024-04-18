@@ -1,27 +1,30 @@
 import { numberWithCommas } from '../../util/stringUtility';
 import { translateStatus } from '../../util/lendingUtility';
-import { useEffect, useState } from 'react';
 
 export default function PoolOverviewCard(props) {
-    const isLoading = props.isLoading;
-    const decimal = props.decimal;
-    const poolDetail = props.poolDetail;
+    const pool = props.pool;
     const symbol = props.symbol;
+    const decimal = props.decimal;
 
-    const [principal, setPrincipal] = useState(0);
-    const [interest, setInterest] = useState(0);
+    function getPrincipal() {
+      if(pool == null) return 0;
+      return parseFloat(pool.targetLoan) / Math.pow(10,decimal)
+    }
 
-    useEffect(()=>{
-        if(poolDetail != null) {
-          setPrincipal(poolDetail?.targetLoan / Math.pow(10,decimal));
-          setInterest(poolDetail?.targetInterestPerPayment * poolDetail?.paymentFrequency / Math.pow(10,decimal));
-        }
-    },[poolDetail])
+    function getTargetInterest() {
+      if(pool == null) return 0;
+      return parseFloat(pool.targetInterestPerPayment) * parseFloat(pool.paymentFrequency) / Math.pow(10,decimal)
+    }
+
+    function getPoolStatus() {
+      if(pool == null) return 0;
+      return pool.status
+    }
 
     return (
     <>
         {
-            isLoading
+            pool == null
             ? <div className='card space-y-6'>
                 <h6 className="!font-semibold">Overview</h6>
                 <div>
@@ -53,21 +56,21 @@ export default function PoolOverviewCard(props) {
                   <div className='flex'>
                     <div className='flex-1 p-4 border rounded-tl-lg'>
                       <p className='text-sm font-light'>Principal</p>
-                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(principal)} {symbol}</p>
+                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(getPrincipal())} {symbol}</p>
                     </div>
                     <div className='flex-1 p-4 border border-l-0 rounded-tr-lg'>
                       <p className='text-sm font-light'>Interest</p>
-                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(interest)} {symbol}</p>
+                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(getTargetInterest())} {symbol}</p>
                     </div>
                   </div>
                   <div className='flex'>
                     <div className='flex-1 p-4 border border-t-0 rounded-bl-lg'>
                       <p className='text-sm font-light'>Total</p>
-                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(principal + interest)} {symbol}</p>
+                      <p className='text-xl font-semibold mt-1'>{numberWithCommas(getPrincipal() + getTargetInterest())} {symbol}</p>
                     </div>
                     <div className='flex-1 p-4 border border-t-0 border-l-0 rounded-br-lg'>
                       <p className='text-sm font-light'>Pool status</p>
-                      <p className='text-xl font-semibold mt-1'>{translateStatus(poolDetail?.status)}</p>
+                      <p className='text-xl font-semibold mt-1'>{translateStatus(getPoolStatus())}</p>
                     </div>
                   </div>
                 </div>

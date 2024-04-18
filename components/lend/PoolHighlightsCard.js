@@ -1,13 +1,11 @@
 export default function PoolHighlightsCard(props) {
   
-  const isLoadingDetail = props.isLoadingDetail;
-  const isLoadingPool = props.isLoadingPool;
-  const poolDetailErc1155 = props.poolDetailErc1155;
+  const poolJson = props.poolJson;
 
   return (
     <>
         {
-            isLoadingDetail || isLoadingPool
+            poolJson == null
             ? <div className='card space-y-6'>
                 <h6 className="!font-semibold">Highlights</h6>
                 <div className='grid grid-cols-2 gap-4'>
@@ -29,13 +27,13 @@ export default function PoolHighlightsCard(props) {
               </div>
             : <div className='card space-y-6'>
                 <h6 className="!font-semibold">Highlights</h6>
-                <div className='grid grid-cols-2 gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   {
-                    poolDetailErc1155?.properties.highlights.map((highlight, index) => {
+                    poolJson.properties.highlights.map((highlight, index) => {
                       return(
-                        <div className='card !bg-blue-100 text-slate-800 flex-1' key={`highligh-${index}`}>
+                        <div className='card !bg-blue-100 text-slate-800' key={`highligh-${index}`}>
                           <p className='text-sm font-bold'>{highlight.title}</p>
-                          <p className='text-sm mt-2 text-justify'>{highlight.description}</p>
+                          <p className='text-sm mt-2'>{highlight.description}</p>
                         </div>
                       )
                     })

@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { erc20ABI, useContractReads } from "wagmi";
 import { numberWithCommas } from "../../util/stringUtility";
 import { getLendingOverviewService } from "../../services/service_lending";
 import { getCoinPriceService } from "../../services/service_erc20"
 
 export default function OverviewCard(props) {
-
     const [totalValueLocked, setTotalValueLocked] = useState(0)
     const [totalLoanOrigination, setTotalLoanOrigination] = useState(0)
     const [currentLoanOutstanding, setCurrentLoanOutstanding] = useState(0)
@@ -40,18 +38,6 @@ export default function OverviewCard(props) {
                 <p className="text-sm">Current Loans Outstanding</p>
                 <p className="text-2xl font-semibold">{numberWithCommas(currentLoanOutstanding, 0)} USD</p>
             </div>
-
-            {/* <div className="">
-                <p className="text-sm">WAG Price: <span className="font-medium">
-                    ~
-                </span></p>
-                <p className="text-sm">WAG Market Cap: <span className="font-medium">
-                    ~
-                </span></p>
-                <p className="text-sm">Circulating Supply: <span className="font-medium">
-                    ~
-                </span></p>
-            </div> */}
         </div>
     )
   }

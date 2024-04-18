@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { numberWithCommas } from "../../util/stringUtility"
 import SelectNetworkDialog from "./dialog/SelectNetworkDialog";
 import { getERC20NetworkBalanceService } from "../../services/service_erc20.js"
-import { useAccount } from "wagmi";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 export default function BridgeNetworkCard(props) {
 
@@ -11,13 +11,18 @@ export default function BridgeNetworkCard(props) {
     const [isLoading, setIsloading] = useState(null)
     const network = props.network;
 
-    const { address } = useAccount();
+    const { address } = useWeb3ModalAccount();
 
     async function getBalance() {
         try {
             setIsloading(true)
-            const wagBalance = await getERC20NetworkBalanceService(network.wagAddress, address, network.rpc, network.chainId)
+            const wagBalance = await getERC20NetworkBalanceService(
+                network.wagAddress, 
+                address, 
+                network.rpc)
+
             setBalance(wagBalance);
+            props.setBalance(wagBalance);
             setIsloading(false)
         } catch (error) {
             console.log(error);
@@ -52,7 +57,7 @@ export default function BridgeNetworkCard(props) {
                     <p className="text-xs">
                         Network
                     </p>
-                    <SelectNetworkDialog otherNetwork={props.otherNetwork} network={network} setNetwork={props.setNetwork}/>
+                    <SelectNetworkDialog otherNetwork={props.otherNetwork} network={network} setNetwork={props.setNetwork} id={props.primary ? 1 : 2}/>
                 </div>
             </div>
             <div className='flex gap-2 items-center justify-between mt-2 px-4 pb-2'>

@@ -3,70 +3,53 @@ import { useRouter } from 'next/router';
 import { Alert, Breadcrumb } from 'flowbite-react';
 import { useEffect, useState } from "react";
 
-import { getPoolCardDetailService } from "../../services/service_lending";
 import PoolDetailCard from '../../components/lend/PoolDetailCard';
 import UserLendingStatistic from '../../components/lend/UserLendingStatistic';
 import PoolOverviewCard from '../../components/lend/PoolOverviewCard';
 import PoolHighlightsCard from '../../components/lend/PoolHighlightsCard';
 import PoolRepaymentTermCard from '../../components/lend/PoolRepaymentTermCard';
 import PoolActivityCard from '../../components/lend/PoolActivityCard';
+import useGetPoolJsonHook from '../../components/lend/utils/useGetPoolJsonHook';
+import useGetLendingPoolHook from '../../components/lend/utils/useGetLendingPoolHook';
+import { getTokenDecimals } from '../../util/lendingUtility';
 
 export default function Pool() {
   const router = useRouter();
   const { poolId } = router.query;
 
-  const [poolDetailErc1155, setPoolDetailErc1155] = useState(null);
-  const [poolDetail, setPoolDetail] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [symbol, setSymbol] = useState("");
-  const [decimal, setDecimal] = useState(0);
-
-  const [tokenSupply, setTokenSupply] = useState(0);
-  const [tokenMaxSupply, setTokenMaxSupply] = useState(0);
-
-  const [collectedPrincipal, setCollectedPrincipal] = useState(0);
-
   const [isLate, setIsLate] = useState(false);
-  
-  async function getPoolDetail() {
-    setIsLoading(true)
-    try {
-      const poolCardDetail = await getPoolCardDetailService(poolId)
 
-      setPoolDetail(poolCardDetail.pool);
-      setPoolDetailErc1155(poolCardDetail.json);
+  const {data: pool, fetchData: getPool} = useGetLendingPoolHook();
+  const {data: poolJson, fetchData: getPoolJson} = useGetPoolJsonHook();
   
-      setSymbol(poolCardDetail.lendingCurrency.symbol)
-      const decimal = poolCardDetail.lendingCurrency.decimals;
-      setDecimal(decimal)
-  
-      setTokenSupply(parseFloat(poolCardDetail.erc1155.tokenSupply) / Math.pow(10, decimal));
-      setTokenMaxSupply(parseFloat(poolCardDetail.erc1155.tokenMaxSupply) / Math.pow(10, decimal));
-
-      setCollectedPrincipal(parseFloat(poolCardDetail.activePool.collectedPrincipal) / Math.pow(10, decimal));
-      setIsLoading(false)
-    } catch (error) {
-      console.log(error)
-      setIsLoading(false)
-    }
+  function getSymbol() {
+    if(poolJson == null) return "";
+    return poolJson.properties.currency;
   }
 
+  function getDecimal() {
+    if(poolJson == null) return 0;
+    return getTokenDecimals(poolJson.properties.currency);
+}
+
   useEffect(()=>{
-    if (poolId != null) getPoolDetail();
+    if (poolId != null) {
+      getPoolJson(poolId);
+      getPool(poolId);
+    }
   }, [poolId])
 
   useEffect(()=>{
-    if(poolDetail != null && poolDetailErc1155 != null)
+    if(pool != null && poolJson != null)
       checkIsLate();
-  }, [poolDetailErc1155, poolDetail])
+  }, [poolJson, pool])
 
   function checkIsLate() {
-    if(parseFloat(poolDetail.status) == 1) return;
+    if(parseFloat(pool.status) == 1) return;
 
-    const loanStart = parseFloat(poolDetail.termStart) * 1000;
-    const durationBetweenPayment = poolDetail.loanTerm / poolDetail.paymentFrequency * 1000;
-    const paymentTime = loanStart + (durationBetweenPayment * (poolDetail.latestRepayment + 1));
+    const loanStart = parseFloat(pool.termStart) * 1000;
+    const durationBetweenPayment = parseFloat(pool.loanTerm) / parseFloat(pool.paymentFrequency) * 1000;
+    const paymentTime = loanStart + (durationBetweenPayment * (parseFloat(pool.latestRepayment) + 1));
     
     const millisecondsPerDay = 24 * 60 * 60 * 1000;
 
@@ -77,55 +60,46 @@ export default function Pool() {
     <div className='container mx-auto px-4 md:px-10 space-y-6 pb-4 max-w-7xl'>
       <Breadcrumb aria-label="Default breadcrumb example">
           <Breadcrumb.Item href="/lend">Pool Explorer</Breadcrumb.Item>
-          <Breadcrumb.Item>{poolDetailErc1155?.name}</Breadcrumb.Item>
+          <Breadcrumb.Item>{poolJson?.name}</Breadcrumb.Item>
       </Breadcrumb>
 
       { isLate > 0 &&
         <Alert color="warning" rounded>
-          <p className='text-sm'>{`Alert: ${poolDetailErc1155.name} is ${isLate} days late on repayment.`}</p>
+          <p className='text-sm'>{`Alert: ${poolJson.name} is ${isLate} days late on repayment.`}</p>
         </Alert>
       }
 
       <div className='flex flex-col xl:flex-row gap-4'>
         <div className='flex-1'>
-          <PoolDetailCard 
-            isLoading={isLoading}
-            poolDetailErc1155={poolDetailErc1155}
-            poolDetail={poolDetail}
-            tokenSupply={tokenSupply}
-            tokenMaxSupply={tokenMaxSupply}
-            collectedPrincipal={collectedPrincipal}
-            symbol={symbol}
+          <PoolDetailCard
+            poolId={poolId}
+            poolJson={poolJson}
+            pool={pool}
+            symbol={getSymbol()}
+            decimal={getDecimal()}
           />
         </div>
 
         <div className='flex-1 space-y-4'>
           <UserLendingStatistic
-            isLoading={isLoading}
-            poolDetail={poolDetail}
-            poolDetailErc1155={poolDetailErc1155}
-            symbol={symbol}
-            decimal={decimal}
+            pool={pool}
+            poolJson={poolJson}
+            symbol={getSymbol()}
+            decimal={getDecimal()}
           />
 
           <PoolOverviewCard
-            isLoading={isLoading}
-            decimal={decimal}
-            poolDetail={poolDetail}
-            symbol={symbol}
+            pool={pool}
+            symbol={getSymbol()}
+            decimal={getDecimal()}
           />
 
           <PoolHighlightsCard
-            isLoadingDetail={isLoading}
-            isLoadingPool={isLoading}
-            poolDetailErc1155={poolDetailErc1155}
+            poolJson={poolJson}
           />
 
           <PoolRepaymentTermCard
-            isLoadingDetail={isLoading}
-            isLoadingPool={isLoading}
-            poolDetail={poolDetail}
-            poolDetailErc1155={poolDetailErc1155}
+            poolJson={poolJson}
           />
 
           <div className='card'>
@@ -135,7 +109,7 @@ export default function Pool() {
 
           <PoolActivityCard
             poolId={poolId}
-            decimal={decimal}
+            decimal={getDecimal()}
           />
 
         </div>

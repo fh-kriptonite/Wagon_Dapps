@@ -1,19 +1,49 @@
 const { ethers } = require("ethers");
 const stakingAbi = require("../public/ABI/staking.json");
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
+const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
 const contractAddress = process.env.WAGON_STAKING_PROXY;
 const contract = new ethers.Contract(contractAddress, stakingAbi, provider);
 
 module.exports = {
 
+    getStakingTotalStaked : async () => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let totalSupply = await contract.totalSupply();
+                resolve(totalSupply);
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+
+    getStakingRewardRate : async () => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let rewardRate = await contract.rewardRate();
+                resolve(rewardRate);
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+
+    getStakingFinishAt : async () => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let finishAt = await contract.finishAt();
+                resolve(finishAt);
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+
     getStakingBalance: async (address) => {
         return new Promise( async (resolve, reject) => {
             try {
                 let balance = await contract.balanceOf(address);
-                const decimals = await contract.decimals();
-
-                balance = parseFloat(balance / Math.pow(10, decimals))
                 resolve(balance);
             } catch (error) {
                 console.error('Error:', error);
@@ -22,13 +52,22 @@ module.exports = {
         })
     },
 
-    getRewardalance: async (address) => {
+    getRewardBalance: async (address) => {
         return new Promise( async (resolve, reject) => {
             try {
                 let balance = await contract.earned(address);
-                const decimals = await contract.decimals();
+                resolve(balance);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
 
-                balance = parseFloat(balance / Math.pow(10, decimals))
+    getClaimableBalance: async (address) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let balance = await contract.claimables(address);
                 resolve(balance);
             } catch (error) {
                 console.error('Error:', error);
@@ -60,14 +99,23 @@ module.exports = {
         return new Promise( async (resolve, reject) => {
             try {
                 let balance = await contract.userTotalRewardClaimed(address);
-                const decimals = await contract.decimals();
-
-                balance = parseFloat(balance / Math.pow(10, decimals))
                 resolve(balance);
             } catch (error) {
                 console.error('Error:', error);
                 reject(error);
             }
         })
-    }
+    },
+
+    getClaimableDurationService : async () => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let claimableDuration = await contract.claimableDuration();
+                resolve(claimableDuration);
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    },
 }

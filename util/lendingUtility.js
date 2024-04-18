@@ -34,7 +34,7 @@ export function showPool(filter, poolStatus) {
 }
 
 export function calculateApy(pool) {
-    const apy = pool?.targetInterestPerPayment / pool?.targetLoan * 12 * 100
+    const apy = parseFloat(pool?.targetInterestPerPayment) / parseFloat(pool?.targetLoan) * 12 * 100
     return(apy);
 }
 
@@ -72,4 +72,15 @@ export function formatTime(seconds) {
     output = output.replace(/, $/, '');
 
     return output;
+}
+
+export function getTokenDecimals(TokenName) {
+    switch (TokenName) {
+        case "WAG":
+            return 18;
+        case "IDRT":
+            return 2;
+        default:
+            return 0;
+    }
 }

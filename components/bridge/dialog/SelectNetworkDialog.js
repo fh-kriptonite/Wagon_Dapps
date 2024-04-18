@@ -79,10 +79,10 @@ export default function SelectNetworkDialog(props) {
                   <div className='h-[360px] mt-6 overflow-auto'>
                     {
                       networks.map((network, index) => {
-                        if(network != null && network.name == props.otherNetwork?.name) return <></>
+                        if(network.name != props.otherNetwork?.name)
                         return (
                           <div 
-                            key={network.name}
+                            key={props.id + "_" + network.name}
                             className='px-2 py-3 flex items-center gap-4 hover:cursor-pointer'
                             onClick={() => {
                               props.setNetwork(network);

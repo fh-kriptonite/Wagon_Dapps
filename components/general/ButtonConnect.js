@@ -1,4 +1,4 @@
-import { useWeb3Modal } from '@web3modal/react'
+import { useWeb3Modal } from '@web3modal/ethers/react'
 import { useState } from 'react';
 
 export default function ButtonConnect(props) {

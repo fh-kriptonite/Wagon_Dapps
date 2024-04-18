@@ -2,253 +2,92 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { numberWithCommas } from "../../../util/stringUtility";
-import { erc20ABI, useAccount, useContractReads, useContractWrite, useNetwork, useSwitchNetwork, useWaitForTransaction } from 'wagmi';
-
-import lendingABI from "../../../public/ABI/lending.json"
-import { parseEther } from 'ethers/lib/utils.js';
-import LendProcessDialog from './LendProcessDialog';
 import { formatTime } from '../../../util/lendingUtility';
-
-const wagContract = {
-  address: process.env.WAG_ADDRESS_BNB,
-  abi: erc20ABI,
-}
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { Button } from 'flowbite-react';
+import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
 
 export default function LendToPoolDialog(props) {
-  const { address } = useAccount();
-  const { chain } = useNetwork();
+  const { chainId, address } = useWeb3ModalAccount();
 
-  const [isOpen, setIsOpen] = useState(false)
   const [stableNumber,setStableNumber] = useState("")
   const [wagNumber,setWagNumber] = useState("")
-  
-  const [stablebalance, setStableBalance] = useState(0)
-  const [wagBalance, setWagBalance] = useState(0)
 
-  const poolDetail = props.poolDetail;
-  const poolDetailErc1155 = props.poolDetailErc1155;
+  const isOpen = props.isOpen;
+  const closeModal = props.closeModal;
+  const pool = props.pool;
+  const poolJson = props.poolJson;
   const symbol = props.symbol;
   const fees = props.fees;
+  const decimal = props.decimal;
 
-  const stableContract = {
-    address: poolDetail?.lendingCurrency,
-    abi: erc20ABI,
-  }
-
-  const { isLoading : isLoadingBalance, refetch : getBalance } = useContractReads({
-    enabled:false,
-    contracts: [
-        {
-          ...stableContract,
-          functionName: 'balanceOf',
-          args:[address]
-        },
-        {
-          ...stableContract,
-          functionName: 'decimals'
-        },
-        {
-          ...wagContract,
-          functionName: 'balanceOf',
-          args:[address]
-        },
-        {
-          ...wagContract,
-          functionName: 'decimals'
-        }
-    ],
-    onSuccess: (data) => {
-      const stableDecimal = parseFloat(data[1]);
-      setStableBalance(parseFloat(data[0]) / Math.pow(10, stableDecimal))
-      const wagDecimal = parseFloat(data[3]);
-      setWagBalance(parseFloat(data[2]) / Math.pow(10, wagDecimal))
-    }
-  })
+  const {data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook()
+  const {data: wagBalance, fetchData: getWagBalance} = useGetStableBalanceHook()
 
   useEffect(()=>{
-    if(isOpen) getBalance();
-  }, [isOpen])
-
-  const { data: dataAllowance, isLoading : isLoadingAllowance, refetch } = useContractReads({
-    enabled:false,
-    contracts: [
-        {
-          ...stableContract,
-          functionName: 'allowance',
-          args: [
-            address,
-            process.env.LENDING_ADDRESS_BNB
-          ]
-        },
-        {
-          ...wagContract,
-          functionName: 'allowance',
-          args: [
-            address,
-            process.env.LENDING_ADDRESS_BNB
-          ]
-        },
-        {
-          ...stableContract,
-          functionName: 'decimals'
-        },
-        {
-          ...wagContract,
-          functionName: 'decimals'
-        },
-        
-    ],
-    onSuccess: (dataAllowance) => {
-      // check allowance
-      const stableDecimals = parseFloat(dataAllowance[2])
-      const stableAllowance = parseFloat(dataAllowance[0] / Math.pow(10,stableDecimals));
-
-      const wagDecimals = parseFloat(dataAllowance[3])
-      const wagAllowance = parseFloat(dataAllowance[1] / Math.pow(10,wagDecimals));
-
-      if(parseFloat(stableNumber) + getAdminFee() > stableAllowance) {
-        writeApproveStable();
-      } else if(parseFloat(wagNumber) > wagAllowance) {
-        writeApproveWag();
-      } else {
-        writeLendToPool();
-      }
+    if(isOpen && pool != null) {
+      getStableBalance(chainId, address, pool.lendingCurrency);
+      getWagBalance(chainId, address, pool.pairingCurrency);
     }
-  })
+    resetModal();
+  }, [pool, isOpen])
 
-  const ratio = parseFloat(poolDetail?.stabletoPairRate / Math.pow(10,18));
-
-  function closeModal() {
-    setIsOpen(false)
+  function getRatio() {
+    if(pool == null) return 0;
+    return parseFloat(parseFloat(pool?.stabletoPairRate) / Math.pow(10,18));
   }
 
-  const { chains, error, isLoading : isLoadingSwitching, pendingChainId, switchNetwork } = useSwitchNetwork({
-    onSuccess(data) {
-        
-    },
-    onError(data) {
-        
-    }
-})
-
-  function openModal() {
-    // switch network
-    if(chain.id != parseFloat(process.env.BNB_CHAIN_ID)) {
-      switchNetwork(parseFloat(process.env.BNB_CHAIN_ID))
-    } else {
-      setStableNumber("")
-      setWagNumber("")
-      setIsOpen(true)
-    }
+  function resetModal() {
+    setStableNumber("")
+    setWagNumber("")
   }
 
   function getExpectedInterest() {
-    return numberWithCommas(stableNumber / poolDetail?.targetLoan * poolDetail?.targetInterestPerPayment * poolDetail?.paymentFrequency)
+    if(stableNumber == "") return 0;
+    return parseFloat(stableNumber) / parseFloat(pool?.targetLoan) * parseFloat(pool?.targetInterestPerPayment) * parseFloat(pool?.paymentFrequency)
   }
 
   function getAdminFee() {
-    if(fees == undefined) return 0
+    if(fees == null) return 0;
     return (stableNumber * parseFloat(fees.adminFee) / 10000);
   }
 
-   // APPROVE STABLE ----- START -----
+  function getStableBalanceWithDecimal() {
+    if(stableBalance == null) return "0";
 
-   const { data: dataApproveStable, isLoading: isLoadingApproveStable, write : writeApproveStable } = useContractWrite({
-    ...stableContract,
-    functionName: 'approve',
-    args:[
-          process.env.LENDING_ADDRESS_BNB,
-          (dataAllowance == undefined) 
-            ? 0
-            : ((parseFloat(stableNumber) + getAdminFee()) * Math.pow(10, parseFloat(dataAllowance[2]))).toString()
-        ]
-  })
+    return parseFloat(stableBalance) / Math.pow(10,decimal);
+  }
 
-  const {isLoading : isLoadingWaitApproveStable} 
-  = useWaitForTransaction({
-    hash: dataApproveStable?.hash,
-    onSuccess(data) {
-      const wagDecimals = parseFloat(dataAllowance[3])
-      const wagAllowance = parseFloat(dataAllowance[1] / Math.pow(10,wagDecimals));
+  function getWagBalanceWithDecimal() {
+    if(wagBalance == null) return "0";
 
-      if(parseFloat(wagNumber) > wagAllowance) {
-        writeApproveWag()
-      } else {
-        writeLendToPool()
-      }
-    }
-  })
+    return parseFloat(wagBalance) / Math.pow(10,18);
+  }
 
-  // APPROVE STABLE ----- END -----
+  function getTotalStable() {
+    if(stableNumber == "") return 0;
+    return parseFloat(stableNumber) + getAdminFee()
+  }
 
-  // APPROVE WAG ----- START -----
+  function getLendToPoolButtonDisabled() {
+    if(stableNumber == "") return true
+    if(wagNumber == "") return true
+    if(parseFloat(stableNumber) <= 0) return true
+    if(parseFloat(wagNumber) <= 0) return true
+    if(parseFloat(stableNumber) > parseFloat(stableBalance) / Math.pow(10,decimal)) return true
+    if(parseFloat(wagNumber) > parseFloat(wagBalance) / Math.pow(10,18)) return true
+    if(getStableBalanceWithDecimal() < getTotalStable()) return true
 
-  const { data: dataApproveWag, isLoading: isLoadingApproveWag, write : writeApproveWag } = useContractWrite({
-    ...wagContract,
-    functionName: 'approve',
-    args:[
-          process.env.LENDING_ADDRESS_BNB,
-          (wagNumber == "")
-            ? 0
-            : BigInt(Math.round(parseFloat(wagNumber) * Math.pow(10, 18)))
-        ]
-  })
+    return false;
+  }
 
-  const {isLoading : isLoadingWaitApproveWag} 
-  = useWaitForTransaction({
-    hash: dataApproveWag?.hash,
-    onSuccess(data) {
-      writeLendToPool();
-    }
-  })
-
-  // APPROVE WAG ----- END -----
-
-
-  // LEND TO POOL ----- START -----
-
-  const { data: dataLendToPool, isLoading: isLoadingLendToPool, write: writeLendToPool } = useContractWrite({
-    address: process.env.LENDING_ADDRESS_BNB,
-    abi: lendingABI,
-    functionName: 'lendToPool',
-    args:[
-          props.poolId,
-          (dataAllowance == undefined) 
-            ? 0
-            : (parseFloat(stableNumber) * Math.pow(10, parseFloat(dataAllowance[2]))).toString()
-        ],
-    onError(error) {
-      console.log('Error', error.message)
-    },
-  })
-  
-  const {isLoading : isLoadingWaitLendToPool} 
-  = useWaitForTransaction({
-    hash: dataLendToPool?.hash,
-    onSuccess(data) {
-      closeModal();
-    }
-  })
-
-  // LEND TO POOL ----- END -----
-
-  async function lendToPool() {
-    
-    await refetch();
+  function handleLend() {
+    const adminFee = getAdminFee();
+    props.handleLend(stableNumber, wagNumber, adminFee);
   }
 
   return (
     <>
-      <div>
-        <button
-          type="button"
-          onClick={openModal}
-          className="button-light"
-        >
-          Lend to Pool
-        </button>
-      </div>
-
       <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
 
@@ -294,7 +133,7 @@ export default function LendToPoolDialog(props) {
                             Amount
                         </p>
                         <p className="text-xs font-semibold text-gray-500">
-                            Available: {numberWithCommas(stablebalance)} {symbol}
+                            Available: {numberWithCommas(getStableBalanceWithDecimal(), 2)} {symbol}
                         </p>
                     </div>
                     
@@ -302,31 +141,48 @@ export default function LendToPoolDialog(props) {
                         <input type="number" id="amount" 
                             min="0"
                             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
-                            value={stableNumber == "" ? "" : stableNumber}
+                            value={stableNumber}
                             onChange={(e)=>{
                               setStableNumber(e.target.value)
-                              setWagNumber(e.target.value * ratio)
-                              console.log("test: ", BigInt(Math.round(parseFloat(e.target.value * ratio) * Math.pow(10, 18))))
+                              setWagNumber(e.target.value * getRatio())
                             }}
                             placeholder="0" required/>
-                        <img src={poolDetailErc1155?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
+                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
                         <p className="text-lg text-gray-500">
                             {symbol}
                         </p>
-                        <button
-                          type="button"
+                        <Button
+                          color={"light"}
+                          size={"sm"}
                           onClick={() => {
-                            setStableNumber(stablebalance)
-                            setWagNumber(stablebalance * ratio)
+                            setStableNumber(getStableBalanceWithDecimal())
+                            setWagNumber(getStableBalanceWithDecimal() * getRatio())
                           }}
-                          className="button-max text-sm"
                         >
                           Max
-                        </button>
+                        </Button>
                     </div>
+
+                    <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
+                      <p className="text-xs text-gray-500">
+                        Admin Fee
+                      </p>
+                      <p className="text-xs font-semibold">
+                        + {numberWithCommas(getAdminFee(), 2)} {symbol}
+                      </p>
+                    </div>
+                    
                   </div>
 
-                  <p className='mt-4 text-center'>+</p>
+                  <p 
+                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, "buyIDRT");}}
+                    className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit ml-auto mt-2"
+                  >
+                    Buy more {symbol}
+                  </p>
+                  
+
+                  <p className='mt-2 text-center'>+</p>
 
                   <div className="mt-4 border rounded-xl p-4">
                     <div className='flex justify-between'>
@@ -334,7 +190,7 @@ export default function LendToPoolDialog(props) {
                             Amount
                         </p>
                         <p className="text-xs font-semibold text-gray-500">
-                            Available: {numberWithCommas(wagBalance)} WAG
+                            Available: {numberWithCommas(getWagBalanceWithDecimal(), 2)} WAG
                         </p>
                     </div>
                     
@@ -342,99 +198,104 @@ export default function LendToPoolDialog(props) {
                         <input type="number" id="amount" 
                             min="0"
                             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
-                            value={wagNumber == "" ? "" : wagNumber}
+                            value={wagNumber}
                             onChange={(e)=>{
                               setWagNumber(e.target.value)
-                              setStableNumber(e.target.value / ratio)
+                              setStableNumber(e.target.value / getRatio())
                             }}
                             placeholder="0" required/>
                         <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
                         <p className="text-lg text-gray-500">
                             WAG
                         </p>
-                        <button
-                          type="button"
+                        <Button
+                          color={"light"}
+                          size={"sm"}
                           onClick={() => {
-                            setWagNumber(wagBalance)
-                            setStableNumber(wagBalance / ratio)
+                            setWagNumber(getWagBalanceWithDecimal())
+                            setStableNumber(getWagBalanceWithDecimal() / getRatio())
                           }}
-                          className="button-max text-sm"
                         >
                           Max
-                        </button>
+                        </Button>
                     </div>
                   </div>
 
+                  <p 
+                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
+                    className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit  ml-auto mt-2"
+                  >
+                    Buy more WAG
+                  </p>
+                  
                   <div className="mt-6 border rounded-xl p-4">
-                    <p className="text-xs font-semibold text-gray-500 border-b pb-4">
+                    <p className="text-xs font-semibold text-gray-500 border-b pb-2">
                         Expectation and pool maturity
                     </p>
                     
-                    <div className='flex gap-2 items-center justify-between mt-4 text-center'>
-                        <div>
-                          <p className="text-xs">
-                            {formatTime(parseFloat(poolDetail?.loanTerm))}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                              Loan Term
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs">
-                            {numberWithCommas(getAdminFee())} {symbol}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            Admin Fee
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs">
-                              {getExpectedInterest()} {symbol}
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">
-                              Expected Interest
-                          </p>
-                        </div>
+                    <div className='flex gap-2 items-center justify-between mt-2 text-center'>
+                      <p className="text-xs text-gray-500">
+                          Loan Term
+                      </p>
+                      <p className="text-xs font-semibold">
+                        {formatTime(parseFloat(pool?.loanTerm))}
+                      </p>
                     </div>
+
+                    <div className='flex gap-2 items-center justify-between mt-1 text-center'>
+                      <p className="text-xs text-gray-500">
+                          Expected Interest
+                      </p>
+                      <p className="text-xs font-semibold">
+                          {numberWithCommas(getExpectedInterest(), 2)} {symbol}
+                      </p>
+                    </div>
+                    
+                  </div>
+
+                  <div className="mt-4 border rounded-xl p-4">
+                    <p className="text-xs font-semibold text-gray-500 border-b pb-2">
+                      Total needs for lend and fee
+                    </p>
+
+                    <div className='flex gap-2 items-center justify-between mt-2 text-center'>
+                      <p className="text-xs text-gray-500">
+                          Total {symbol}
+                      </p>
+                      <p className="text-xs font-semibold">
+                          {numberWithCommas(getTotalStable() , 2)} {symbol}
+                      </p>
+                    </div>
+
+                    <div className='flex gap-2 items-center justify-between mt-1 text-center'>
+                      <p className="text-xs text-gray-500">
+                          Total WAG
+                      </p>
+                      <p className="text-xs font-semibold">
+                          {numberWithCommas(wagNumber , 2)} WAG
+                      </p>
+                    </div>
+                    
                   </div>
 
                   <div className="mt-4 text-center">
-                    {
-                      <button
-                          type="button"
-                          className={
-                            `button-light`
-                          }
-                          onClick={()=>{
-                            lendToPool()
-                          }}
-                        >
-                          Lend To Pool
-                      </button>
-                    }
+                    <Button
+                      color={"dark"}
+                      size={"sm"}
+                      style={{width:"100%"}}
+                      disabled={getLendToPoolButtonDisabled()}
+                      onClick={handleLend}
+                    >
+                      Lend To Pool
+                    </Button>
                   </div>
+
                 </Dialog.Panel>
               </Transition.Child>
             </div>
           </div>
         </Dialog>
       </Transition>
-
-      <LendProcessDialog 
-        isOpen={
-          isLoadingApproveStable || isLoadingWaitApproveStable || 
-          isLoadingApproveWag || isLoadingWaitApproveWag || 
-          isLoadingLendToPool || isLoadingWaitLendToPool } 
-        number={stableNumber} 
-        tokenName={symbol} 
-        wagNumber={wagNumber} 
-        poolName={poolDetailErc1155?.name} 
-        title={
-          isLoadingApproveStable || isLoadingApproveWag ? "Checking Allowance"
-          : isLoadingWaitApproveStable || isLoadingWaitApproveWag ? "Approving Allowance"
-          : isLoadingLendToPool || isLoadingWaitLendToPool ? "Lending To Pool"
-          : "Processing"
-        }/>
     </>
   )
 }

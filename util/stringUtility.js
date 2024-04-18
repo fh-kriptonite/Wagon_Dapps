@@ -37,3 +37,23 @@ export function shortenAddress(address) {
 
   return `${prefix}...${suffix}`;
 }
+
+export function convertTime(seconds) {
+  if (seconds < 0) {
+      return "Invalid input"; // Assuming negative seconds are invalid
+  }
+
+  const minute = 60;
+  const hour = 3600;
+  const day = 86400;
+
+  if (seconds < minute) {
+      return seconds + " seconds";
+  } else if (seconds < hour) {
+      return Math.floor(seconds / minute) + " minutes";
+  } else if (seconds < day) {
+      return Math.floor(seconds / hour) + " hours";
+  } else {
+      return Math.floor(seconds / day) + " days";
+  }
+}

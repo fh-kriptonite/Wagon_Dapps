@@ -1,20 +1,20 @@
-import { useAccount } from "wagmi"
-import { Button, Dropdown, Spinner } from "flowbite-react"
+import { Button, Spinner } from "flowbite-react"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { FaLongArrowAltDown } from "react-icons/fa";
 import { getUserBalancesService, getUserPoolsService } from "../../services/service_lending";
 import { useEffect, useState } from "react";
 import PoolCard from "../lend/PoolCard";
-import { getAPYService, getRewardalance, getStakingBalance, getUserTotalRewardClaimedService } from "../../services/service_staking";
+import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardClaimedService } from "../../services/service_staking";
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountComponent(props) {
-    const { address } = useAccount();
+    const { address } = useWeb3ModalAccount();
     const [pools, setPools] = useState([]);
     const [wagPrice, setWagPrice] = useState(0);
     const [idrtPrice, setIdrtPrice] = useState(0);
@@ -48,12 +48,12 @@ export default function AccountComponent(props) {
 
     async function getStaking() {
         const balance = await getStakingBalance(address);
-        setStakingBalance(balance);
+        setStakingBalance(parseFloat(balance) / 1e18);
     }
 
     async function getRewards() {
-        const balance = await getRewardalance(address);
-        setRewardBalance(balance);
+        const balance = await getRewardBalance(address);
+        setRewardBalance(parseFloat(balance) / 1e18);
     }
 
     async function getAPY() {
@@ -63,7 +63,7 @@ export default function AccountComponent(props) {
 
     async function getStakingUserTotalRewardClaimed() {
         const totalRewardClaimedData = await getUserTotalRewardClaimedService(address);
-        setTotalRewardClaimed(totalRewardClaimedData);
+        setTotalRewardClaimed(parseFloat(totalRewardClaimedData) / 1e18);
     }
 
     const [isLoadingPools, setIsLoadingPools] = useState(false);
@@ -164,10 +164,16 @@ export default function AccountComponent(props) {
                             </div>
                             <div className="flex flex-col gap-2 w-full xl:w-1/3">
                                 <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Uniswap</Button>
+                                    <Button size={"xs"} color="light" style={{width:"100%"}}>
+                                        <img src={"./network/logo-eth.png"} className="h-5 w-5 mr-2" alt="ETH Logo"/>
+                                        Uniswap
+                                    </Button>
                                 </a>
                                 <a href="https://pancakeswap.finance/swap?inputCurrency=0x66207E39bb77e6B99aaB56795C7c340C08520d83&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>PancakeSwap</Button>
+                                    <Button size={"xs"} color="light" style={{width:"100%"}}>
+                                        <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
+                                        PancakeSwap
+                                    </Button>
                                 </a>
                             </div>
                         </div>
@@ -190,7 +196,7 @@ export default function AccountComponent(props) {
                 </div>
             </div>
             <div className="card w-full flex flex-col xl:flex-row gap-4">
-                <div className="w-full md:w-1/4">
+                <div className="w-full xl:w-1/4">
                     <div className="flex flex-col justify-between h-full gap-4">
                         <p className="text-base font-semibold">Balance</p>
                         <p className="text-4xl font-semibold mt-1">USD {numberWithCommas((stakingBalance * wagPrice) + (tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
@@ -224,8 +230,8 @@ export default function AccountComponent(props) {
                             <Button color={"dark"} size={"xs"}>Stake</Button>    
                         </Link>
                     </div>
-                    <div className="flex gap-10 mt-3">
-                        <div className="w-40 relative">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
+                        <div className="w-40 relative mx-auto">
                             <div
                                 className="absolute top-8 left-8"
                             >
@@ -279,8 +285,8 @@ export default function AccountComponent(props) {
                             <Button color={"dark"} size={"xs"}>Lend</Button>
                         </Link>
                     </div>
-                    <div className="flex gap-10 mt-3">
-                        <div className="w-40 relative">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
+                        <div className="w-40 relative mx-auto">
                             <div
                                 className="absolute top-8 left-8"
                             >

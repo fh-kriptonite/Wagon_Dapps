@@ -3,7 +3,7 @@ const lendingAbi = require("../public/ABI/lending.json");
 const erc1155Abi = require("../public/ABI/lendingErc1155.json");
 const erc20Abi = require("../public/ABI/erc20.json");
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
+const provider = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
 const contractAddress = process.env.LENDING_ADDRESS_BNB;
 const contract = new ethers.Contract(contractAddress, lendingAbi, provider);
 
@@ -17,16 +17,6 @@ async function get1155Balance(address, poolId) {
     return balance;
 }
 
-async function get1155TokenSupply(poolId) {
-    let balance = await contract1155.tokenSupply(poolId);
-    return balance;
-}
-
-async function get1155TokenMaxSupply(poolId) {
-    let balance = await contract1155.tokenMaxSupply(poolId);
-    return balance;
-}
-
 // LENDING CONTRACT FUNCTIONS
 
 async function getWagLocked(address, poolId) {
@@ -36,11 +26,6 @@ async function getWagLocked(address, poolId) {
 
 async function getPoolDetail(poolId) {
     let poolDetail = await contract.pools(poolId);
-    return poolDetail;
-}
-
-async function getActivePoolDetail(poolId) {
-    let poolDetail = await contract.activePools(poolId);
     return poolDetail;
 }
 
@@ -102,17 +87,108 @@ async function getStableSymbol(currencyAddress) {
 // CONTROLLER SERVICES
 
 module.exports = {
-    getPoolDetailJson : async (uri) => {
+    getPoolService : async (poolId) => {
         return new Promise( async (resolve, reject) => {
             try {
-                const response = await fetch(uri);
-                if (!response.ok) {
-                    reject('Network response was not ok');
-                }
-                const jsonData = await response.json();
-                resolve(jsonData);
+                let response = await contract.pools(poolId);
+                resolve(response);
             } catch (error) {
-                console.error('Error fetching JSON:', error);
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getActivePoolService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.activePools(poolId);
+                resolve(response);
+            } catch (error) {
+                reject(error);
+            }
+        })
+    },
+
+    getPoolFeeService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.fees(poolId);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+    
+    getPoolMaxSupplyService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract1155.tokenMaxSupply(poolId);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getPoolSupplyService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract1155.tokenSupply(poolId);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getUserStableBalanceService : async (address, poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract1155.balanceOf(address, poolId);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getWagLockedService : async (address, poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.wagLocked(poolId, address);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getInterestAmountShareService : async (address, poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.getInterestAmountShare(poolId, address);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
+    
+    getLatestInterestClaimedService : async (address, poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.latestInterestClaimed(poolId, address);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
                 reject(error);
             }
         })
@@ -180,7 +256,7 @@ module.exports = {
                 for(let i = 0; i < poolCount; i++) {
                     const poolDetail = await getPoolDetail(pools[i].pool_id);
 
-                    const stableDecimal = await getStableDecimals(pools[i].currency);
+                    const stableDecimal = parseFloat(await getStableDecimals(pools[i].currency));
 
                     const dataIdrt = parseFloat(await get1155Balance(address, pools[i].pool_id));
                     tvlIdrt += dataIdrt / Math.pow(10,stableDecimal)
@@ -196,53 +272,6 @@ module.exports = {
                 resolve([tvlIdrt, tvlWag, interestIdrt, interestIdrtInYear]);
             } catch (error) {
                 console.error('Error fetching JSON:', error);
-                reject(error);
-            }
-        })
-    },
-
-    getPoolCardDetailService: async (poolId) =>{
-        return new Promise( async (resolve, reject) => {
-            try {
-                let pool = {};
-                // get Pool Json
-                const headers = new Headers();
-                headers.append('Content-Type', 'application/json');
-
-                const response = await fetch(process.env.BNB_ERC1155_JSON_URI + poolId, {
-                    headers: headers
-                })
-                
-                const jsonData = await response.json();
-                pool.json = jsonData;
-
-                console.log(response)
-                console.log(jsonData)
-
-                // get Pool Detail
-                const poolDetail = await getPoolDetail(poolId);
-                pool.pool = poolDetail;
-
-                const activePool = await getActivePoolDetail(poolId);
-                pool.activePool = activePool;
-
-                // get stable currency info
-                const lendingCurrencySymbol = await getStableSymbol(poolDetail.lendingCurrency);
-                const lendingCurrencyDecimals = await getStableDecimals(poolDetail.lendingCurrency);
-                pool.lendingCurrency = {
-                    symbol: lendingCurrencySymbol,
-                    decimals: lendingCurrencyDecimals
-                };
-
-                const tokenSupply = await get1155TokenSupply(poolId);
-                const tokenMaxSupply = await get1155TokenMaxSupply(poolId);
-                pool.erc1155 = {
-                    tokenSupply: tokenSupply,
-                    tokenMaxSupply: tokenMaxSupply
-                };
-
-                resolve(pool);
-            } catch (error) {
                 reject(error);
             }
         })
@@ -277,16 +306,9 @@ module.exports = {
     getUserBalanceService: async (address, poolId) =>{
         return new Promise( async (resolve, reject) => {
             try {
-                // get stable balance
-                const stableBalance = await get1155Balance(address, poolId)
-
-                const wagLocked = await getWagLocked(address, poolId)
-
                 const fees = await getPoolFees(poolId)
 
                 const response = {
-                    stableBalance: stableBalance,
-                    wagLocked: wagLocked,
                     fees: fees
                 }
 

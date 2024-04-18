@@ -1,211 +1,147 @@
-import { useAccount, useContractReads, useContractWrite, useNetwork, usePrepareContractWrite, useWaitForTransaction } from "wagmi"
 import { numberWithCommas } from "../../util/stringUtility";
-import stakingABI from "../../public/ABI/staking.json";
-import { useEffect, useState } from "react";
-import { Spinner } from "flowbite-react";
+import { useEffect } from "react";
+import { Button } from "flowbite-react";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import useGetUserRewardHook from "./utils/useGetUserRewardHook";
+import useGetUserClaimableHook from "./utils/useGetUserClaimableHook";
+import useClaimWagHook from "./utils/useClaimWagHook";
+import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
 
 export default function WithdrawCard(props) {
-    const [claimTime, setClaimTime] = useState(null);
-    const [reward, setReward] = useState(null);
-    const [readyToWithdraw, setReadyToWithdraw] = useState(null);
-    
-    const { address } = useAccount();
-    const { chain } = useNetwork()
+    const { address } = useWeb3ModalAccount();
 
-    const stakingContract = {
-        address: (chain?.id == 1) ? process.env.WAGON_STAKING_PROXY : process.env.WAGON_STAKING_PROXY_BASE_GOERLI,
-        abi: stakingABI,
-    }
-
-    const currentDate = new Date();
-
-    const { data, isError, isLoading, isSuccess, refetch } = useContractReads({
-        contracts: [
-            {
-                ...stakingContract,
-                functionName: 'claimables',
-                args: [address],
-                watch: true
-            },
-            {
-                ...stakingContract,
-                functionName: 'earned',
-                args: [address],
-                watch: true
-            },
-        ],
-        onSuccess:(data) => {
-            if (data[0] != null) {
-                setReadyToWithdraw(data[0].amount / 1e18);
-                
-                if(data[0].claimableTime > 0) 
-                    setClaimTime(new Date(data[0].claimableTime * 1000))
-            }
-            if(data[1] != null) {
-                setReward(data[1] / 1e18);
-            }
-        }
-    })
+    const { data: reward, fetchData: getUserReward } = useGetUserRewardHook();
+    const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();
 
     useEffect(()=>{
-        refetch();
+        getUserReward(address);
+        getUserClaimable(address);
+    }, [])
+
+    useEffect(()=>{
+        getUserReward(address);
+        getUserClaimable(address);
     }, [props.fetch])
 
-    // get reward function
-    let { config } = usePrepareContractWrite({
-        ...stakingContract,
-        functionName: 'getReward'
-    })
-    
-    const {
-        data : useContractWriteData, 
-        error: errorWrite, 
-        isError: isErrorWrite, 
-        isLoading : useContractWriteLoading, 
-        write 
-    } = useContractWrite(config)
+    const { isLoading: isLoadingClaimWag, fetchData: claimWag } = useClaimWagHook();
 
-    const {
-        data : useWaitForTransactionData, 
-        isLoading : useWaitForTransactionLoading, 
-        isSuccess : useWaitForTransactionSuccess} 
-    = useWaitForTransaction({
-        hash: useContractWriteData?.hash,
-        onSuccess(data) {
+    async function handleClaim() {
+        try {
+            const resultClaim = await claimWag()
+            if (resultClaim.error) {
+                throw resultClaim.error;
+            }
             props.triggerFetch();
+        } catch (error) {
+            console.log(error)
         }
-    })
+    }
 
-    // withdraw unstake coin function
-    let { config : configWithdraw } = usePrepareContractWrite({
-        ...stakingContract,
-        functionName: 'withdraw'
-    })
-    
-    const {
-        data : useContractWriteDataWithdraw, 
-        error: errorWriteWithdraw, 
-        isError: isErrorWriteWithdraw, 
-        isLoading : useContractWriteLoadingWithdraw, 
-        write : writeWithdraw
-    } = useContractWrite(configWithdraw)
+    const { isLoading: isLoadingClaimUnstakedWag, fetchData: claimUnstakedWag } = useClaimUnstakedWagHook();
 
-    const {
-        data : useWaitForTransactionDataWithdraw, 
-        isLoading : useWaitForTransactionLoadingWithdraw, 
-        isSuccess : useWaitForTransactionSuccessWithdraw} 
-    = useWaitForTransaction({
-        hash: useContractWriteDataWithdraw?.hash,
-        onSuccess(data) {
+    async function handleWithdraw() {
+        try {
+            const resultClaim = await claimUnstakedWag()
+            if (resultClaim.error) {
+                throw resultClaim.error;
+            }
             props.triggerFetch();
+        } catch (error) {
+            console.log(error)
         }
-    })
+    }
+
+    function isClaimDisabled() {
+        if(isLoadingClaimWag) return true;
+        if(reward == null) return true;
+        if(parseFloat(reward) == 0) return true;
+
+        return false;
+    }
+
+    function isWithdrawDisabled() {
+        if(isLoadingClaimUnstakedWag) return true;
+        if(claimable == null) return true;
+        if(parseFloat(claimable[2]) == 0) return true;
+        
+        const currentDate = new Date();
+        const claimableDate = new Date(parseFloat(claimable[1]) * 1000);
+        if(currentDate < claimableDate) return true;
+
+        return false;
+    }
+
+    function getClaimableTime() {
+        if(claimable == null) return "~";
+
+        if(claimable[1] != null) {
+            return (new Date(parseFloat(claimable[1]) * 1000)).toUTCString()
+        }
+        
+        return "~"
+    }
 
     return (
         <div className="card flex-1">
-            <div className="flex flex-col sm:flex-row items-start gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                     <div className="grow">
                         <h6 className="text-sm font-medium text-gray-500">My Reward</h6>
                         <h2 className="mt-1">
                             {
                                 (reward != null )
-                                ? numberWithCommas(reward)
+                                ? numberWithCommas(parseFloat(reward)/1e18, 2)
                                 : "~"
                             }
                             <span className="text-2xl font-medium"> WAG</span>
                         </h2>
                     </div>
                     <div className="flex-none w-full sm:w-36">
-                    {
-                        (useContractWriteLoading || useWaitForTransactionLoading)
-                        ?   <div className="text-center">
-                                <Spinner
-                                    aria-label="Loading Claim"
-                                    size="xl"
-                                />
-                            </div>
-                        : <button
-                            type="button"
+                        <Button color={"dark"} style={{width:"100%"}} size={"sm"}
+                            disabled={isClaimDisabled()}
                             onClick={()=>{
-                                write?.()
+                                handleClaim()
                             }}
-                            className= {
-                                (   reward == null || 
-                                    reward == 0 || 
-                                    useContractWriteLoading || 
-                                    useWaitForTransactionLoading ||
-                                    !write
-                                ) ? "button-dark-disable" : "button-light"
-                            }
-                            disabled= {
-                                (   reward == null || 
-                                    reward == 0 || 
-                                    useContractWriteLoading || 
-                                    useWaitForTransactionLoading ||
-                                    !write
-                                )  ? true : false}
                         >
-                            Claim
-                        </button>
-                    }
+                            {
+                                isLoadingClaimWag
+                                ? "Loading"
+                                : "Claim"
+                            }
+                        </Button>
                     </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-start gap-2 border-t-2 mt-3 pt-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-t-2 mt-3 pt-3">
                 <div className="grow">
                     <h6 className="text-sm font-medium text-gray-500">My Pending Unstake</h6>
                     <h2 className="mt-1">
                         {
-                            readyToWithdraw != null
-                            ? numberWithCommas(readyToWithdraw)
+                            claimable != null
+                            ? numberWithCommas(parseFloat(claimable[2])/1e18, 2)
                             : "~"
                         }
                         <span className="text-2xl font-medium"> WAG</span>
                     </h2>
                 </div>
                 <div className="flex-none w-full sm:w-36">
-                    {
-                        (useContractWriteLoadingWithdraw || useWaitForTransactionLoadingWithdraw)
-                        ?   <div className="text-center">
-                                <Spinner
-                                    aria-label="Loading Withdraw"
-                                    size="xl"
-                                />
-                            </div>
-                        : <button
-                            type="button"
-                            onClick={()=>{
-                                writeWithdraw?.()
-                            }}
-                            className= {
-                                (
-                                    readyToWithdraw == null || 
-                                    readyToWithdraw == 0 || 
-                                    currentDate < claimTime ||
-                                    useContractWriteLoadingWithdraw || 
-                                    useWaitForTransactionLoadingWithdraw ||
-                                    !writeWithdraw
-                                ) ? "button-dark-disable" : "button-light"}
-                            disabled= {
-                                (
-                                    readyToWithdraw == null || 
-                                    readyToWithdraw == 0 || 
-                                    currentDate < claimTime ||
-                                    useContractWriteLoadingWithdraw || 
-                                    useWaitForTransactionLoadingWithdraw ||
-                                    !writeWithdraw
-                                ) ? true : false}
-                        >
-                            Withdraw
-                        </button>
-                    }
-                    
+                    <Button color={"dark"} style={{width:"100%"}} size={"sm"}
+                        disabled={isWithdrawDisabled()}
+                        onClick={()=>{
+                            handleWithdraw()
+                        }}
+                    >
+                        {
+                            isLoadingClaimUnstakedWag
+                            ? "Loading"
+                            : "Withdraw"
+                        }
+                    </Button>
                 </div>
             </div>
             <div className="border-t-2 mt-2 pt-3">
                 <p className="text-xs text-gray-500 font-light">Withdrawable at <span className="font-medium">
                     {
-                        claimTime != null
-                        ? claimTime.toUTCString()
+                        claimable != null
+                        ? getClaimableTime()
                         : "~"
                     }
                 </span></p>

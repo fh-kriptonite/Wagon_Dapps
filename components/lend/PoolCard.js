@@ -1,66 +1,86 @@
 import { numberWithCommas } from "../../util/stringUtility";
-
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from 'next/router';
-
-import { getPoolCardDetailService } from "../../services/service_lending";
 import { Progress } from "flowbite-react";
 import CountdownTimer from "../general/CountdownTimer";
-import { calculateApy, formatTime } from "../../util/lendingUtility";
+import { calculateApy, formatTime, getTokenDecimals } from "../../util/lendingUtility";
+import useGetLendingPoolHook from "./utils/useGetLendingPoolHook";
+import useGetActivePoolHook from "./utils/useGetActivePoolHook";
+import useGetPoolJsonHook from "./utils/useGetPoolJsonHook";
+import useGetPoolMaxSupplyHook from "./utils/useGetPoolMaxSupplyHook";
+import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook copy";
 
 export default function PoolCard(props) {
   const router = useRouter();
 
-  const [pool, setPool] = useState(null);
-  const [poolDetail, setPoolDetail] = useState(null);
-  const [tokenSupply, setTokenSupply] = useState(0);
-  const [tokenMaxSupply, setTokenMaxSupply] = useState(0);
-  const [collectedPrincipal, setCollectedPrincipal] = useState(0);
-  const [symbol, setSymbol] = useState("");
-  const [apy, setApy] = useState(0);
-
-  const [isLoading, setIsloading] = useState(true);
-
   const poolId = props.poolId;
 
-  async function getPoolCardDetail() {
-    setIsloading(true)
-    try {
-      const poolCardDetail = await getPoolCardDetailService(poolId)
+  const {data: pool, fetchData: getPool} = useGetLendingPoolHook();
+  const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
+  const {isLoading: isLoadingPoolJson, data: poolJson, fetchData: getPoolJson} = useGetPoolJsonHook();
+  const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
+  const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
 
-      setPool(poolCardDetail.pool);
-      setPoolDetail(poolCardDetail.json);
-  
-      setSymbol(poolCardDetail.lendingCurrency.symbol)
-      const decimal = poolCardDetail.lendingCurrency.decimals;
-  
-      setTokenSupply(parseFloat(poolCardDetail.erc1155.tokenSupply) / Math.pow(10, decimal));
-      setTokenMaxSupply(parseFloat(poolCardDetail.erc1155.tokenMaxSupply) / Math.pow(10, decimal));
+  useEffect(()=>{
+    if (poolId != null) {
+      getPoolJson(poolId)
+      getPool(poolId);
+      getActivePool(poolId);
+      getPoolMaxSupply(poolId);
+      getPoolSupply(poolId);
+    }
+  }, [])
 
-      setCollectedPrincipal(parseFloat(poolCardDetail.activePool.collectedPrincipal) / Math.pow(10, decimal));
-      setIsloading(false)
-    } catch (error) {
-      console.log(error)
-      setIsloading(false)
+  function getCollectedPrincipalDecimal() {
+    if(activePool == null) return 0;
+    return parseFloat(activePool[0]) / Math.pow(10, getDecimal());
+  }
+
+  function getPoolMaxSupplyDecimal() {
+    if(poolMaxSupply == null) return 0;
+    return parseFloat(poolMaxSupply) / Math.pow(10, getDecimal());
+  }
+
+  function getPoolStatus() {
+    if(pool == null) return 0;
+    return parseFloat(pool.status)
+  }
+
+  function getPoolProgress() {
+    if(getPoolStatus() >= 2) {
+      return getCollectedPrincipalDecimal() / getPoolMaxSupplyDecimal() * 100
+    } else {
+      return parseFloat(poolSupply) / getPoolMaxSupplyDecimal() * 100
     }
   }
 
-  useEffect(()=>{
-    if (poolId != null) getPoolCardDetail();
-  }, [poolId])
+  function getSymbol() {
+    if(poolJson == null) return "";
+    return poolJson.properties.currency;
+  }
 
-  useEffect(()=>{
-    if(pool != null) getApy();
-  }, [pool])
+  function getDecimal() {
+    if(poolJson == null) return 0;
+    return getTokenDecimals(poolJson.properties.currency);
+  }
+
+  function getPoolProgressSupply() {
+    if(getPoolStatus() >= 2) {
+      return numberWithCommas(getCollectedPrincipalDecimal())
+    } else {
+      return numberWithCommas(parseFloat(poolSupply))
+    }
+  }
 
   function getApy() {
-    setApy(calculateApy(pool));
+    if(pool == null) return 0;
+    return calculateApy(pool);
   }
 
   return (
     <>
       {  
-        isLoading
+        poolJson == null || isLoadingPoolJson
         ? <div className="card animate-pulse">
               <div className="flex items-start gap-4 justify-between">
                 <div className="card !p-0 !bg-gray-300">
@@ -120,47 +140,40 @@ export default function PoolCard(props) {
         >
           <div className="flex items-start gap-4 justify-between">
             <div className="card !p-0">
-              <img src={poolDetail?.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
+              <img src={poolJson?.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
             </div>
             <div className="flex gap-2">
               <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
-              <img src={poolDetail?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
+              <img src={poolJson?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
               <div className="bg-green-500 h-10 w-10 rounded-xl text-white flex items-center justify-center">
-                <p className="text-base font-bold">{poolDetail?.properties.rating}</p>
+                <p className="text-base font-bold">{poolJson?.properties.rating}</p>
               </div>
             </div>
           </div>
 
           <div className="mt-4">
-            <h5 className="font-semibold">{poolDetail?.name}</h5>
-            <p className="text-base text-gray-500">{poolDetail?.sub_name}</p>
+            <h5 className="font-semibold">{poolJson?.name}</h5>
+            <p className="text-base text-gray-500">{poolJson?.sub_name}</p>
           </div>
 
           <div className="border-t my-4"/>
 
-          <p className="text-2xl font-bold">{numberWithCommas(tokenMaxSupply)} {symbol}</p>
+          <p className="text-2xl font-bold">{numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}</p>
 
-          <p className="text-sm mt-2 font-semibold text-gray-700">Progress ({
-            (pool?.status > 2)
-            ? collectedPrincipal / tokenMaxSupply * 100
-            : tokenSupply / tokenMaxSupply * 100
-            }%)</p>
+          <p className="text-sm mt-2 font-semibold text-gray-700">
+            Progress ({ getPoolProgress() }%)</p>
           
           <div className="mt-2">
-            <Progress progress={
-              (pool?.status > 2)
-              ? collectedPrincipal/tokenMaxSupply * 100
-              : tokenSupply/tokenMaxSupply * 100  
-            } color="dark"/>
+            <Progress progress={ getPoolProgress() } color="dark"/>
           </div>
 
           <div className="flex items-center justify-between mt-2">
-            <p className="text-sm font-semibold text-gray-700">{
-              (pool?.status > 2)
-              ? numberWithCommas(collectedPrincipal)
-              : numberWithCommas(tokenSupply)
-            } {symbol}</p>
-            <p className="text-sm font-semibold text-gray-700">{numberWithCommas(tokenMaxSupply)} {symbol}</p>
+            <p className="text-sm font-semibold text-gray-700">
+              { getPoolProgressSupply() } {getSymbol()}
+            </p>
+            <p className="text-sm font-semibold text-gray-700">
+              {numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}
+            </p>
           </div>
 
           <div className="border-t my-4"/>
@@ -168,7 +181,7 @@ export default function PoolCard(props) {
           <div className="text-center">
             <div className="h-full flex justify-between items-center">
               <p className="text-sm">Fixed APY</p>
-              <p className="text-sm font-semibold">{numberWithCommas(apy, 2)}%</p>
+              <p className="text-sm font-semibold">{numberWithCommas(getApy(), 2)}%</p>
             </div>
           </div>
           
@@ -180,7 +193,7 @@ export default function PoolCard(props) {
           </div>
           
           {
-            pool?.status == 1 &&
+            getPoolStatus() == 1 &&
             <>
               <div className="border-t my-4"/>    
               <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>

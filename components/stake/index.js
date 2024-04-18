@@ -2,12 +2,9 @@ import { useState } from "react";
 import GeneralCard from "./GeneralCard";
 import UserCard from "./UserCard";
 import WithdrawCard from "./WithdrawCard";
-import { useNetwork } from "wagmi";
 
 export default function StakeComponent(props) {
     const [fetch, setFetch] = useState(false);
-    
-    const { chain } = useNetwork()
 
     function triggerFetch() {
         setFetch(!fetch);
@@ -39,15 +36,10 @@ export default function StakeComponent(props) {
                         StkWAG contract:
                     </p>
                     <p className="text-sm font-bold hover:underline w-80 lg:w-full truncate">
-                        <a href={
-                            chain?.id == 1
-                            ? process.env.MAINNET_EXPLORER + process.env.WAGON_STAKING_PROXY
-                            : process.env.GOERLI_EXPLORER + process.env.WAGON_STAKING_PROXY_BASE_GOERLI
-                        } target="blank">
+                        <a href={process.env.MAINNET_EXPLORER + process.env.WAGON_STAKING_PROXY} 
+                        target="etherscan_wagon_staking">
                             {
-                                chain?.id == 1
-                                ? process.env.WAGON_STAKING_PROXY
-                                : process.env.WAGON_STAKING_PROXY_BASE_GOERLI
+                                process.env.WAGON_STAKING_PROXY
                             }
                         </a>
                     </p>

@@ -3,34 +3,96 @@ import { Fragment } from 'react'
 import { Button } from 'flowbite-react';
 import { numberWithCommas } from '../../../util/stringUtility';
 import { ImCross } from 'react-icons/im';
+import useClaimInterestHook from '../utils/useClaimInterestHook';
+import { useRouter } from 'next/router';
 
 export default function ConfirmationClaimInterestDialog(props) {
 
+  const router = useRouter();
+  const { poolId } = router.query;
+
   const isOpen = props.isOpen;
-  const number = props.number;
-  const tokenName = props.tokenName;
-  const lockedWag = props.lockedWag;
-  const title = props.title;
-  const isLastClaim = props.isLastClaim;
+  const symbol = props.symbol;
+  const wagBalance = props.wagBalance;
 
   const repayments = props.repayments;
-  const poolDetail = props.poolDetail;
+  const pool = props.pool;
   const latestInterestClaimed = props.latestInterestClaimed;
-  const interestSharePerPayment = props.interestSharePerPayment;
-  const symbol = props.symbol;
+  const interestAmountShare = props.interestAmountShare;
   const stableBalance = props.stableBalance;
+  const decimal = props.decimal;
+  const fees = props.fees;
 
-  const protocolFee = props.fees?.protocolFee;
+  const refreshLatestInterestClaimed = props.refreshLatestInterestClaimed;
 
   function closeModal() {
     props.close();
   }
 
   function isInterestClaimable(index) {
-    if(index < latestInterestClaimed) return "Claimed"
-    if(index < poolDetail?.latestRepayment) return "Claimable"
+    if(index < parseFloat(latestInterestClaimed)) return "Claimed"
+    if(index < parseFloat(pool.latestRepayment)) return "Claimable"
     return "Unclaimable"
-}
+  }
+
+  function countTotalClaimable() {
+    const countClaimable = parseFloat(pool.latestRepayment) - parseFloat(latestInterestClaimed);
+    const claimable = countClaimable * parseFloat(interestAmountShare) / Math.pow(10,decimal)
+    return claimable
+  }
+
+  function getClaimableInterestAmount() {
+    const claimable = countTotalClaimable();
+    return numberWithCommas(claimable, 2)
+  }
+
+  function countFee() {
+    if(fee == null) return 0;
+    const claimable = countTotalClaimable();
+    const fee = claimable * parseFloat(fees.protocolFee) / 10000;
+    return fee;
+  }
+
+  function getProtocolFeeAmount() {
+    if (fees == null) return "~"
+
+    const fee = countFee();
+    return numberWithCommas(fee, 2)
+  }
+
+  function getReceivedInterestAmount() {
+    const claimable = countTotalClaimable();
+    const fee = countFee();
+
+    return numberWithCommas(claimable - fee, 2)
+  }
+
+  function getUnlockWagAmount() {
+    if(pool == null) return "~"
+    if(parseFloat(pool.latestRepayment) == parseFloat(pool.paymentFrequency)) return numberWithCommas(parseFloat(wagBalance) / 1e18, 2)
+
+    return numberWithCommas(0, 2)
+  }
+
+  const {isLoading: isLoadingClaimInterest, fetchData: claimInterest} = useClaimInterestHook();
+
+  async function handleClaimInterest() {
+    try {
+      const resultClaim = await claimInterest(poolId)
+      if (resultClaim.error) {
+          throw resultClaim.error
+      }
+      refreshLatestInterestClaimed();
+      closeModal();
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  function handleClaimButtonString() {
+    if (isLoadingClaimInterest) return "Claiming..."
+    return "Claim";
+  }
 
   return (
     <>
@@ -65,7 +127,7 @@ export default function ConfirmationClaimInterestDialog(props) {
                           as="h3"
                           className="text-lg font-medium leading-6 text-gray-900"
                       >
-                          {title}
+                          Claiming Interest
                       </Dialog.Title>
                       <button onClick={()=>closeModal()}>
                         <ImCross/>
@@ -82,13 +144,16 @@ export default function ConfirmationClaimInterestDialog(props) {
                       repayments.map((repayment, index) => {
                           const claimable = isInterestClaimable(index);
                           if(claimable != "Claimable") return(<></>);
-                          const loanStart = parseFloat(poolDetail.termStart) * 1000;
-                          const durationBetweenPayment = poolDetail.loanTerm / poolDetail.paymentFrequency * 1000;
-                          const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
                           return (     
-                              <div className='flex justify-between px-4 py-1 gap-4' key={`repayment-${index}`}>
+                              <div className='flex justify-between px-4 py-1 gap-4' key={`confirmrepayment-${index}`}>
                                   <p className='text-xs font-light w-10'>{index+1}</p>
-                                  <p className='text-xs font-light flex-1 text-end'>{(index+1 == poolDetail.paymentFrequency) ? numberWithCommas(stableBalance + interestSharePerPayment) : numberWithCommas(interestSharePerPayment)} {symbol}</p>
+                                  <p className='text-xs font-light flex-1 text-end'>
+                                    {
+                                      (index+1 == pool.paymentFrequency) 
+                                          ? numberWithCommas(parseFloat(stableBalance) + parseFloat(interestAmountShare) / Math.pow(10,decimal), 2) 
+                                          : numberWithCommas(parseFloat(interestAmountShare) / Math.pow(10,decimal), 2)
+                                    } {symbol}
+                                    </p>
                                   <p className='text-xs font-light flex-1 text-end'>{claimable}</p>
                               </div>
                           )
@@ -96,7 +161,7 @@ export default function ConfirmationClaimInterestDialog(props) {
                     }
                     
                     <div className="mt-6 border rounded-xl p-2">
-                      <p className="text-xs font-semibold text-gray-500">
+                      <p className="text-xs font-semibold">
                           Breakdown
                       </p>
 
@@ -105,18 +170,18 @@ export default function ConfirmationClaimInterestDialog(props) {
                       <div className='space-y-1'>
                           <div className='flex justify-between'>
                             <p className="text-xs text-gray-500">
-                                Claimable Interest ({tokenName})
+                                Claimable Interest ({symbol})
                             </p>
                             <p className="text-xs text-gray-500">
-                              {numberWithCommas(number)}
+                              {getClaimableInterestAmount()}
                             </p>
                           </div>
                           <div className='flex justify-between'>
                             <p className="text-xs text-gray-500">
-                                Protocol Fee ({tokenName})
+                                Protocol Fee ({symbol})
                             </p>
                             <p className="text-xs text-gray-500">
-                              -{numberWithCommas(number * protocolFee / 10000, 2)}
+                              -{getProtocolFeeAmount()}
                             </p>
                           </div>
                       </div>
@@ -125,22 +190,20 @@ export default function ConfirmationClaimInterestDialog(props) {
 
                       <div className='space-y-1'>
                           <div className='flex justify-between'>
-                            <p className="text-xs text-gray-500">
-                                Received Interest ({tokenName})
+                            <p className="text-xs">
+                                Received Interest ({symbol})
                             </p>
-                            <p className="text-xs text-gray-500 font-semibold">
-                              {numberWithCommas(number)}
+                            <p className="text-xs">
+                              {getReceivedInterestAmount()}
                             </p>
                           </div>
                           <div className='flex justify-between'>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs">
                                 Unlock (WAG)
                             </p>
-                            <p className="text-xs text-gray-500 font-semibold">
+                            <p className="text-xs">
                             {
-                              isLastClaim
-                              ? numberWithCommas(lockedWag)
-                              : 0.00
+                              getUnlockWagAmount()
                             }
                             </p>
                           </div>
@@ -150,7 +213,14 @@ export default function ConfirmationClaimInterestDialog(props) {
                   </div>
 
                   <div className='mt-6'>
-                    <Button color={"dark"} style={{ width: '100%' }} size={"sm"} onClick={()=>{props.claimInterest()}}>Claim</Button>
+                    <Button color={"dark"} style={{ width: '100%' }} size={"sm"} 
+                      disabled={isLoadingClaimInterest}
+                      onClick={()=>{
+                        handleClaimInterest();
+                      }}
+                    >
+                      {handleClaimButtonString()}
+                    </Button>
                   </div>
                   
                 </Dialog.Panel>

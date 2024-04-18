@@ -1,6 +1,11 @@
 import ERC20_ABI from '../public/ABI/erc20.json';
 import { ethers } from "ethers"
 
+const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
+const providerBnb = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
+const contractAddress = process.env.WAG_ADDRESS;
+const wagContract = new ethers.Contract(contractAddress, ERC20_ABI, provider);
+
 async function getTokenToUsdRate (priceUrl, chainId) {
     return new Promise( async (resolve, reject) => {
         try {
@@ -22,23 +27,20 @@ async function getTokenToUsdRate (priceUrl, chainId) {
 
 module.exports = {
 
-    getErc20BalanceService : async (web3, account, erc20Address) => {
-        const erc20Contract = new web3.eth.Contract(
-            ERC20_ABI,
-            erc20Address
-        );
+    getErc20BalanceService : async (chainId, account, erc20Address) => {
 
+        let providerUrl = process.env.ALCHEMY_PROVIDER_HTTPS;
+        if(chainId == process.env.BNB_CHAIN_ID) {
+            providerUrl = process.env.PROVIDER_HTTPS_BNB;
+        }
+    
+        const provider = new ethers.JsonRpcProvider(providerUrl);
+        const erc20Contract = new ethers.Contract(erc20Address, ERC20_ABI, provider);
+        
         return new Promise( async (resolve, reject) => {
             try {
-                const balance = await erc20Contract.methods
-                    .balanceOf(account)
-                    .call();
-
-                const decimals = await erc20Contract.methods
-                    .decimals()
-                    .call();
-
-                resolve(balance / Math.pow(10, decimals));
+                const balance = await erc20Contract.balanceOf(account);
+                resolve(balance);
             } catch (error) {
                 reject(error)
             }
@@ -83,9 +85,9 @@ module.exports = {
         })
     },
 
-    allowanceErc20Service : async (erc20Address, owner, spender, providerUrl, chainId) => {
+    allowanceErc20Service : async (erc20Address, owner, spender, providerUrl) => {
         // Connect to the Ethereum network
-        const provider = new ethers.providers.JsonRpcProvider(providerUrl, {chainId});
+        const provider = new ethers.JsonRpcProvider(providerUrl);
 
         const erc20Contract = new ethers.Contract(erc20Address, ERC20_ABI, provider);
 
@@ -97,7 +99,7 @@ module.exports = {
                 const decimals = await erc20Contract.decimals();
                             
                 // Adjust the balance based on the token decimals
-                const adjustedAllowance = ethers.utils.formatUnits(allowance, decimals);
+                const adjustedAllowance = ethers.formatUnits(allowance, decimals);
 
                 resolve(parseFloat(adjustedAllowance));
             } catch (error) {
@@ -106,9 +108,9 @@ module.exports = {
         })
     },
 
-    getERC20NetworkBalanceService : async (tokenAddress, walletAddress, providerUrl, chainId) => {
+    getERC20NetworkBalanceService : async (tokenAddress, walletAddress, providerUrl) => {
         // Connect to the Ethereum network
-        const provider = new ethers.providers.JsonRpcProvider(providerUrl, {chainId});
+        const provider = new ethers.JsonRpcProvider(providerUrl);
       
         // Instantiate the ERC-20 token contract
         const erc20Contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider);
@@ -122,7 +124,7 @@ module.exports = {
                 const decimals = await erc20Contract.decimals();
             
                 // Adjust the balance based on the token decimals
-                const adjustedBalance = ethers.utils.formatUnits(balance, decimals);
+                const adjustedBalance = ethers.formatUnits(balance, decimals);
                 
                 resolve(parseFloat(adjustedBalance));
             } catch (error) {
@@ -159,6 +161,52 @@ module.exports = {
                 reject(error);
             }
         })
-    }
+    },
 
+    getWagTotalSupply : async () => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let totalSupply = await wagContract.totalSupply();
+                resolve(totalSupply);
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+
+    getWagBalanceOf : async (address) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let balanceOf = await wagContract.balanceOf(address);
+                resolve(balanceOf);
+            } catch (error) {
+                reject(error)
+            }
+        })
+    },
+
+    getWagAllowance : async (address, spender) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let allowance = await wagContract.allowance(address, spender);
+                resolve(allowance);
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    },
+
+    getErc20Allowance : async (address, spender, erc20Address) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                const contract = new ethers.Contract(erc20Address, ERC20_ABI, providerBnb);
+                let allowance = await contract.allowance(address, spender);
+                resolve(allowance);
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    }
 }

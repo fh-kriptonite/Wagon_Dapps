@@ -14,13 +14,12 @@
     "@headlessui/react": "^1.7.11",
     "@popperjs/core": "^2.11.6",
     "@tailwindcss/line-clamp": "^0.4.2",
-    "@web3modal/ethereum": "^2.2.0",
-    "@web3modal/react": "^2.2.0",
+    "@web3modal/ethers": "^4.1.1",
     "alchemy-sdk": "^2.7.0",
     "axios": "^0.27.2",
     "chart.js": "^4.2.1",
     "dotenv": "^16.0.3",
-    "ethers": "^5.7.2",
+    "ethers": "^6.0.0",
     "flowbite": "^1.5.3",
     "flowbite-react": "^0.1.11",
     "mysql2": "^3.9.1",
@@ -30,10 +29,9 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
     "uuid": "^9.0.0",
-    "wagmi": "^0.12.1",
+    "wagmi": "^2.5.11",
     "web3": "^1.8.0",
-    "web3-eth": "^1.9.0",
-    "web3modal": "^1.9.12"
+    "web3-eth": "^1.9.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.12",
