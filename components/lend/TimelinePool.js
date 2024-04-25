@@ -115,7 +115,7 @@ export default function TimelinePool(props) {
                         <Table.Cell className='!py-2 text-right'>
                           {
                             (index+1 == pool.paymentFrequency) 
-                                ? numberWithCommas(parseFloat(stableBalance) + parseFloat(interestAmountShare) / Math.pow(10,decimal), 2) 
+                                ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (parseFloat(interestAmountShare) / Math.pow(10,decimal)), 2) 
                                 : numberWithCommas(parseFloat(interestAmountShare) / Math.pow(10,decimal), 2)
                           } {symbol}
                         </Table.Cell>

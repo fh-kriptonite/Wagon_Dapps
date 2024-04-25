@@ -150,7 +150,7 @@ export default function ConfirmationClaimInterestDialog(props) {
                                   <p className='text-xs font-light flex-1 text-end'>
                                     {
                                       (index+1 == pool.paymentFrequency) 
-                                          ? numberWithCommas(parseFloat(stableBalance) + parseFloat(interestAmountShare) / Math.pow(10,decimal), 2) 
+                                          ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (parseFloat(interestAmountShare) / Math.pow(10,decimal)), 2) 
                                           : numberWithCommas(parseFloat(interestAmountShare) / Math.pow(10,decimal), 2)
                                     } {symbol}
                                     </p>

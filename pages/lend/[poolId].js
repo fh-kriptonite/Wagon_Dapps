@@ -63,10 +63,11 @@ export default function Pool() {
           <Breadcrumb.Item>{poolJson?.name}</Breadcrumb.Item>
       </Breadcrumb>
 
-      { isLate > 0 &&
-        <Alert color="warning" rounded>
-          <p className='text-sm'>{`Alert: ${poolJson.name} is ${isLate} days late on repayment.`}</p>
-        </Alert>
+      { 
+        // isLate > 0 &&
+        // <Alert color="warning" rounded>
+        //   <p className='text-sm'>{`Alert: ${poolJson.name} is ${isLate} days late on repayment.`}</p>
+        // </Alert>
       }
 
       <div className='flex flex-col xl:flex-row gap-4'>
