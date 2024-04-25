@@ -76,6 +76,7 @@ export default function TimelinePool(props) {
 
   function isUnclaimable() {
     if(pool == null) return true
+    if(parseFloat(stableBalance) == 0) return true
     if(parseFloat(latestInterestClaimed) < parseFloat(pool.latestRepayment)) return false
     return true
   }
