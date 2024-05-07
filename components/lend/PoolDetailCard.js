@@ -44,6 +44,11 @@ export default function PoolDetailCard(props) {
         return parseFloat(poolMaxSupply) / Math.pow(10, decimal);
     }
 
+    function getPoolSupplyDecimal() {
+        if(poolSupply == null) return 0;
+        return parseFloat(poolSupply) / Math.pow(10, decimal);
+    }
+
     function getPoolProgress() {
         if(pool == null) return 0;
         if(getPoolMaxSupplyDecimal() == 0) return 0;
@@ -51,7 +56,7 @@ export default function PoolDetailCard(props) {
         if(parseFloat(pool.status) >= 2) {
           return getCollectedPrincipalDecimal() / getPoolMaxSupplyDecimal() * 100
         } else {
-          return parseFloat(poolSupply) / getPoolMaxSupplyDecimal() * 100
+          return getPoolSupplyDecimal() / getPoolMaxSupplyDecimal() * 100
         }
     }
 
@@ -61,7 +66,7 @@ export default function PoolDetailCard(props) {
             return numberWithCommas(getCollectedPrincipalDecimal())
         } else {
             if(poolSupply == null) return 0;
-            return numberWithCommas(parseFloat(poolSupply))
+            return numberWithCommas(getPoolSupplyDecimal())
         }
     }
 
