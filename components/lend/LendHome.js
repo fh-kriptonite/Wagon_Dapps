@@ -4,6 +4,7 @@ import PoolCard from "./PoolCard";
 import { MdOpenInNew } from "react-icons/md";
 
 import { getPoolsService } from "../../services/service_lending";
+import PoolCardComingSoon from "./PoolCardComingSoon";
 
 export default function LendHome(props) {
   const [selectedStatus, setSelectedStatus] = useState(1)
@@ -42,21 +43,27 @@ export default function LendHome(props) {
       <p className="text-sm mt-2">Lend to pools managed by Wagon Network DAO, where borrowers and loans are reviewed and approved by WAG stakers.</p>
 
       <div className="flex gap-4 justify-item-center mt-4">
-        <p className={`text-base mt-2 hover:cursor-pointer px-4 hover:text-slate-800 ${selectedStatus == 1 ? "text-gray-800" : "text-gray-400"}`}
-          onClick={()=>{
-            setSelectedStatus(1)
-          }}
-        >Open</p>
-        <p className={`text-base mt-2 hover:cursor-pointer px-4 hover:text-slate-800 ${selectedStatus == 2 ? "text-gray-800" : "text-gray-400"}`}
-          onClick={()=>{
-            setSelectedStatus(2)
-          }}
-        >Active</p>
-        <p className={`text-base mt-2 hover:cursor-pointer px-4 hover:text-slate-800 ${selectedStatus == 3 ? "text-gray-800" : "text-gray-400"}`}
-          onClick={()=>{
-            setSelectedStatus(3)
-          }}
-        >Close</p>
+        <div className="w-20">
+          <p className={`text-base hover:cursor-pointer px-4 hover:text-slate-800 hover:font-bold ${selectedStatus == 1 ? "text-slate-800 font-bold" : "text-gray-400"}`}
+            onClick={()=>{
+              setSelectedStatus(1)
+            }}
+          >Open</p>
+        </div>
+        <div className="w-20">
+          <p className={`text-base hover:cursor-pointer px-4 hover:text-slate-800 hover:font-bold ${selectedStatus == 2 ? "text-slate-800 font-bold" : "text-gray-400"}`}
+            onClick={()=>{
+              setSelectedStatus(2)
+            }}
+          >Active</p>
+        </div>
+        <div className="w-20">
+          <p className={`text-base hover:cursor-pointer px-4 hover:text-slate-800 hover:font-bold ${selectedStatus == 3 ? "text-slate-800 font-bold" : "text-gray-400"}`}
+            onClick={()=>{
+              setSelectedStatus(3)
+            }}
+          >Close</p>
+        </div>
       </div>
 
       {
@@ -66,7 +73,11 @@ export default function LendHome(props) {
               pools.map((pool, index)=>{
                 return (
                   <div key={`poolCard-${pool.pool_id}-${selectedStatus}`} id={`poolCard-${pool.pool_id}-${selectedStatus}`}>
-                    <PoolCard poolId={pool.pool_id}/>
+                    {
+                      (pool.status == 0)
+                      ? <PoolCardComingSoon poolId={pool.pool_id}/>
+                      : <PoolCard poolId={pool.pool_id}/>
+                    }
                   </div>
                 )
               })

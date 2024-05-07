@@ -150,8 +150,12 @@ module.exports = {
                     if (err) {
                         return reject(err); // Reject the promise with the error
                     }
+                    let query = 'SELECT pool_id, currency, network, status FROM `lending_pools` WHERE status = ?';
+                    if (status == 1) {
+                        query = 'SELECT pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 0';
+                    }
                     conn.query(
-                        'SELECT pool_id, currency, network FROM `lending_pools` WHERE status = ?',
+                        query,
                         [status],
                         (err, results, fields) => {
                             // Release the connection before resolving or rejecting

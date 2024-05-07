@@ -1,7 +1,7 @@
 import { numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
 import { useRouter } from 'next/router';
-import { Progress } from "flowbite-react";
+import { Badge, Progress, Spinner } from "flowbite-react";
 import CountdownTimer from "../general/CountdownTimer";
 import { calculateApy, formatTime, getTokenDecimals } from "../../util/lendingUtility";
 import useGetLendingPoolHook from "./utils/useGetLendingPoolHook";
@@ -15,11 +15,11 @@ export default function PoolCard(props) {
 
   const poolId = props.poolId;
 
-  const {data: pool, fetchData: getPool} = useGetLendingPoolHook();
+  const {isLoading: isLoadingPool, data: pool, fetchData: getPool} = useGetLendingPoolHook();
   const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
   const {isLoading: isLoadingPoolJson, data: poolJson, fetchData: getPoolJson} = useGetPoolJsonHook();
-  const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
-  const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
+  const {isLoading: isLoadingPoolMaxSupply, data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
+  const {isLoading: isLoadingPoolSupply, data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
 
   useEffect(()=>{
     if (poolId != null) {
@@ -41,16 +41,23 @@ export default function PoolCard(props) {
     return parseFloat(poolMaxSupply) / Math.pow(10, getDecimal());
   }
 
+  function getPoolSupplyDecimal() {
+    if(poolSupply == null) return 0;
+    return parseFloat(poolSupply) / Math.pow(10, getDecimal());
+  }
+
   function getPoolStatus() {
     if(pool == null) return 0;
     return parseFloat(pool.status)
   }
 
   function getPoolProgress() {
+    if(getPoolMaxSupplyDecimal() == 0) return 0
+
     if(getPoolStatus() >= 2) {
       return getCollectedPrincipalDecimal() / getPoolMaxSupplyDecimal() * 100
     } else {
-      return parseFloat(poolSupply) / getPoolMaxSupplyDecimal() * 100
+      return getPoolSupplyDecimal() / getPoolMaxSupplyDecimal() * 100
     }
   }
 
@@ -68,13 +75,34 @@ export default function PoolCard(props) {
     if(getPoolStatus() >= 2) {
       return numberWithCommas(getCollectedPrincipalDecimal())
     } else {
-      return numberWithCommas(parseFloat(poolSupply))
+      return numberWithCommas(getPoolSupplyDecimal())
     }
   }
 
   function getApy() {
     if(pool == null) return 0;
     return calculateApy(pool);
+  }
+
+  function getBadgeColor() {
+    if(getPoolStatus() == 1) return "success"
+    if(getPoolStatus() == 2) return "success"
+
+    return "dark"
+  }
+
+  function getBadgeString() {
+    if(getPoolStatus() == 1) return "Open To Lend"
+    if(getPoolStatus() == 2) return "Ongoing Lend"
+
+    return "Disabled"
+  }
+
+  function getBadgePulseColor() {
+    if(getPoolStatus() == 1) return "bg-green-400"
+    if(getPoolStatus() == 2) return "bg-green-400"
+
+    return "bg-gray-400"
   }
 
   return (
@@ -142,11 +170,28 @@ export default function PoolCard(props) {
             <div className="card !p-0">
               <img src={poolJson?.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
             </div>
-            <div className="flex gap-2">
-              <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
-              <img src={poolJson?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
-              <div className="bg-green-500 h-10 w-10 rounded-xl text-white flex items-center justify-center">
-                <p className="text-base font-bold">{poolJson?.properties.rating}</p>
+            <div className="space-y-4">
+              {
+                (isLoadingPool)
+                ? <div className="w-fit ml-auto">
+                    <Spinner/>
+                  </div>
+                : <Badge color={getBadgeColor()} size={"sm"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
+                    <div className="flex gap-2 items-center">
+                      <span className="relative flex h-3 w-3">
+                        <span className={`${getBadgePulseColor()} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
+                        <span className={`${getBadgePulseColor()} relative inline-flex rounded-full h-3 w-3`}></span>
+                      </span>
+                      {getBadgeString()}
+                    </div>
+                  </Badge>
+              }
+              <div className="flex gap-2">
+                <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
+                <img src={poolJson?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
+                <div className="bg-green-500 h-10 w-10 rounded-xl text-white flex items-center justify-center">
+                  <p className="text-base font-bold">{poolJson?.properties.rating}</p>
+                </div>
               </div>
             </div>
           </div>
