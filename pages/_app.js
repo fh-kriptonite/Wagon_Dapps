@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      {/* <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-T11YXZR7QS"/>
+      <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-T11YXZR7QS"/>
         <Script
           id='google-analytics'
           strategy="afterInteractive"
@@ -35,7 +35,7 @@ function MyApp({ Component, pageProps }) {
               });
             `,
             }}
-        /> */}
+        />
 
       {ready ? (
         <Web3Modal>
