@@ -1,7 +1,7 @@
 import { BsBank2 } from 'react-icons/bs'
 import {MdHowToVote, MdOutlineQueryStats, MdDashboard} from 'react-icons/md'
 import { BiTransferAlt } from "react-icons/bi";
-import {FaCoins} from 'react-icons/fa'
+import {FaCoins, FaBook, FaQuestionCircle} from 'react-icons/fa'
 import {AiFillDatabase} from 'react-icons/ai'
 import { useRouter } from 'next/router';
 
@@ -100,6 +100,24 @@ export default function Sidebar(props) {
                                     <span className="ml-3">Governance</span>
                                 </div>
                             </Link>
+                        </li>
+                    </ul>
+                    <ul className="space-y-2 font-medium pt-2 border-t border-gray-200 dark:border-gray-700 text-sm mt-2">
+                        <li>
+                            
+                            <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
+                                onClick={()=>{window.open("https://docs.wagon.network/", '_docs');}}
+                            >
+                                <FaBook className='w-5 h-5 text-gray-500'/>
+                                <span className="ml-3">Docs</span>
+                            </div>
+                            
+                            <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
+                                onClick={()=>{window.open("https://wagon.network/faq/", '_faq');}}
+                            >
+                                <FaQuestionCircle className='w-5 h-5 text-gray-500'/>
+                                <span className="ml-3">FAQ</span>
+                            </div>
                         </li>
                     </ul>
                     <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-blue-50 dark:bg-blue-900" role="alert">
