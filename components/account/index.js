@@ -156,21 +156,57 @@ export default function AccountComponent(props) {
         <div className="max-w-7xl mx-auto space-y-4 pb-4">
             <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1">
-                    <div className="card w-full h-full !bg-blue-100">
+                    <div className="card w-full h-full !bg-blue-50">
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow">
-                                <p className="text-lg font-semibold">Earn your stable interest now!</p>
-                                <p className="text-sm mt-0.5 text-gray-500">Buy <span className="font-bold">WAG</span> now and start building your stable portfolio</p>
+                            <div className="grow w-full">
+                                <p className="text-lg font-semibold">Wagon Staking <span className="text-xs">on ETH Network</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Earn</span> your stable interest now</p>
+                                <p className="text-sm mt-0.5 text-gray-500">Stake your <span className="font-bold">WAG</span> and get your <span className="font-bold">WAG</span> rewards</p>
+                            </div>
+                            <div className="flex flex-col gap-2 w-full xl:w-1/3">
+                                <Link href="/stake">
+                                    <Button color={"dark"} size={"xs"} style={{width:"100%"}}>Stake Now</Button>    
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1">
+                    <div className="card w-full h-full !bg-blue-50">
+                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                            <div className="grow w-full">
+                                <p className="text-base font-semibold">Wagon Lending <span className="text-xs"> on BSC Network</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Stabilize</span> your portfolio with <span className="font-bold">Real World Asset and Businesses</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">stable</span> coin and get stable interest</p>
+                            </div>
+                            <div className="w-full xl:w-1/3">
+                                <Link href="/lend">
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Lend Now</Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex-1">
+
+                    <div className="card w-full h-full !bg-blue-50">
+                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                            <div className="grow w-full">
+                                <p className="text-lg font-semibold">Buy Wagon Token now</p>
+                                <p className="text-sm mt-0.5 text-gray-500">On ETH network Uniswap <span className="font-bold">WAG/ETH</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/IDRT</span></p>
                             </div>
                             <div className="flex flex-col gap-2 w-full xl:w-1/3">
                                 <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
-                                    <Button size={"xs"} color="light" style={{width:"100%"}}>
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>
                                         <img src={"./network/logo-eth.png"} className="h-5 w-5 mr-2" alt="ETH Logo"/>
                                         Uniswap
                                     </Button>
                                 </a>
                                 <a href="https://pancakeswap.finance/swap?inputCurrency=0x66207E39bb77e6B99aaB56795C7c340C08520d83&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
-                                    <Button size={"xs"} color="light" style={{width:"100%"}}>
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>
                                         <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
                                         PancakeSwap
                                     </Button>
@@ -178,12 +214,14 @@ export default function AccountComponent(props) {
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div className="flex-1">
-                    <div className="card w-full h-full">
+                    <div className="card w-full h-full !bg-blue-50">
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
                             <div className="grow w-full">
-                                <p className="text-base font-semibold">Bridge</p>
+                                <p className="text-base font-semibold">Wagon Bridge</p>
+                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Wagon Token</span> and <span className="font-bold">DeFi</span> are available on multiple network</p>
                                 <p className="text-sm mt-0.5 text-gray-500">Transfer your <span className="font-bold">WAG</span> across network and start gaining</p>
                             </div>
                             <div className="w-full xl:w-1/3">
@@ -226,9 +264,6 @@ export default function AccountComponent(props) {
                 <div className="flex-1">
                     <div className="flex justify-between">
                         <p className="text-base font-semibold">Staking</p>
-                        <Link href="/stake">
-                            <Button color={"dark"} size={"xs"}>Stake</Button>    
-                        </Link>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
                         <div className="w-40 relative mx-auto">
@@ -281,9 +316,6 @@ export default function AccountComponent(props) {
                 <div className="flex-1">
                     <div className="flex justify-between">
                         <p className="text-base font-semibold">Lending</p>
-                        <Link href="/lend">
-                            <Button color={"dark"} size={"xs"}>Lend</Button>
-                        </Link>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
                         <div className="w-40 relative mx-auto">

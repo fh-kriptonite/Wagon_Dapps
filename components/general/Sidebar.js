@@ -120,11 +120,16 @@ export default function Sidebar(props) {
                             </div>
                         </li>
                     </ul>
-                    <div id="dropdown-cta" className="p-4 mt-6 rounded-lg bg-blue-50 dark:bg-blue-900" role="alert">
-                        <div className="flex items-center mb-3">
-                            <span className="bg-orange-100 text-orange-800 text-sm font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-orange-200 dark:text-orange-900">Beta</span>
+                    <div id="dropdown-cta" className="p-4 mt-2 rounded-lg bg-yellow-50 dark:bg-blue-900" role="alert">
+                        <p className="text-xs text-yellow-800 dark:text-blue-400">
+                            In certain countries, VPN connection is required to interact with BSC Network and successfully make a transaction. 
+                        </p>
+                    </div>
+                    <div id="dropdown-cta" className="p-4 mt-2 rounded-lg bg-blue-50 dark:bg-blue-900" role="alert">
+                        <div className="flex items-center mb-2">
+                            <span className="bg-blue-200 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-orange-200 dark:text-orange-900">Beta</span>
                         </div>
-                        <p className="mb-3 text-sm text-blue-800 dark:text-blue-400">
+                        <p className="text-xs text-blue-800 dark:text-blue-400">
                             Expect potential bugs, frequent updates, and features subject to change. User discretion is advised as we refine and enhance the application.
                         </p>
                     </div>
