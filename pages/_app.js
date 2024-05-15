@@ -5,14 +5,32 @@ import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import Sidebar from '../components/general/Sidebar'
 import { Web3Modal } from '../components/general/web3modal'
+import { useRouter } from 'next/router'
 
 function MyApp({ Component, pageProps }) {
   const [ready, setReady] = useState(false)
+  const router = useRouter();
 
   useEffect(() => {
     setReady(true)
     import("flowbite")
   }, [])
+
+  useEffect(() => {
+  if (process.env.PRODUCTION) {
+    const handleRouteChange = (url) => {
+      window.gtag('config', process.env.NEXT_PUBLIC_GA_TRACKING_ID, {
+        page_path: url,
+      });
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }
+  }, [router.events]);
 
   return (
     <>
@@ -21,21 +39,26 @@ function MyApp({ Component, pageProps }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <Script strategy="afterInteractive" src="https://www.googletagmanager.com/gtag/js?id=G-T11YXZR7QS"/>
-        <Script
-          id='google-analytics'
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-          __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-T11YXZR7QS', {
-                page_path: window.location.pathname,
-              });
-            `,
-            }}
-        />
+      {
+        process.env.PRODUCTION &&
+        <>
+          <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`} />
+          <Script
+            id='google-analytics'
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+            __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_TRACKING_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `,
+              }}
+          />
+        </>
+      }
 
       {ready ? (
         <Web3Modal>

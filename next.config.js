@@ -4,6 +4,7 @@ const nextConfig = {
   swcMinify: true,
   env: {
     PORT: process.env.PORT,
+    PRODUCTION: process.env.PRODUCTION,
     
     WALLET_PROJECT_ID: process.env.WALLET_PROJECT_ID,
     WALLET_FAUCET_ADDRESS: process.env.WALLET_FAUCET_ADDRESS,
