@@ -70,6 +70,21 @@ export default function PoolDetailCard(props) {
         }
     }
 
+    function getCollectedWag() {
+        if(pool == null) return 0;
+        if(parseFloat(pool.status) >= 2) {
+            return numberWithCommas(getCollectedPrincipalDecimal() * parseFloat(pool.stabletoPairRate) / Math.pow(10,18) )
+        } else {
+            if(poolSupply == null) return 0;
+            return numberWithCommas(getPoolSupplyDecimal() * parseFloat(pool.stabletoPairRate) / Math.pow(10,18) )
+        }
+    }
+
+    function getPoolMaxWag() {
+        if(poolMaxSupply == null) return 0;
+        return parseFloat(poolMaxSupply) * parseFloat(pool.stabletoPairRate) / Math.pow(10,18) / Math.pow(10,decimal);
+    }
+
   return (
     <>
         {
@@ -123,16 +138,25 @@ export default function PoolDetailCard(props) {
                         Progress ({getPoolProgress()}%)
                     </p>
                 
-                    <div className="mt-2">
+                    <div className="mt-1">
                         <Progress progress={ getPoolProgress() } color="dark"/>
                     </div>
-
-                    <div className="flex items-center justify-between mt-2">
+                    
+                    <div className="flex items-center justify-between mt-1">
                         <p className="text-sm font-semibold text-gray-700">
                             {getPoolProgressSupply()} {symbol}
                         </p>
                         <p className="text-sm font-semibold text-gray-700">
                             {numberWithCommas(getPoolMaxSupplyDecimal())} {symbol}
+                        </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-1">
+                        <p className="text-sm font-semibold text-gray-700">
+                            {getCollectedWag()} WAG
+                        </p>
+                        <p className="text-sm font-semibold text-gray-700">
+                            {numberWithCommas(getPoolMaxWag())} WAG
                         </p>
                     </div>
                 </div>
