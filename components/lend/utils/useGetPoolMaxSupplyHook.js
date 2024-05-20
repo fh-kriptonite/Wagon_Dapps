@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getPoolMaxSupplyService, getPoolService } from '../../../services/service_lending';
+import { getPoolMaxSupplyService } from '../../../services/service_lending';
 
 const useGetPoolMaxSupplyHook = () => {
   const [isLoading, setIsLoading] = useState(false);

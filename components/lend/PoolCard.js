@@ -8,7 +8,7 @@ import useGetLendingPoolHook from "./utils/useGetLendingPoolHook";
 import useGetActivePoolHook from "./utils/useGetActivePoolHook";
 import useGetPoolJsonHook from "./utils/useGetPoolJsonHook";
 import useGetPoolMaxSupplyHook from "./utils/useGetPoolMaxSupplyHook";
-import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook copy";
+import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
 
 export default function PoolCard(props) {
   const router = useRouter();

@@ -20,6 +20,9 @@ export default function LendToPoolButton(props) {
   const [adminFee, setAdminFee] = useState(0)
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false)
 
+  const poolMaxSupply = props.poolMaxSupply;
+  const poolSupply = props.poolSupply;
+
   async function openModal() {
     // switch network
     if(chainId != process.env.BNB_CHAIN_ID) {
@@ -46,9 +49,16 @@ export default function LendToPoolButton(props) {
     setAdminFee(adminFee)
   }
 
+  function handleDisableLendButton() {
+    if(parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return true
+    if(poolSupply == poolMaxSupply) return true
+    return false;
+  }
+
   return (
     <div>
       <Button color={"dark"} size={"sm"} style={{width:"100%"}}
+        disabled={handleDisableLendButton()}
         onClick={openModal}
       >
         Lend To Pool

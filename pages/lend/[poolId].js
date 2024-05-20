@@ -11,6 +11,9 @@ import PoolRepaymentTermCard from '../../components/lend/PoolRepaymentTermCard';
 import PoolActivityCard from '../../components/lend/PoolActivityCard';
 import useGetPoolJsonHook from '../../components/lend/utils/useGetPoolJsonHook';
 import useGetLendingPoolHook from '../../components/lend/utils/useGetLendingPoolHook';
+import useGetActivePoolHook from '../../components/lend/utils/useGetActivePoolHook';
+import useGetPoolMaxSupplyHook from '../../components/lend/utils/useGetPoolMaxSupplyHook';
+import useGetPoolSupplyHook from '../../components/lend/utils/useGetPoolSupplyHook';
 import { getTokenDecimals } from '../../util/lendingUtility';
 import Head from 'next/head';
 
@@ -22,6 +25,10 @@ export default function Pool() {
 
   const {data: pool, fetchData: getPool} = useGetLendingPoolHook();
   const {data: poolJson, fetchData: getPoolJson} = useGetPoolJsonHook();
+  const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
+  const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
+  const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
+
   
   function getSymbol() {
     if(poolJson == null) return "";
@@ -37,6 +44,9 @@ export default function Pool() {
     if (poolId != null) {
       getPoolJson(poolId);
       getPool(poolId);
+      getActivePool(poolId);
+      getPoolMaxSupply(poolId);
+      getPoolSupply(poolId);
     }
   }, [poolId])
 
@@ -82,6 +92,9 @@ export default function Pool() {
             pool={pool}
             symbol={getSymbol()}
             decimal={getDecimal()}
+            activePool={activePool}
+            poolMaxSupply={poolMaxSupply}
+            poolSupply={poolSupply}
           />
         </div>
 
@@ -91,6 +104,8 @@ export default function Pool() {
             poolJson={poolJson}
             symbol={getSymbol()}
             decimal={getDecimal()}
+            poolMaxSupply={poolMaxSupply}
+            poolSupply={poolSupply}
           />
 
           <PoolOverviewCard

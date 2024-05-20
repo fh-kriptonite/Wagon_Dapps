@@ -6,9 +6,6 @@ import { numberWithCommas } from '../../util/stringUtility';
 import { calculateApy, formatTime } from '../../util/lendingUtility';
 import CountdownTimer from '../../components/general/CountdownTimer';
 import { FaTruck } from "react-icons/fa";
-import useGetPoolMaxSupplyHook from './utils/useGetPoolMaxSupplyHook';
-import useGetPoolSupplyHook from './utils/useGetPoolSupplyHook copy';
-import useGetActivePoolHook from './utils/useGetActivePoolHook';
 import LoadingPoolDetailCard from './LoadingPoolDetailCard';
 
 export default function PoolDetailCard(props) {
@@ -19,17 +16,14 @@ export default function PoolDetailCard(props) {
     const symbol = props.symbol;
     const decimal = props.decimal;
 
-    const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
-    const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
-    const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
+    const activePool = props.activePool;
+    const poolMaxSupply = props.poolMaxSupply;
+    const poolSupply = props.poolSupply;
 
     const [apy, setApy] = useState(0);
 
     useEffect(()=>{
         if(pool != null) {
-            getPoolMaxSupply(poolId);
-            getPoolSupply(poolId);
-            getActivePool(poolId);
             setApy(calculateApy(pool));
         }
     },[pool])

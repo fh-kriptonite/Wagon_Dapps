@@ -111,11 +111,7 @@ export default function UserLendingStatistic(props) {
                         !isConnected
                             ? <ButtonConnect/>
                             : <LendToPoolButton 
-                                pool={pool} 
-                                poolJson={poolJson} 
-                                poolId={poolId} 
-                                symbol={symbol}
-                                decimal={decimal}
+                                {...props}
                                 fees={fees}
                                 refreshUser={()=>{
                                     getStableBalance(address, poolId);
