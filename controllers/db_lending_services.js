@@ -234,7 +234,7 @@ module.exports = {
                     conn.query(
                         `SELECT DISTINCT lending_pools.pool_id, lending_pools.currency, lending_pools.network
                         FROM lending_lends
-                        LEFT JOIN lending_pools ON lending_lends.pool_id = lending_pools.id
+                        LEFT JOIN lending_pools ON lending_lends.pool_id = lending_pools.pool_id
                         WHERE lending_lends.lender = ?
                         AND lending_pools.status < 3`,
                         [address],
