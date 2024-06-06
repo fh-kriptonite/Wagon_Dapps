@@ -87,6 +87,7 @@ export default function PoolCard(props) {
   function getBadgeColor() {
     if(getPoolStatus() == 1) return "success"
     if(getPoolStatus() == 2) return "success"
+    if(getPoolStatus() == 3) return "success"
 
     return "dark"
   }
@@ -94,6 +95,7 @@ export default function PoolCard(props) {
   function getBadgeString() {
     if(getPoolStatus() == 1) return "Open To Lend"
     if(getPoolStatus() == 2) return "Ongoing Lend"
+    if(getPoolStatus() == 3) return "Done"
 
     return "Disabled"
   }
@@ -101,6 +103,7 @@ export default function PoolCard(props) {
   function getBadgePulseColor() {
     if(getPoolStatus() == 1) return "bg-green-400"
     if(getPoolStatus() == 2) return "bg-green-400"
+    if(getPoolStatus() == 3) return "bg-green-400"
 
     return "bg-gray-400"
   }
