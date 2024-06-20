@@ -9,7 +9,6 @@ import { useRouter } from 'next/router';
 import Link from 'next/link'
 import { Button } from 'flowbite-react';
 import { useWeb3Auth } from '@web3auth/modal-react-hooks';
-import { useWalletServicesPlugin } from '@web3auth/wallet-services-plugin-react-hooks';
 import ConnectDialog from './dialog/ConnectDialog';
 import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { useWeb3WalletState } from './web3WalletContext';
@@ -17,7 +16,6 @@ import { useWeb3WalletState } from './web3WalletContext';
 export default function Sidebar(props) {
     const { address, isConnected } = useWeb3WalletState();
     const { logout, userInfo } = useWeb3Auth();
-    const { showWalletUI } = useWalletServicesPlugin();
     const { isConnected : isConnectedWeb3Modal } = useWeb3ModalAccount()
     
     const router = useRouter();
@@ -53,13 +51,9 @@ export default function Sidebar(props) {
                                                 ? <img src={userInfo.profileImage} 
                                                     className="h-10 w-10 mr-2 rounded-full hover:cursor-pointer" 
                                                     alt="ETH Logo"
-                                                    onClick={showWalletUI}
                                                 />
                                                 : <Button 
                                                     color="dark"
-                                                    onClick={async ()=>{
-                                                        showWalletUI();
-                                                    }}
                                                     style={{borderRadius:"100px"}}
                                                 >{address}</Button>
                                             }
