@@ -51,7 +51,10 @@ const nextConfig = {
     CMC_API_KEY: process.env.CMC_API_KEY,
 
     // BRIDGE
-    BRIDGE_NETWORK_FILE: process.env.BRIDGE_NETWORK_FILE
+    BRIDGE_NETWORK_FILE: process.env.BRIDGE_NETWORK_FILE,
+
+    // WEB3AUTH
+    WEB3AUTH_CLIENT_ID: process.env.WEB3AUTH_CLIENT_ID
   },
   trailingSlash: true
 }

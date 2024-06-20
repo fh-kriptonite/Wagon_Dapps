@@ -4,7 +4,7 @@ import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
 import { chainConfig } from "../../util/chainCofigs"
 
-const clientId = "BF3HLx3QcfPh4g4Kyrx0vmvkB2s2t1tI-FApikT8vk0ERnmtz-XW_AWySynEJEk9FryMrmtWgAjYXGB_I54NSfk";
+const clientId = process.env.WEB3AUTH_CLIENT_ID;
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
     config: {
@@ -18,11 +18,13 @@ const web3AuthOptions = {
     uiConfig: {
       uxMode: "popup",
       appName: "Wagon Network",
-      appUrl: "https://wagon.network/",
-      logoLight: "https://web3auth.io/images/web3authlog.png",
-      logoDark: "https://web3auth.io/images/web3authlogodark.png",
+      loginMethodsOrder: ["google", "apple", "twitter"],
+      appUrl: "https://app.wagon.network/",
+      logoLight: "https://app.wagon.network/logo.png",
+      logoDark: "https://app.wagon.network/logo.png",
       defaultLanguage: "en", // en, de, ja, ko, zh, es, fr, pt, nl, tr
       mode: "light", // whether to enable dark mode. defaultValue: auto
+      primaryButton: "socialLogin",
       useLogoLoader: true,
     },
     privateKeyProvider: privateKeyProvider,
