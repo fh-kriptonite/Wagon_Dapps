@@ -1,5 +1,4 @@
 import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { WEB3AUTH_NETWORK } from "@web3auth/base";
 import { OpenloginAdapter } from "@web3auth/openlogin-adapter";
 import { WalletServicesPlugin } from "@web3auth/wallet-services-plugin";
 import { chainConfig } from "../../util/chainCofigs"
@@ -14,7 +13,7 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 
 const web3AuthOptions = {
     clientId: clientId,
-    web3AuthNetwork: process.env.PRODUCTION ? WEB3AUTH_NETWORK.SAPPHIRE_MAINNET : WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+    web3AuthNetwork: process.env.WEB3AUTH_NETWORK,
     uiConfig: {
       uxMode: "popup",
       appName: "Wagon Network",

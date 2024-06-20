@@ -54,7 +54,8 @@ const nextConfig = {
     BRIDGE_NETWORK_FILE: process.env.BRIDGE_NETWORK_FILE,
 
     // WEB3AUTH
-    WEB3AUTH_CLIENT_ID: process.env.WEB3AUTH_CLIENT_ID
+    WEB3AUTH_CLIENT_ID: process.env.WEB3AUTH_CLIENT_ID,
+    WEB3AUTH_NETWORK: process.env.WEB3AUTH_NETWORK
   },
   trailingSlash: true
 }
