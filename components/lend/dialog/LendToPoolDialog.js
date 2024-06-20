@@ -3,12 +3,12 @@ import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Button } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 export default function LendToPoolDialog(props) {
-  const { chainId, address } = useWeb3ModalAccount();
+  const { chainId, address } = useWeb3WalletState();
 
   const [stableNumber,setStableNumber] = useState("")
   const [wagNumber,setWagNumber] = useState("")

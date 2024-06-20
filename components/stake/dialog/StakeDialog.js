@@ -6,15 +6,15 @@ import { convertTime, numberWithCommas } from "../../../util/stringUtility";
 
 import { Button } from 'flowbite-react';
 import useGetWagAllowanceHook from '../utils/useGetWagAllowanceHook';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
-import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 import useStakeWagHook from '../utils/useStakeWagHook';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
+import useSwitchNetworkHook from '../../../util/useSwitchNetworkHook';
 
 
 export default function StakeDialog(props) {
   const balance = props.balance;
-  const { chainId, address } = useWeb3ModalAccount();
+  const { chainId, address } = useWeb3WalletState();
 
   const claimableDuration = props.claimableDuration;
 
@@ -22,7 +22,9 @@ export default function StakeDialog(props) {
   const [number,setNumber] = useState("")
   const [showButton,setShowButton] = useState(0)
 
-  const { fetchData: switchNetwork } = useSwitchNetworkHook();
+  const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
+
+  const { isLoading, fetchData: getAllowance } = useGetWagAllowanceHook();
 
   function closeModal() {
     setIsOpen(false)
@@ -35,6 +37,7 @@ export default function StakeDialog(props) {
   }
 
   function isNextButtonDisabled() {
+    if(isLoadingSwitchChain) return true;
     if(number == "") return true;
     if(parseFloat(number) == 0) return true;
     if(isLoading) return true;
@@ -42,22 +45,18 @@ export default function StakeDialog(props) {
     return false
   }
 
-  const { isLoading, fetchData: getAllowance } = useGetWagAllowanceHook();
-
   async function checkAllowance() {
     if(number == "") return;
     if(parseFloat(number) == 0) return;
 
-    if(chainId != process.env.ETH_CHAIN_ID) {
-      try {
-        const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
-        if (resultSwitchNetwork.error) {
-            throw resultSwitchNetwork.error
-        }
-      } catch (error) {
-        console.log(error)
-        return
+    try {
+      const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+      if (resultSwitchNetwork.error) {
+          throw resultSwitchNetwork.error
       }
+    } catch (error) {
+      console.log(error)
+      return
     }
 
     const response = await getAllowance(address);

@@ -1,19 +1,21 @@
 import { useEffect } from "react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 import { numberWithCommas } from "../../util/stringUtility";
 import StakeDialog from "./dialog/StakeDialog";
 import UnstakeDialog from "./dialog/UnstakeDialog";
 import useGetWagBalanceHook from "./utils/useGetWagBalanceHook";
+import { useWeb3WalletState } from "../general/web3WalletContext";
 
 export default function StakeSection(props) {
-    const { address } = useWeb3ModalAccount();
+    const { address } = useWeb3WalletState();
 
     const { isLoading, data: balance, fetchData: getBalance } = useGetWagBalanceHook();
 
     useEffect(()=>{
-        getBalance(address)
-    }, [])
+        if(address != null) {
+            getBalance(address)
+        }
+    }, [address])
 
     useEffect(()=>{
         getBalance(address)

@@ -5,6 +5,8 @@ import { numberWithCommas } from '../../../util/stringUtility';
 import { ImCross } from 'react-icons/im';
 import useClaimInterestHook from '../utils/useClaimInterestHook';
 import { useRouter } from 'next/router';
+import useSwitchNetworkHook from '../../../util/useSwitchNetworkHook';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 export default function ConfirmationClaimInterestDialog(props) {
 
@@ -24,6 +26,9 @@ export default function ConfirmationClaimInterestDialog(props) {
   const fees = props.fees;
 
   const refreshLatestInterestClaimed = props.refreshLatestInterestClaimed;
+
+  const { chainId } = useWeb3WalletState()
+  const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
 
   function closeModal() {
     props.close();
@@ -47,7 +52,7 @@ export default function ConfirmationClaimInterestDialog(props) {
   }
 
   function countFee() {
-    if(fee == null) return 0;
+    if(fees == null) return 0;
     const claimable = countTotalClaimable();
     const fee = claimable * parseFloat(fees.protocolFee) / 10000;
     return fee;
@@ -78,6 +83,16 @@ export default function ConfirmationClaimInterestDialog(props) {
 
   async function handleClaimInterest() {
     try {
+      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID);
+      if (resultSwitchNetwork.error) {
+          throw resultSwitchNetwork.error
+      }
+    } catch (error) {
+      console.log(error)
+      return
+    }
+    
+    try {
       const resultClaim = await claimInterest(poolId)
       if (resultClaim.error) {
           throw resultClaim.error
@@ -89,7 +104,14 @@ export default function ConfirmationClaimInterestDialog(props) {
     }
   }
 
+  function handleClaimButtonDisable() {
+    if (isLoadingSwitchChain) return true
+    if (isLoadingClaimInterest) return true
+    return false;
+  }
+
   function handleClaimButtonString() {
+    if (isLoadingSwitchChain) return "Loading..."
     if (isLoadingClaimInterest) return "Claiming..."
     return "Claim";
   }
@@ -214,7 +236,7 @@ export default function ConfirmationClaimInterestDialog(props) {
 
                   <div className='mt-6'>
                     <Button color={"dark"} style={{ width: '100%' }} size={"sm"} 
-                      disabled={isLoadingClaimInterest}
+                      disabled={handleClaimButtonDisable()}
                       onClick={()=>{
                         handleClaimInterest();
                       }}

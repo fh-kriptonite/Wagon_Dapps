@@ -1,10 +1,10 @@
 import { convertTime, numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetTotalEarnHook from "./utils/useGetTotalEarnHook";
+import { useWeb3WalletState } from "../general/web3WalletContext";
 
 export default function StakingStatsSummary(props) {
-    const { address } = useWeb3ModalAccount();
+    const { address } = useWeb3WalletState();
 
     const claimableDuration = props.claimableDuration;
     const stakedBalance = props.stakedBalance;
@@ -12,11 +12,15 @@ export default function StakingStatsSummary(props) {
     const { data: totalEarn, fetchData: getTotalEarn } = useGetTotalEarnHook();
 
     useEffect(()=>{
-        getTotalEarn(address);
-    }, [])
+        if(address != null) {
+            getTotalEarn(address);
+        }
+    }, [address])
 
     useEffect(()=>{
-        getTotalEarn(address);
+        if(address != null) {
+            getTotalEarn(address);
+        }
     }, [props.fetch])
 
     return (

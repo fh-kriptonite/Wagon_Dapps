@@ -1,31 +1,47 @@
 import { numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
 import { Button } from "flowbite-react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetUserRewardHook from "./utils/useGetUserRewardHook";
 import useGetUserClaimableHook from "./utils/useGetUserClaimableHook";
 import useClaimWagHook from "./utils/useClaimWagHook";
 import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
+import { useWeb3WalletState } from "../general/web3WalletContext";
+import useSwitchNetworkHook from "../../util/useSwitchNetworkHook";
 
 export default function WithdrawCard(props) {
-    const { address } = useWeb3ModalAccount();
+    const { address, chainId } = useWeb3WalletState();
 
     const { data: reward, fetchData: getUserReward } = useGetUserRewardHook();
     const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();
+    const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
-    }, [])
+        if(address != null) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
+    }, [address])
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
+        if(address != null) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
     }, [props.fetch])
 
     const { isLoading: isLoadingClaimWag, fetchData: claimWag } = useClaimWagHook();
 
     async function handleClaim() {
+        try {
+            const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+            if (resultSwitchNetwork.error) {
+                throw resultSwitchNetwork.error
+            }
+        } catch (error) {
+            console.log(error)
+            return
+        }
+
         try {
             const resultClaim = await claimWag()
             if (resultClaim.error) {
@@ -41,6 +57,16 @@ export default function WithdrawCard(props) {
 
     async function handleWithdraw() {
         try {
+            const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+            if (resultSwitchNetwork.error) {
+                throw resultSwitchNetwork.error
+            }
+        } catch (error) {
+            console.log(error)
+            return
+        }
+        
+        try {
             const resultClaim = await claimUnstakedWag()
             if (resultClaim.error) {
                 throw resultClaim.error;
@@ -52,6 +78,7 @@ export default function WithdrawCard(props) {
     }
 
     function isClaimDisabled() {
+        if(isLoadingSwitchChain) return true;
         if(isLoadingClaimWag) return true;
         if(reward == null) return true;
         if(parseFloat(reward) == 0) return true;
@@ -60,6 +87,7 @@ export default function WithdrawCard(props) {
     }
 
     function isWithdrawDisabled() {
+        if(isLoadingSwitchChain) return true;
         if(isLoadingClaimUnstakedWag) return true;
         if(claimable == null) return true;
         if(parseFloat(claimable[2]) == 0) return true;

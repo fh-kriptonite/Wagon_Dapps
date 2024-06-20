@@ -9,19 +9,19 @@ import AllowanceDialog from "./dialog/AllowanceDialog.js";
 import ApproveDialog from "./dialog/ApproveDialog.js";
 import BridgeDialog from "./dialog/BridgeDialog.js";
 
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetDestinationGasHook from "./utils/useGetDestinationGasHook.js";
-import useSwitchNetworkHook from "./utils/useSwitchNetworkHook.js";
+import useSwitchNetworkHook from "../../util/useSwitchNetworkHook.js";
 import useCheckAllowanceHook from "./utils/useCheckAllowanceHook.js";
 import useApproveAllowanceHook from "./utils/useApproveAllowanceHook.js";
 import useSendBridgeHook from "./utils/useSendBridgeHook.js";
 
 import { Alert } from 'flowbite-react';
+import { useWeb3WalletState } from "../general/web3WalletContext.js";
 
 export default function BridgeCard(props) {
 
-    const { address, chainId } = useWeb3ModalAccount();
-    
+    const { address, chainId } = useWeb3WalletState();
+
     const [number, setNumber] = useState("");
     const [balance, setBalance] = useState(0);
     const [network1, setNetwork1] = useState(null);
@@ -36,7 +36,7 @@ export default function BridgeCard(props) {
         }
     }, [network1, network2])
 
-    const { isLoading: isLoadingSwitchNetwork, fetchData: switchNetwork } = useSwitchNetworkHook();
+    const { isLoading: isLoadingSwitchNetwork, switchChain } = useSwitchNetworkHook();
     const { isLoading: isLoadingAllowance, fetchData: checkAllowance } = useCheckAllowanceHook();
     const { isLoading: isLoadingApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
     const { isLoading: isLoadingSendBridge, fetchData: sendBridge } = useSendBridgeHook();
@@ -45,12 +45,15 @@ export default function BridgeCard(props) {
         // checking network
         let currentChainId = chainId;
 
-        if(chainId != network1.chainId) {
-            const resultSwitchNetwork = await switchNetwork(network1.chainId);
+        try {
+            const resultSwitchNetwork = await switchChain(currentChainId, network1.chainId);
             if (resultSwitchNetwork.error) {
                 throw resultSwitchNetwork.error
             }
             currentChainId = resultSwitchNetwork.data
+        } catch (error) {
+            console.log(error)
+            return
         }
 
         return currentChainId;
@@ -195,7 +198,7 @@ export default function BridgeCard(props) {
 
             {
                 showAlert &&
-                <div class="absolute top-0 left-0 right-0">
+                <div className="absolute top-0 left-0 right-0">
                     <Alert color="success" onDismiss={() => setShowAlert(false)}>
                         <span className="font-medium">Bridge Success!</span> Please wait for several minutes for WAG to be deposited at the target network.
                     </Alert>

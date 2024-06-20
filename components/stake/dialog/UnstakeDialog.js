@@ -4,10 +4,13 @@ import { ImCross } from "react-icons/im"
 import { numberWithCommas } from "../../../util/stringUtility";
 import { Button } from 'flowbite-react';
 import useUnstakeWagHook from '../utils/useUnstakeWagHook';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
+import useSwitchNetworkHook from '../../../util/useSwitchNetworkHook';
 
 export default function UnstakeDialog(props) {
   let [isOpen, setIsOpen] = useState(false)
   const [number, setNumber] = useState("")
+  const { chainId } = useWeb3WalletState();
 
   const stakedBalance = props.stakedBalance;
 
@@ -20,9 +23,20 @@ export default function UnstakeDialog(props) {
     setIsOpen(true)
   }
 
+  const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
   const { isLoading: isLoadingUnstakeWag, fetchData: unstakeWag } = useUnstakeWagHook();
   
   async function handleUnstake() {
+    try {
+      const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+      if (resultSwitchNetwork.error) {
+          throw resultSwitchNetwork.error
+      }
+    } catch (error) {
+      console.log(error)
+      return
+    }
+
     try {
       const resultUnstake = await unstakeWag(number)
       if (resultUnstake.error) {
@@ -103,7 +117,7 @@ export default function UnstakeDialog(props) {
                             min="0"
                             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
                             value={number}
-                            disabled={isLoadingUnstakeWag}
+                            disabled={isLoadingSwitchChain || isLoadingUnstakeWag}
                             onChange={(e)=>{
                               setNumber(e.target.value)
                             }}
@@ -114,7 +128,7 @@ export default function UnstakeDialog(props) {
                             WAG
                         </p>
                         <Button size={"xs"} color={"light"}
-                          disabled={isLoadingUnstakeWag}
+                          disabled={isLoadingSwitchChain || isLoadingUnstakeWag}
                           onClick={() => {
                             setNumber(parseFloat(stakedBalance) / 1e18)
                           }}
@@ -126,11 +140,11 @@ export default function UnstakeDialog(props) {
 
                   <div className="mt-4 text-center">
                     <Button color={"failure"} size={"sm"} style={{width:"100%"}}
-                      disabled={isLoadingUnstakeWag}
+                      disabled={isLoadingSwitchChain || isLoadingUnstakeWag}
                       onClick={()=>{handleUnstake()}}
                     >
                       {
-                        isLoadingUnstakeWag
+                        isLoadingUnstakeWag || isLoadingSwitchChain
                         ? "Loading"
                         : "Unstake"
                       }

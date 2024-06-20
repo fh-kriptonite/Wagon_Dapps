@@ -12,7 +12,9 @@ export default function Disconnected(props) {
                 <p className="mb-5 font-light text-gray-500 dark:text-gray-400">
                     Pelase connect your wallet to see your staking dashboard.
                 </p>
-                <ButtonConnect/>
+                <div className='w-full flex justify-center'>
+                    <ButtonConnect/>
+                </div>
             </div>
         </div>
     )

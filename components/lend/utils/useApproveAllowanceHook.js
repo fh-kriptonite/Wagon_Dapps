@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
 import { ethers } from 'ethers';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 const useApproveAllowanceHook = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { getProviderTransaction } = useWeb3WalletState();
   
   const fetchData = async (amount, erc20Address) => {
     setIsLoading(true);
@@ -13,7 +15,7 @@ const useApproveAllowanceHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      const provider = new ethers.BrowserProvider(getProviderTransaction())
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

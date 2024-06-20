@@ -10,6 +10,8 @@ export default function GeneralCard(props) {
     const { isLoading: isLoadingRewardRate, data: rewardRate, dataFinishAt: finishAt, fetchData: getRewardRate } = useGetRewardRateHook();
     const { isLoading: isLoadingCirculation, data: totalCirculation, fetchData: getTotalCirculation } = useGetTotalCirculationHook();
     
+    const [apy, setApy] = useState(0);
+
     useEffect(()=>{
         getTotalStaked();
         getRewardRate();
@@ -29,6 +31,11 @@ export default function GeneralCard(props) {
 
         return rewardRate / totalStaked * 31536000 * 100 / 1e18;
     }
+
+    useEffect(()=>{
+        const response = getAPY();
+        setApy(response);
+    }, [totalStaked, finishAt, rewardRate])
 
     return (
         <>
@@ -50,7 +57,7 @@ export default function GeneralCard(props) {
                         {
                             isLoadingRewardRate || isLoadingGetTotalStaked
                             ? "~"
-                            : numberWithCommas(getAPY())
+                            : numberWithCommas(apy)
                         }
                         <span className="text-2xl font-medium"> %</span>
                     </h2>

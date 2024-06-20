@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { ethers } from 'ethers';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 const useClaimInterestHook = () => {
   const [isLoading, setIsLoading] = useState(false);
   
+  const { getProviderTransaction } = useWeb3WalletState();
+
   const fetchData = async (poolId, amount) => {
     setIsLoading(true);
 
@@ -13,7 +16,7 @@ const useClaimInterestHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      const provider = new ethers.BrowserProvider(getProviderTransaction())
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

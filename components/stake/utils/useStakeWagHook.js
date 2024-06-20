@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import STAKING_ABI from "../../../public/ABI/staking.json";
 import { ethers, parseEther } from 'ethers';
+import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 const useStakeWagHook = () => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const { getProviderTransaction } = useWeb3WalletState();
   
   const fetchData = async (amount) => {
     setIsLoading(true);
@@ -13,7 +16,7 @@ const useStakeWagHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      const provider = new ethers.BrowserProvider(getProviderTransaction())
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

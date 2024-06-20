@@ -1,3 +1,4 @@
+import React from 'react';
 import { BsBank2 } from 'react-icons/bs'
 import {MdHowToVote, MdOutlineQueryStats, MdDashboard} from 'react-icons/md'
 import { BiTransferAlt } from "react-icons/bi";
@@ -6,8 +7,19 @@ import {AiFillDatabase} from 'react-icons/ai'
 import { useRouter } from 'next/router';
 
 import Link from 'next/link'
+import { Button } from 'flowbite-react';
+import { useWeb3Auth } from '@web3auth/modal-react-hooks';
+import { useWalletServicesPlugin } from '@web3auth/wallet-services-plugin-react-hooks';
+import ConnectDialog from './dialog/ConnectDialog';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useWeb3WalletState } from './web3WalletContext';
 
 export default function Sidebar(props) {
+    const { address, isConnected } = useWeb3WalletState();
+    const { logout, userInfo } = useWeb3Auth();
+    const { showWalletUI } = useWalletServicesPlugin();
+    const { isConnected : isConnectedWeb3Modal } = useWeb3ModalAccount()
+    
     const router = useRouter();
     const { asPath } = router;
 
@@ -33,7 +45,36 @@ export default function Sidebar(props) {
                         </div>
                         <div className="flex items-center">
                             <div className="flex items-center ml-3 gap-2">
-                                <w3m-button balance='hide' label='Connect Wallet'/>
+                                {
+                                    isConnected && !isConnectedWeb3Modal
+                                    ? <div className="flex gap-2">
+                                            {
+                                                userInfo?.profileImage != null && userInfo?.profileImage != ""
+                                                ? <img src={userInfo.profileImage} 
+                                                    className="h-10 w-10 mr-2 rounded-full hover:cursor-pointer" 
+                                                    alt="ETH Logo"
+                                                    onClick={showWalletUI}
+                                                />
+                                                : <Button 
+                                                    color="dark"
+                                                    onClick={async ()=>{
+                                                        showWalletUI();
+                                                    }}
+                                                    style={{borderRadius:"100px"}}
+                                                >{address}</Button>
+                                            }
+                                            <Button 
+                                                color="dark"
+                                                onClick={async ()=>{
+                                                    logout()
+                                                }}
+                                                style={{borderRadius:"100px"}}
+                                            >Logout</Button>
+                                        </div>
+                                    : isConnectedWeb3Modal
+                                        ? <w3m-button balance='hide' label='Connect Wallet'/>
+                                        : <ConnectDialog/>
+                                }
                             </div>
                         </div>
                     </div>
