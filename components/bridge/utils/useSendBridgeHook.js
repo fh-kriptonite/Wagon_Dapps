@@ -2,9 +2,11 @@ import { useState } from 'react';
 import BRIDGE_ABI from "../../../public/ABI/bridge.json";
 import { ethers, parseEther } from 'ethers';
 import { getDestinationGasFeeService } from "../../../services/service_bridge.js"
+import { useWeb3ModalProvider } from '@web3modal/ethers/react';
 
 const useSendBridgeHook = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const {walletProvider} = useWeb3ModalProvider()
   
   const fetchData = async (network1, network2, address, amount) => {
     setIsLoading(true);
@@ -14,7 +16,7 @@ const useSendBridgeHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(window.ethereum)
+      const provider = new ethers.BrowserProvider(walletProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

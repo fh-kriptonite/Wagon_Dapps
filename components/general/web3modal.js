@@ -48,6 +48,12 @@ const metadata = {
 const ethersConfig = defaultConfig({
     /*Required*/
     metadata,
+    auth: {
+        email: true, // default to true
+        socials: ['google', 'x', 'github', 'discord', 'apple'],
+        showWallets: true, // default to true
+        walletFeatures: true // default to true
+    }
 })
 
 // 5. Create a Web3Modal instance
@@ -57,10 +63,11 @@ createWeb3Modal({
     projectId,
     themeMode: 'light',
     enableAnalytics: true, // Optional - defaults to your Cloud configuration
+    enableOnramp: true,
     themeVariables: {
         '--w3m-font-family': 'Roboto, sans-serif',
         '--w3m-accent': 'rgb(31, 41, 55)'
-      }
+    }
 })
 
 export function Web3Modal({ children }) {

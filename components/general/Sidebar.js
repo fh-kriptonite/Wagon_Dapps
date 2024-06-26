@@ -33,7 +33,7 @@ export default function Sidebar(props) {
                         </div>
                         <div className="flex items-center">
                             <div className="flex items-center ml-3 gap-2">
-                                <w3m-button balance='hide' label='Connect Wallet'/>
+                                <w3m-button label='Connect Wallet'/>
                             </div>
                         </div>
                     </div>
