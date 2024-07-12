@@ -3,12 +3,13 @@ import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import { Button } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function LendToPoolDialog(props) {
-  const { chainId, address } = useWeb3ModalAccount();
+  const address = useAccount();
+  const chainId = props.chainId;
 
   const [stableNumber,setStableNumber] = useState("")
   const [wagNumber,setWagNumber] = useState("")

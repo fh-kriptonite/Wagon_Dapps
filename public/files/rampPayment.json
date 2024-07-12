@@ -1,0 +1,37 @@
+[
+    {
+        "name":"Virtual Account Bank BJB",
+        "logo": "/ramp/bjb-logo.svg",
+        "value": "BJB"
+    },
+    {
+        "name":"Virtual Account Bank BNI",
+        "logo": "/ramp/bni-logo.svg",
+        "value": "BNI"
+    },
+    {
+        "name":"Virtual Account Bank BRI",
+        "logo": "/ramp/bri-logo.svg",
+        "value": "BRI"
+    },
+    {
+        "name":"Virtual Account Bank BSI",
+        "logo": "/ramp/bsi-logo.svg",
+        "value": "BSI"
+    },
+    {
+        "name":"Virtual Account Bank CIMB",
+        "logo": "/ramp/cimb-logo.svg",
+        "value": "CIMB"
+    },
+    {
+        "name":"Virtual Account Bank Mandiri",
+        "logo": "/ramp/mandiri-logo.svg",
+        "value": "MANDIRI"
+    },
+    {
+        "name":"Virtual Account Bank Permata",
+        "logo": "/ramp/permata-logo.svg",
+        "value": "PERMATA"
+    }
+]

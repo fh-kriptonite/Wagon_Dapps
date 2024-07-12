@@ -9,7 +9,6 @@ import AllowanceDialog from "./dialog/AllowanceDialog.js";
 import ApproveDialog from "./dialog/ApproveDialog.js";
 import BridgeDialog from "./dialog/BridgeDialog.js";
 
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetDestinationGasHook from "./utils/useGetDestinationGasHook.js";
 import useSwitchNetworkHook from "./utils/useSwitchNetworkHook.js";
 import useCheckAllowanceHook from "./utils/useCheckAllowanceHook.js";
@@ -17,10 +16,11 @@ import useApproveAllowanceHook from "./utils/useApproveAllowanceHook.js";
 import useSendBridgeHook from "./utils/useSendBridgeHook.js";
 
 import { Alert } from 'flowbite-react';
+import { useAccount } from "@particle-network/connectkit";
+import useChainHook from "../../util/useChainHook.js";
 
 export default function BridgeCard(props) {
-
-    const { address, chainId } = useWeb3ModalAccount();
+    const address = useAccount();
     
     const [number, setNumber] = useState("");
     const [balance, setBalance] = useState(0);
@@ -41,11 +41,13 @@ export default function BridgeCard(props) {
     const { isLoading: isLoadingApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
     const { isLoading: isLoadingSendBridge, fetchData: sendBridge } = useSendBridgeHook();
 
+    const { fetchData: getChainId } = useChainHook();
+
     async function handleNetwork() {
         // checking network
-        let currentChainId = chainId;
+        let currentChainId = (await getChainId()).data;
 
-        if(chainId != network1.chainId) {
+        if(currentChainId != network1.chainId) {
             const resultSwitchNetwork = await switchNetwork(network1.chainId);
             if (resultSwitchNetwork.error) {
                 throw resultSwitchNetwork.error
@@ -101,7 +103,7 @@ export default function BridgeCard(props) {
     };
 
     return (
-        <div className="relative">
+        <div className="h-full flex flex-col justify-center">
 
             <div className="card max-w-md mx-auto">
 
@@ -195,7 +197,7 @@ export default function BridgeCard(props) {
 
             {
                 showAlert &&
-                <div class="absolute top-0 left-0 right-0">
+                <div className="absolute top-0 left-0 right-0">
                     <Alert color="success" onDismiss={() => setShowAlert(false)}>
                         <span className="font-medium">Bridge Success!</span> Please wait for several minutes for WAG to be deposited at the target network.
                     </Alert>

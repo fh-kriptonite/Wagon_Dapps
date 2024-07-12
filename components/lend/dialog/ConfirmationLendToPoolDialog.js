@@ -5,13 +5,13 @@ import { Button } from 'flowbite-react';
 import { numberWithCommas } from '../../../util/stringUtility';
 import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
 import useGetAllowanceHook from '../utils/useGetAllowanceHook';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
-import { parseEther } from 'ethers';
+import { ethers, parseEther } from 'ethers';
 import useLendToPoolHook from '../utils/useLendToPoolHook';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function ConfirmationLendToPoolDialog(props) {
   
-  const {address} = useWeb3ModalAccount();
+  const address = useAccount();
 
   const poolId = props.poolId;
   const isOpen = props.isOpen;
@@ -42,7 +42,7 @@ export default function ConfirmationLendToPoolDialog(props) {
 
   async function handleApproveStable() {
     try {
-      const stableAmount = (parseFloat(stableNumber) + adminFee) * Math.pow(10, decimal);
+      const stableAmount = ethers.parseUnits((parseFloat(stableNumber) + adminFee).toString(), decimal);
       const resultApprove = await approveStable(stableAmount, pool.lendingCurrency)
       if (resultApprove.error) {
           throw resultApprove.error

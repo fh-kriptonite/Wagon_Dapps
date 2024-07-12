@@ -1,6 +1,5 @@
 import { Button, Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ButtonConnect from '../general/ButtonConnect';
 import { formatDate, numberWithCommas } from '../../util/stringUtility';
@@ -8,9 +7,12 @@ import useGetInterestAmountSharedHook from './utils/useGetInterestAmountSharedHo
 import { useRouter } from 'next/router';
 import useGetLatestInterestClaimedHook from './utils/useGetLatestInterestClaimedHook';
 import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestDialog'
+import { useAccount } from '@particle-network/connectkit';
+import useChainHook from '../../util/useChainHook';
 
 export default function TimelinePool(props) {
-  const { isConnected, chainId, address } = useWeb3ModalAccount();
+  const address = useAccount();
+  const { fetchData: getChainId } = useChainHook();
 
   const {fetchData: switchNetwork} = useSwitchNetworkHook();
 
@@ -58,6 +60,7 @@ export default function TimelinePool(props) {
 
   async function handleClaimButton() {
     // switch network
+    const chainId = await getChainId()
     if(chainId != process.env.BNB_CHAIN_ID) {
       try {
         const resultSwitchNetwork = await switchNetwork(process.env.BNB_CHAIN_ID);

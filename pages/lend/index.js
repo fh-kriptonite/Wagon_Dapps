@@ -1,10 +1,10 @@
 import Head from 'next/head';
 import Disconnected from '../../components/general/Disconnected';
 import LendHome from '../../components/lend/LendHome';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function Lend(props) {
-  const { isConnected } = useWeb3ModalAccount();
+  const address = useAccount();
 
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>
@@ -12,7 +12,7 @@ export default function Lend(props) {
           <title>Lend | Wagon Network</title>
         </Head>
         {
-            !isConnected 
+            !address 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
               </div>

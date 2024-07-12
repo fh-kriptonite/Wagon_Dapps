@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import STAKING_ABI from "../../../public/ABI/staking.json";
 import { ethers, parseEther } from 'ethers';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useParticleProvider } from '@particle-network/connectkit';
 
 const useStakeWagHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {walletProvider} = useWeb3ModalProvider()
+  const particleProvider = useParticleProvider()
   
   const fetchData = async (amount) => {
     setIsLoading(true);
@@ -15,7 +15,7 @@ const useStakeWagHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(walletProvider)
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

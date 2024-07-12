@@ -9,12 +9,13 @@ import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardC
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useAccount } from "@particle-network/connectkit";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountComponent(props) {
-    const { address } = useWeb3ModalAccount();
+    const address = useAccount();
+
     const [pools, setPools] = useState([]);
     const [wagPrice, setWagPrice] = useState(0);
     const [idrtPrice, setIdrtPrice] = useState(0);

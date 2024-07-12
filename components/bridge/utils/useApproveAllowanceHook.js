@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
 import { ethers, parseEther } from 'ethers';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useParticleProvider } from '@particle-network/connectkit';
 
 const useApproveAllowanceHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {walletProvider} = useWeb3ModalProvider()
+  const particleProvider = useParticleProvider();
   
   const fetchData = async (network1, amount) => {
     setIsLoading(true);
@@ -15,7 +15,7 @@ const useApproveAllowanceHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(walletProvider)
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

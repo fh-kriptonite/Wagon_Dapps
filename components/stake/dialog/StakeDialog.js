@@ -1,20 +1,18 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
-
 import { convertTime, numberWithCommas } from "../../../util/stringUtility";
-
 import { Button } from 'flowbite-react';
 import useGetWagAllowanceHook from '../utils/useGetWagAllowanceHook';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
 import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 import useStakeWagHook from '../utils/useStakeWagHook';
-
+import { useAccount } from '@particle-network/connectkit';
+import useChainHook from '../../../util/useChainHook';
 
 export default function StakeDialog(props) {
   const balance = props.balance;
-  const { chainId, address } = useWeb3ModalAccount();
+  const address = useAccount();
 
   const claimableDuration = props.claimableDuration;
 
@@ -43,11 +41,13 @@ export default function StakeDialog(props) {
   }
 
   const { isLoading, fetchData: getAllowance } = useGetWagAllowanceHook();
+  const { fetchData: getChain } = useChainHook();
 
   async function checkAllowance() {
     if(number == "") return;
     if(parseFloat(number) == 0) return;
 
+    const chainId = await getChain();
     if(chainId != process.env.ETH_CHAIN_ID) {
       try {
         const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);

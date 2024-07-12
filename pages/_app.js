@@ -4,8 +4,10 @@ import Script from 'next/script'
 
 import { useEffect, useState } from 'react'
 import Sidebar from '../components/general/Sidebar'
-import { Web3Modal } from '../components/general/web3modal'
+import { ParticleProvider } from '../components/general/particleProvider'
 import { useRouter } from 'next/router'
+
+import '@particle-network/connectkit/dist/index.css';
 
 function MyApp({ Component, pageProps }) {
   const [ready, setReady] = useState(false)
@@ -61,14 +63,14 @@ function MyApp({ Component, pageProps }) {
       }
 
       {ready ? (
-        <Web3Modal>
+        <ParticleProvider>
           <div className='h-screen flex flex-col'>
             <Sidebar/>
             <div className="p-2 mt-20 md:ml-56 grow">
               <Component {...pageProps}/>
             </div>
           </div>
-        </Web3Modal>
+        </ParticleProvider>
       ) : null}
     </>
   )

@@ -4,8 +4,10 @@ import { BiTransferAlt } from "react-icons/bi";
 import {FaCoins, FaBook, FaQuestionCircle} from 'react-icons/fa'
 import {AiFillDatabase} from 'react-icons/ai'
 import { useRouter } from 'next/router';
+import { RiTokenSwapFill } from "react-icons/ri";
 
 import Link from 'next/link'
+import { ConnectButton } from '@particle-network/connectkit';
 
 export default function Sidebar(props) {
     const router = useRouter();
@@ -33,7 +35,7 @@ export default function Sidebar(props) {
                         </div>
                         <div className="flex items-center">
                             <div className="flex items-center ml-3 gap-2">
-                                <w3m-button label='Connect Wallet'/>
+                                <ConnectButton/>
                             </div>
                         </div>
                     </div>
@@ -74,6 +76,14 @@ export default function Sidebar(props) {
                                 <div className={`${currentPath === '/lend' || asPath.includes("/lend") ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
                                     <BsBank2 className='w-5 h-5 text-gray-500'/>
                                     <span className="ml-3">Lend</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/ramp">
+                                <div className={`${currentPath === '/ramp' || asPath.includes("/ramp") ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                    <RiTokenSwapFill className='w-5 h-5 text-gray-500'/>
+                                    <span className="ml-3">Ramp</span>
                                 </div>
                             </Link>
                         </li>

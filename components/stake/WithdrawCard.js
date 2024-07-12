@@ -1,14 +1,16 @@
 import { numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
 import { Button } from "flowbite-react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetUserRewardHook from "./utils/useGetUserRewardHook";
 import useGetUserClaimableHook from "./utils/useGetUserClaimableHook";
 import useClaimWagHook from "./utils/useClaimWagHook";
 import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
+import { useAccount } from "@particle-network/connectkit";
+import useChainHook from "../../util/useChainHook";
+import useSwitchNetworkHook from "./utils/useSwitchNetworkHook";
 
 export default function WithdrawCard(props) {
-    const { address } = useWeb3ModalAccount();
+    const address = useAccount();
 
     const { data: reward, fetchData: getUserReward } = useGetUserRewardHook();
     const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();
@@ -24,8 +26,23 @@ export default function WithdrawCard(props) {
     }, [props.fetch])
 
     const { isLoading: isLoadingClaimWag, fetchData: claimWag } = useClaimWagHook();
+    const { fetchData: getChain } = useChainHook();
+    const { fetchData: switchNetwork } = useSwitchNetworkHook();
 
     async function handleClaim() {
+        const chainId = await getChain();
+        if(chainId != process.env.ETH_CHAIN_ID) {
+            try {
+                const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
+                if (resultSwitchNetwork.error) {
+                    throw resultSwitchNetwork.error
+                }
+            } catch (error) {
+                console.log(error)
+                return
+            }
+        }
+
         try {
             const resultClaim = await claimWag()
             if (resultClaim.error) {
@@ -40,6 +57,19 @@ export default function WithdrawCard(props) {
     const { isLoading: isLoadingClaimUnstakedWag, fetchData: claimUnstakedWag } = useClaimUnstakedWagHook();
 
     async function handleWithdraw() {
+        const chainId = await getChain();
+        if(chainId != process.env.ETH_CHAIN_ID) {
+            try {
+                const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
+                if (resultSwitchNetwork.error) {
+                    throw resultSwitchNetwork.error
+                }
+            } catch (error) {
+                console.log(error)
+                return
+            }
+        }
+
         try {
             const resultClaim = await claimUnstakedWag()
             if (resultClaim.error) {

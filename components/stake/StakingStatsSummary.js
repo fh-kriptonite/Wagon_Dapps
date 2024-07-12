@@ -1,10 +1,10 @@
 import { convertTime, numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import useGetTotalEarnHook from "./utils/useGetTotalEarnHook";
+import { useAccount } from "@particle-network/connectkit";
 
 export default function StakingStatsSummary(props) {
-    const { address } = useWeb3ModalAccount();
+    const address = useAccount();
 
     const claimableDuration = props.claimableDuration;
     const stakedBalance = props.stakedBalance;

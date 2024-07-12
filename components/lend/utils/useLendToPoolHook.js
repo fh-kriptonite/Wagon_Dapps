@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { ethers } from 'ethers';
-import { useWeb3ModalProvider } from '@web3modal/ethers/react';
+import { useParticleProvider } from '@particle-network/connectkit';
 
 const useLendToPoolHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const {walletProvider} = useWeb3ModalProvider()
+  const particleProvider = useParticleProvider()
   
   const fetchData = async (poolId, amount) => {
     setIsLoading(true);
@@ -15,7 +15,7 @@ const useLendToPoolHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(walletProvider)
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

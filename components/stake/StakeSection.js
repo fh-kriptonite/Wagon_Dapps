@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 import { numberWithCommas } from "../../util/stringUtility";
 import StakeDialog from "./dialog/StakeDialog";
 import UnstakeDialog from "./dialog/UnstakeDialog";
 import useGetWagBalanceHook from "./utils/useGetWagBalanceHook";
+import { useAccount } from "@particle-network/connectkit";
 
 export default function StakeSection(props) {
-    const { address } = useWeb3ModalAccount();
+    const address = useAccount();
 
     const { isLoading, data: balance, fetchData: getBalance } = useGetWagBalanceHook();
 

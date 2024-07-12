@@ -4,6 +4,8 @@ import { ImCross } from "react-icons/im"
 import { numberWithCommas } from "../../../util/stringUtility";
 import { Button } from 'flowbite-react';
 import useUnstakeWagHook from '../utils/useUnstakeWagHook';
+import useChainHook from '../../../util/useChainHook';
+import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 
 export default function UnstakeDialog(props) {
   let [isOpen, setIsOpen] = useState(false)
@@ -21,8 +23,23 @@ export default function UnstakeDialog(props) {
   }
 
   const { isLoading: isLoadingUnstakeWag, fetchData: unstakeWag } = useUnstakeWagHook();
-  
+  const { fetchData: getChain } = useChainHook();
+  const { fetchData: switchNetwork } = useSwitchNetworkHook();
+
   async function handleUnstake() {
+    const chainId = await getChain();
+    if(chainId != process.env.ETH_CHAIN_ID) {
+      try {
+        const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
+        if (resultSwitchNetwork.error) {
+            throw resultSwitchNetwork.error
+        }
+      } catch (error) {
+        console.log(error)
+        return
+      }
+    }
+
     try {
       const resultUnstake = await unstakeWag(number)
       if (resultUnstake.error) {

@@ -51,7 +51,15 @@ const nextConfig = {
     CMC_API_KEY: process.env.CMC_API_KEY,
 
     // BRIDGE
-    BRIDGE_NETWORK_FILE: process.env.BRIDGE_NETWORK_FILE
+    BRIDGE_NETWORK_FILE: process.env.BRIDGE_NETWORK_FILE,
+
+    // PARTICLE
+    PARTICLE_NETWORK_PROJECT_ID: process.env.PARTICLE_NETWORK_PROJECT_ID,
+    PARTICLE_NETWORK_CLIENT_KEY: process.env.PARTICLE_NETWORK_CLIENT_KEY,
+    PARTICLE_NETWORK_APP_ID: process.env.PARTICLE_NETWORK_APP_ID,
+
+    // RAMP
+    RAMP_API_URL: process.env.RAMP_API_URL
   },
   trailingSlash: true
 }

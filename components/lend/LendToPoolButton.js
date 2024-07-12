@@ -1,12 +1,24 @@
 import { Button } from 'flowbite-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LendToPoolDialog from './dialog/LendToPoolDialog';
-import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
+import { useParticleProvider } from '@particle-network/connectkit';
+import { ethers } from 'ethers';
 
 export default function LendToPoolButton(props) {
-  const { chainId } = useWeb3ModalAccount();
+  const [chainId, setChainId] = useState(null);
+  const particleProvider = useParticleProvider();
+    
+  useEffect(()=>{
+      async function getChainId() {
+          const provider = new ethers.BrowserProvider(particleProvider);
+          const chain = await provider.getNetwork()
+          setChainId(parseFloat(chain.chainId));
+      }
+      
+      getChainId();
+  }, [])
 
   const {fetchData: switchNetwork} = useSwitchNetworkHook();
 
@@ -31,6 +43,7 @@ export default function LendToPoolButton(props) {
         if (resultSwitchNetwork.error) {
             throw resultSwitchNetwork.error
         }
+        setChainId(resultSwitchNetwork.data)
         setIsOpen(true)
       } catch (error) {
         console.log(error)
@@ -84,6 +97,7 @@ export default function LendToPoolButton(props) {
         isOpen={isOpen} 
         closeModal={()=>{setIsOpen(false)}}
         handleLend={handleLend}
+        chainId={chainId}
       />
 
       <ConfirmationLendToPoolDialog {...props} 

@@ -3,11 +3,11 @@ import StakeSection from "./StakeSection";
 import useGetClaimableDurationHook from "./utils/useGetClaimableDurationHook";
 import useGetStakedWagBalanceHook from "./utils/useGetStakedWagBalanceHook";
 import { useEffect } from "react";
-import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useAccount } from "@particle-network/connectkit";
 
 export default function UserCard(props) {
 
-    const { address } = useWeb3ModalAccount();
+    const address = useAccount();
 
     const { data: claimableDuration, fetchData: getClaimableDuration } = useGetClaimableDurationHook();
     const { data: stakedBalance, fetchData: getStakedWagBalance } = useGetStakedWagBalanceHook();
