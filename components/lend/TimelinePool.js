@@ -1,20 +1,20 @@
 import { Button, Table } from 'flowbite-react';
 import { useEffect, useState } from 'react';
-import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
+import { useWeb3ModalAccount } from '@web3modal/ethers/react';
 import ButtonConnect from '../general/ButtonConnect';
 import { formatDate, numberWithCommas } from '../../util/stringUtility';
 import useGetInterestAmountSharedHook from './utils/useGetInterestAmountSharedHook';
 import { useRouter } from 'next/router';
 import useGetLatestInterestClaimedHook from './utils/useGetLatestInterestClaimedHook';
 import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestDialog'
-import { useAccount } from '@particle-network/connectkit';
-import useChainHook from '../../util/useChainHook';
+import { checkConnected } from '../../util/web3Utility';
+import { useWeb3WalletState } from '../general/web3WalletContext';
+import useSwitchNetworkHook from '../../util/useSwitchNetworkHook';
 
 export default function TimelinePool(props) {
-  const address = useAccount();
-  const { fetchData: getChainId } = useChainHook();
+  const { isConnected, chainId, address } = useWeb3WalletState();
 
-  const {fetchData: switchNetwork} = useSwitchNetworkHook();
+  const { isLoading: isLoadingSwitchNetwork, switchChain } = useSwitchNetworkHook();
 
   const router = useRouter();
   const { poolId } = router.query;
@@ -59,41 +59,43 @@ export default function TimelinePool(props) {
   }
 
   async function handleClaimButton() {
-    // switch network
-    const chainId = await getChainId()
-    if(chainId != process.env.BNB_CHAIN_ID) {
-      try {
-        const resultSwitchNetwork = await switchNetwork(process.env.BNB_CHAIN_ID);
-        if (resultSwitchNetwork.error) {
-            throw resultSwitchNetwork.error
-        }
-        handleClaim()
-      } catch (error) {
-        console.log(error)
-        return
+    try {
+      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID);
+      if (resultSwitchNetwork.error) {
+          throw resultSwitchNetwork.error
       }
-    } else {
-      handleClaim()
+    } catch (error) {
+      console.log(error)
+      return
     }
+    handleClaim()
   }
 
   function isUnclaimable() {
+    if(isLoadingSwitchNetwork) return true
     if(pool == null) return true
     if(parseFloat(stableBalance) == 0) return true
     if(parseFloat(latestInterestClaimed) < parseFloat(pool.latestRepayment)) return false
     return true
   }
 
+  function handleClaimButtonString() {
+    if(isLoadingSwitchNetwork) return "Loading..."
+    return "Claim All"  
+  }
+
   return (
     <div>
       {
         !isConnected
-        ? <ButtonConnect/>
+        ? <div className='w-full flex justify-end'>
+            <ButtonConnect/>
+        </div>
         : <Button color={"dark"} size={"sm"} style={{marginLeft:"auto"}}
             disabled={isUnclaimable()}
             onClick={handleClaimButton}
           >
-            Claim All
+            { handleClaimButtonString() }
           </Button>
       }
 

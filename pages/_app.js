@@ -3,11 +3,13 @@ import Head from "next/head"
 import Script from 'next/script'
 
 import { useEffect, useState } from 'react'
-import Sidebar from '../components/general/Sidebar'
-import { ParticleProvider } from '../components/general/particleProvider'
 import { useRouter } from 'next/router'
-
-import '@particle-network/connectkit/dist/index.css';
+import { Web3AuthInnerContext, Web3AuthProvider } from '@web3auth/modal-react-hooks'
+import { WalletServicesProvider } from "@web3auth/wallet-services-plugin-react-hooks";
+import { web3AuthContextConfig } from '../components/general/web3AuthProviderProps'
+import HomeApp from './HomeApp'
+import Sidebar from '../components/general/Sidebar'
+import { Web3Modal } from '../components/general/web3modal'
 
 function MyApp({ Component, pageProps }) {
   const [ready, setReady] = useState(false)
@@ -63,14 +65,20 @@ function MyApp({ Component, pageProps }) {
       }
 
       {ready ? (
-        <ParticleProvider>
-          <div className='h-screen flex flex-col'>
-            <Sidebar/>
-            <div className="p-2 mt-20 md:ml-56 grow">
-              <Component {...pageProps}/>
-            </div>
-          </div>
-        </ParticleProvider>
+        <Web3AuthProvider config={web3AuthContextConfig}>
+          <WalletServicesProvider context={Web3AuthInnerContext}>
+            <Web3Modal>
+              <HomeApp>
+                <div className='h-screen flex flex-col'>
+                  <Sidebar/>
+                <div className="p-2 mt-20 md:ml-56 grow">
+                  <Component {...pageProps}/>
+                </div>
+              </div>
+              </HomeApp>
+            </Web3Modal>
+          </WalletServicesProvider>
+        </Web3AuthProvider>
       ) : null}
     </>
   )

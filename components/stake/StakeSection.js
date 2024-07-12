@@ -4,16 +4,18 @@ import { numberWithCommas } from "../../util/stringUtility";
 import StakeDialog from "./dialog/StakeDialog";
 import UnstakeDialog from "./dialog/UnstakeDialog";
 import useGetWagBalanceHook from "./utils/useGetWagBalanceHook";
-import { useAccount } from "@particle-network/connectkit";
+import { useWeb3WalletState } from "../general/web3WalletContext";
 
 export default function StakeSection(props) {
-    const address = useAccount();
+    const { address } = useWeb3WalletState();
 
     const { isLoading, data: balance, fetchData: getBalance } = useGetWagBalanceHook();
 
     useEffect(()=>{
-        getBalance(address)
-    }, [])
+        if(address != null) {
+            getBalance(address)
+        }
+    }, [address])
 
     useEffect(()=>{
         getBalance(address)

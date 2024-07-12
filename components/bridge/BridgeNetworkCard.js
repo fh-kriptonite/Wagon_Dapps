@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { numberWithCommas } from "../../util/stringUtility"
 import SelectNetworkDialog from "./dialog/SelectNetworkDialog";
 import { getERC20NetworkBalanceService } from "../../services/service_erc20.js"
-import { useAccount } from "@particle-network/connectkit";
+import { useWeb3WalletState } from "../general/web3WalletContext.js";
 
 export default function BridgeNetworkCard(props) {
 
@@ -11,7 +11,7 @@ export default function BridgeNetworkCard(props) {
     const [isLoading, setIsloading] = useState(null)
     const network = props.network;
 
-    const address = useAccount();
+    const { address } = useWeb3WalletState();
 
     async function getBalance() {
         try {
@@ -32,7 +32,7 @@ export default function BridgeNetworkCard(props) {
 
     useEffect(()=>{
         // get the balance
-        if(network != null) {
+        if(network != null && address != null) {
             getBalance();
         }
     }, [network, address])

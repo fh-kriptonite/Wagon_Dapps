@@ -1,10 +1,10 @@
 import Disconnected from '../components/general/Disconnected';
 import BridgeCard from '../components/bridge/BridgeCard';
 import Head from 'next/head';
-import { useAccount } from '@particle-network/connectkit';
+import { checkConnected } from '../util/web3Utility';
 
 export default function Bridge(props) {
-  const account = useAccount();
+  const isConnected = checkConnected();
 
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>
@@ -12,11 +12,11 @@ export default function Bridge(props) {
           <title>Bridge | Wagon Network</title>
         </Head>
         {
-            !account 
+            !isConnected 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
               </div>
-            : <div className='h-full'>
+            : <div>
                 <BridgeCard {...props}/>
             </div>
         }

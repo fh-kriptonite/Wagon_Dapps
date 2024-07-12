@@ -28,7 +28,7 @@ export default function LendHome(props) {
   },[selectedStatus]);
 
   return (
-    <div className='container mx-auto'>
+    <div className='container mx-auto px-4 md:px-10 max-w-7xl'>
       <OverviewCard/>
       
       <div className="card ">

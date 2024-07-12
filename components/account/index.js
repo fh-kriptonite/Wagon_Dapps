@@ -9,12 +9,13 @@ import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardC
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
-import { useAccount } from "@particle-network/connectkit";
+import { useWeb3WalletState } from "../general/web3WalletContext";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountComponent(props) {
-    const address = useAccount();
+    
+    const { address } = useWeb3WalletState()
 
     const [pools, setPools] = useState([]);
     const [wagPrice, setWagPrice] = useState(0);

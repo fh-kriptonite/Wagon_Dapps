@@ -3,17 +3,18 @@ import ButtonConnect from '../../components/general/ButtonConnect';
 import { useEffect, useState } from "react";
 
 import { numberWithCommas } from '../../util/stringUtility';
+import { useWeb3WalletState } from "../general/web3WalletContext"
 import LoadingUserLendingStatistic from './LoadingUserLendingStatistic';
 import useGetLendStableBalanceHook from './utils/useGetLendStableBalanceHook';
 import useGetLendWagBalanceHook from './utils/useGetLendWagBalanceHook';
 import useGetPoolFeeHook from './utils/useGetPoolFeeHook';
 import LendToPoolButton from './LendToPoolButton';
 import TimelinePool from './TimelinePool';
-import LendToPoolFiatButton from './LendToPoolFIATButton';
-import { useAccount } from '@particle-network/connectkit';
+import { checkConnected } from '../../util/web3Utility';
 
 export default function UserLendingStatistic(props) {
-    const address = useAccount();
+    const { address } = useWeb3WalletState();
+    const isConnected = checkConnected();
     const router = useRouter();
     const { poolId } = router.query;
 
@@ -109,28 +110,19 @@ export default function UserLendingStatistic(props) {
                     getPoolStatus() == 1 &&
                     <>
                         {
-                        !address
-                            ? <ButtonConnect/>
-                            : 
-                            <div className='space-y-2'>
-                                <LendToPoolFiatButton
-                                    {...props}
-                                    fees={fees}
-                                    refreshUser={()=>{
-                                        getStableBalance(address, poolId);
-                                        getWagBalance(address, poolId)
-                                    }}
-                                />
-                                <LendToPoolButton 
-                                    {...props}
-                                    fees={fees}
-                                    poolId={poolId}
-                                    refreshUser={()=>{
-                                        getStableBalance(address, poolId);
-                                        getWagBalance(address, poolId)
-                                    }}
-                                />
+                        !isConnected
+                            ? <div className='w-full flex justify-end'>
+                                <ButtonConnect/>
                             </div>
+                            : <LendToPoolButton 
+                                {...props}
+                                fees={fees}
+                                poolId={poolId}
+                                refreshUser={()=>{
+                                    getStableBalance(address, poolId);
+                                    getWagBalance(address, poolId)
+                                }}
+                            />
                         }
                     </>
                 }

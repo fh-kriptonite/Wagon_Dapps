@@ -2,11 +2,12 @@ import { useState } from 'react';
 import BRIDGE_ABI from "../../../public/ABI/bridge.json";
 import { ethers, parseEther } from 'ethers';
 import { getDestinationGasFeeService } from "../../../services/service_bridge.js"
-import { useParticleProvider } from '@particle-network/connectkit';
+import { useWeb3WalletState } from '../../general/web3WalletContext.js';
 
 const useSendBridgeHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const particleProvider = useParticleProvider();
+
+  const { getProviderTransaction } = useWeb3WalletState();
   
   const fetchData = async (network1, network2, address, amount) => {
     setIsLoading(true);
@@ -16,7 +17,7 @@ const useSendBridgeHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider)
+      const provider = new ethers.BrowserProvider(getProviderTransaction())
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

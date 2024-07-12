@@ -5,42 +5,41 @@ import useGetUserRewardHook from "./utils/useGetUserRewardHook";
 import useGetUserClaimableHook from "./utils/useGetUserClaimableHook";
 import useClaimWagHook from "./utils/useClaimWagHook";
 import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
-import { useAccount } from "@particle-network/connectkit";
-import useChainHook from "../../util/useChainHook";
-import useSwitchNetworkHook from "./utils/useSwitchNetworkHook";
+import { useWeb3WalletState } from "../general/web3WalletContext";
+import useSwitchNetworkHook from "../../util/useSwitchNetworkHook";
 
 export default function WithdrawCard(props) {
-    const address = useAccount();
+    const { address, chainId } = useWeb3WalletState();
 
     const { data: reward, fetchData: getUserReward } = useGetUserRewardHook();
     const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();
+    const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
-    }, [])
+        if(address != null) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
+    }, [address])
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
+        if(address != null) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
     }, [props.fetch])
 
     const { isLoading: isLoadingClaimWag, fetchData: claimWag } = useClaimWagHook();
-    const { fetchData: getChain } = useChainHook();
-    const { fetchData: switchNetwork } = useSwitchNetworkHook();
 
     async function handleClaim() {
-        const chainId = await getChain();
-        if(chainId != process.env.ETH_CHAIN_ID) {
-            try {
-                const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
-                if (resultSwitchNetwork.error) {
-                    throw resultSwitchNetwork.error
-                }
-            } catch (error) {
-                console.log(error)
-                return
+        try {
+            const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+            if (resultSwitchNetwork.error) {
+                throw resultSwitchNetwork.error
             }
+        } catch (error) {
+            console.log(error)
+            return
         }
 
         try {
@@ -57,19 +56,16 @@ export default function WithdrawCard(props) {
     const { isLoading: isLoadingClaimUnstakedWag, fetchData: claimUnstakedWag } = useClaimUnstakedWagHook();
 
     async function handleWithdraw() {
-        const chainId = await getChain();
-        if(chainId != process.env.ETH_CHAIN_ID) {
-            try {
-                const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
-                if (resultSwitchNetwork.error) {
-                    throw resultSwitchNetwork.error
-                }
-            } catch (error) {
-                console.log(error)
-                return
+        try {
+            const resultSwitchNetwork = await switchChain(chainId, process.env.ETH_CHAIN_ID);
+            if (resultSwitchNetwork.error) {
+                throw resultSwitchNetwork.error
             }
+        } catch (error) {
+            console.log(error)
+            return
         }
-
+        
         try {
             const resultClaim = await claimUnstakedWag()
             if (resultClaim.error) {
@@ -82,6 +78,7 @@ export default function WithdrawCard(props) {
     }
 
     function isClaimDisabled() {
+        if(isLoadingSwitchChain) return true;
         if(isLoadingClaimWag) return true;
         if(reward == null) return true;
         if(parseFloat(reward) == 0) return true;
@@ -90,6 +87,7 @@ export default function WithdrawCard(props) {
     }
 
     function isWithdrawDisabled() {
+        if(isLoadingSwitchChain) return true;
         if(isLoadingClaimUnstakedWag) return true;
         if(claimable == null) return true;
         if(parseFloat(claimable[2]) == 0) return true;
