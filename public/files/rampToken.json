@@ -1,0 +1,20 @@
+[
+    {
+        "name":"IDRT",
+        "logo": "/ramp/idrt.png",
+        "network":"BSC",
+        "network_logo": "/network/logo-bnb.png"
+    },
+    {
+        "name":"BNB",
+        "logo": "/network/logo-bnb.png",
+        "network":"BSC",
+        "network_logo": "/network/logo-bnb.png"
+    },
+    {
+        "name":"WAG",
+        "logo": "/logo_pad.png",
+        "network":"BSC",
+        "network_logo": "/network/logo-bnb.png"
+    }
+]

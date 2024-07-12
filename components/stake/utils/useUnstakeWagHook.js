@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import STAKING_ABI from "../../../public/ABI/staking.json";
 import { ethers, parseEther } from 'ethers';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
+import { useParticleProvider } from '@particle-network/connectkit';
 
 const useUnstakeWagHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-
-  const { getProviderTransaction } = useWeb3WalletState();
+  const particleProvider = useParticleProvider()
   
   const fetchData = async (amount) => {
     setIsLoading(true);
@@ -16,7 +15,7 @@ const useUnstakeWagHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(getProviderTransaction())
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -35,7 +34,6 @@ const useUnstakeWagHook = () => {
       await transaction.wait();
       data = transaction;
     } catch (e) {
-      console.log(e)
       error = "Fail to approve";
     } finally {
       setIsLoading(false);

@@ -3,29 +3,22 @@ import StakeSection from "./StakeSection";
 import useGetClaimableDurationHook from "./utils/useGetClaimableDurationHook";
 import useGetStakedWagBalanceHook from "./utils/useGetStakedWagBalanceHook";
 import { useEffect } from "react";
-import { useWeb3WalletState } from "../general/web3WalletContext"
+import { useAccount } from "@particle-network/connectkit";
 
 export default function UserCard(props) {
 
-    const { address }  = useWeb3WalletState();
+    const address = useAccount();
 
     const { data: claimableDuration, fetchData: getClaimableDuration } = useGetClaimableDurationHook();
     const { data: stakedBalance, fetchData: getStakedWagBalance } = useGetStakedWagBalanceHook();
 
     useEffect(()=>{
         getClaimableDuration();
+        getStakedWagBalance(address);
     }, [])
 
     useEffect(()=>{
-        if(address != null) {
-            getStakedWagBalance(address);
-        }
-    }, [address])
-
-    useEffect(()=>{
-        if(address != null) {
-            getStakedWagBalance(address);
-        }
+        getStakedWagBalance(address);
     }, [props.fetch])
 
     return (

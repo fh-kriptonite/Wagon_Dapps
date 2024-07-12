@@ -1,10 +1,10 @@
 import StakeComponent from '../components/stake/index';
 import Disconnected from '../components/general/Disconnected';
 import Head from 'next/head';
-import { checkConnected } from '../util/web3Utility';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function Stake(props) {
-  const isConnected = checkConnected();
+  const address = useAccount();
 
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>
@@ -12,7 +12,7 @@ export default function Stake(props) {
           <title>Stake | Wagon Network</title>
         </Head>
         {
-            !isConnected 
+            !address 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
               </div>

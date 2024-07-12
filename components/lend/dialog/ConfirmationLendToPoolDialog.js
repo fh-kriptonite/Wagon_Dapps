@@ -5,19 +5,15 @@ import { Button } from 'flowbite-react';
 import { numberWithCommas } from '../../../util/stringUtility';
 import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
 import useGetAllowanceHook from '../utils/useGetAllowanceHook';
-import { parseEther } from 'ethers';
+import { ethers, parseEther } from 'ethers';
 import useLendToPoolHook from '../utils/useLendToPoolHook';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
-import useSwitchNetworkHook from '../../../util/useSwitchNetworkHook';
-import { useRouter } from 'next/router';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function ConfirmationLendToPoolDialog(props) {
   
-  const {address, chainId} = useWeb3WalletState();
+  const address = useAccount();
 
-  const router = useRouter();
-  const { poolId } = router.query;
-
+  const poolId = props.poolId;
   const isOpen = props.isOpen;
   const pool = props.pool;
   const poolJson = props.poolJson;
@@ -32,8 +28,6 @@ export default function ConfirmationLendToPoolDialog(props) {
 
   const wagNumber = props.wagNumber;
 
-  const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
-
   const {isLoading: isLoadingStableAllowance, data: stableAllowance, fetchData: getStableAllowance} = useGetAllowanceHook()
   const {isLoading: isLoadingWagAllowance, data: wagAllowance, fetchData: getWagAllowance} = useGetAllowanceHook()
 
@@ -47,19 +41,8 @@ export default function ConfirmationLendToPoolDialog(props) {
   const {isLoading: isLoadingApproveStable, fetchData: approveStable} = useApproveAllowanceHook()
 
   async function handleApproveStable() {
-    // switch network
     try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID)
-      if (resultSwitchNetwork.error) {
-        throw resultSwitchNetwork.error
-      }
-    } catch (error) {
-      console.log(error)
-      return
-    }
-
-    try {
-      const stableAmount = (parseFloat(stableNumber) + adminFee) * Math.pow(10, decimal);
+      const stableAmount = ethers.parseUnits((parseFloat(stableNumber) + adminFee).toString(), decimal);
       const resultApprove = await approveStable(stableAmount, pool.lendingCurrency)
       if (resultApprove.error) {
           throw resultApprove.error
@@ -71,7 +54,6 @@ export default function ConfirmationLendToPoolDialog(props) {
   }
 
   function handleStableApproveButtonDisabled() {
-    if(isLoadingSwitchChain) return true;
     if(isLoadingStableAllowance) return true;
     
     const allowanceWithoutDecimal = parseFloat(stableAllowance) / Math.pow(10,decimal);
@@ -83,7 +65,6 @@ export default function ConfirmationLendToPoolDialog(props) {
   }
 
   function handleStableApproveButtonString() {
-    if(isLoadingSwitchChain) return "Loading..."
     if(isLoadingStableAllowance) return "Checking Allowance";
 
     const allowanceWithoutDecimal = parseFloat(stableAllowance) / Math.pow(10,decimal);
@@ -97,17 +78,6 @@ export default function ConfirmationLendToPoolDialog(props) {
   const {isLoading: isLoadingApproveWag, fetchData: approveWag} = useApproveAllowanceHook()
 
   async function handleApproveWag() {
-    // switch network
-    try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID)
-      if (resultSwitchNetwork.error) {
-        throw resultSwitchNetwork.error
-      }
-    } catch (error) {
-      console.log(error)
-      return
-    }
-
     try {
       const wagAmount = parseEther(`${wagNumber}`).toString()
       const resultApprove = await approveWag(wagAmount, pool.pairingCurrency)
@@ -145,17 +115,6 @@ export default function ConfirmationLendToPoolDialog(props) {
   const {isLoading: isLoadingLendToPool, fetchData: lendToPool} = useLendToPoolHook();
 
   async function handleLend() {
-    // switch network
-    try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID)
-      if (resultSwitchNetwork.error) {
-        throw resultSwitchNetwork.error
-      }
-    } catch (error) {
-      console.log(error)
-      return
-    }
-
     try {
       const stableAmount = parseFloat(stableNumber) * Math.pow(10, decimal);
       const resultLend = await lendToPool(poolId, stableAmount)

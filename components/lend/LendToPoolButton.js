@@ -1,14 +1,27 @@
 import { Button } from 'flowbite-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LendToPoolDialog from './dialog/LendToPoolDialog';
+import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
-import { useWeb3WalletState } from '../general/web3WalletContext';
-import useSwitchNetworkHook from "../../util/useSwitchNetworkHook"
+import { useParticleProvider } from '@particle-network/connectkit';
+import { ethers } from 'ethers';
 
 export default function LendToPoolButton(props) {
-  const { chainId } = useWeb3WalletState();
+  const [chainId, setChainId] = useState(null);
+  const particleProvider = useParticleProvider();
+    
+  useEffect(()=>{
+      async function getChainId() {
+          const provider = new ethers.BrowserProvider(particleProvider);
+          const chain = await provider.getNetwork()
+          setChainId(parseFloat(chain.chainId));
+      }
+      
+      getChainId();
+  }, [])
 
-  const { isLoading: isLoadingSwitchNetwork, switchChain } = useSwitchNetworkHook();
+  const {fetchData: switchNetwork} = useSwitchNetworkHook();
+
   const pool = props.pool;
   const symbol = props.symbol;
 
@@ -24,17 +37,21 @@ export default function LendToPoolButton(props) {
 
   async function openModal() {
     // switch network
-    try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID)
-      if (resultSwitchNetwork.error) {
-        throw resultSwitchNetwork.error
+    if(chainId != process.env.BNB_CHAIN_ID) {
+      try {
+        const resultSwitchNetwork = await switchNetwork(process.env.BNB_CHAIN_ID);
+        if (resultSwitchNetwork.error) {
+            throw resultSwitchNetwork.error
+        }
+        setChainId(resultSwitchNetwork.data)
+        setIsOpen(true)
+      } catch (error) {
+        console.log(error)
+        return
       }
-    } catch (error) {
-      console.log(error)
-      return
+    } else {
+      setIsOpen(true)
     }
-    
-    setIsOpen(true)
   }
 
   function handleLend(stableNumber, wagNumber, adminFee) {
@@ -46,17 +63,9 @@ export default function LendToPoolButton(props) {
   }
 
   function handleDisableLendButton() {
-    if(isLoadingSwitchNetwork) return true
     if(parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return true
     if(poolSupply == poolMaxSupply) return true
     return false;
-  }
-
-  function handleLendButtonString() {
-    if(isLoadingSwitchNetwork) return "Loading..."
-    if(poolSupply == poolMaxSupply) return "Pool Fullfilled"
-    if(parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return "Pool Collection Time Ended"
-    return "Lend To Pool";
   }
 
   return (
@@ -65,7 +74,7 @@ export default function LendToPoolButton(props) {
         disabled={handleDisableLendButton()}
         onClick={openModal}
       >
-        {handleLendButtonString()}
+        Lend To Pool
       </Button>
 
       <div className='flex justify-between mt-2'>
@@ -88,6 +97,7 @@ export default function LendToPoolButton(props) {
         isOpen={isOpen} 
         closeModal={()=>{setIsOpen(false)}}
         handleLend={handleLend}
+        chainId={chainId}
       />
 
       <ConfirmationLendToPoolDialog {...props} 

@@ -16,12 +16,12 @@ import useApproveAllowanceHook from "./utils/useApproveAllowanceHook.js";
 import useSendBridgeHook from "./utils/useSendBridgeHook.js";
 
 import { Alert } from 'flowbite-react';
-import { useWeb3WalletState } from "../general/web3WalletContext.js";
+import { useAccount } from "@particle-network/connectkit";
+import useChainHook from "../../util/useChainHook.js";
 
 export default function BridgeCard(props) {
-
-    const { address, chainId } = useWeb3WalletState();
-
+    const address = useAccount();
+    
     const [number, setNumber] = useState("");
     const [balance, setBalance] = useState(0);
     const [network1, setNetwork1] = useState(null);
@@ -41,12 +41,14 @@ export default function BridgeCard(props) {
     const { isLoading: isLoadingApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
     const { isLoading: isLoadingSendBridge, fetchData: sendBridge } = useSendBridgeHook();
 
+    const { fetchData: getChainId } = useChainHook();
+
     async function handleNetwork() {
         // checking network
-        let currentChainId = chainId;
+        let currentChainId = (await getChainId()).data;
 
-        try {
-            const resultSwitchNetwork = await switchChain(currentChainId, network1.chainId);
+        if(currentChainId != network1.chainId) {
+            const resultSwitchNetwork = await switchNetwork(network1.chainId);
             if (resultSwitchNetwork.error) {
                 throw resultSwitchNetwork.error
             }
@@ -104,7 +106,7 @@ export default function BridgeCard(props) {
     };
 
     return (
-        <div className="relative">
+        <div className="h-full flex flex-col justify-center">
 
             <div className="card max-w-md mx-auto">
 

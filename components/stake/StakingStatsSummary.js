@@ -1,10 +1,10 @@
 import { convertTime, numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
 import useGetTotalEarnHook from "./utils/useGetTotalEarnHook";
-import { useWeb3WalletState } from "../general/web3WalletContext";
+import { useAccount } from "@particle-network/connectkit";
 
 export default function StakingStatsSummary(props) {
-    const { address } = useWeb3WalletState();
+    const address = useAccount();
 
     const claimableDuration = props.claimableDuration;
     const stakedBalance = props.stakedBalance;
@@ -12,15 +12,11 @@ export default function StakingStatsSummary(props) {
     const { data: totalEarn, fetchData: getTotalEarn } = useGetTotalEarnHook();
 
     useEffect(()=>{
-        if(address != null) {
-            getTotalEarn(address);
-        }
-    }, [address])
+        getTotalEarn(address);
+    }, [])
 
     useEffect(()=>{
-        if(address != null) {
-            getTotalEarn(address);
-        }
+        getTotalEarn(address);
     }, [props.fetch])
 
     return (

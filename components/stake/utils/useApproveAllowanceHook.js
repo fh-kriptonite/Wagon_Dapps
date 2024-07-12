@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
 import { ethers, parseEther } from 'ethers';
-import { useWeb3Auth } from '@web3auth/modal-react-hooks';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
+import { useParticleProvider } from '@particle-network/connectkit';
 
 const useApproveAllowanceHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { getProviderTransaction } = useWeb3WalletState();
-  
+  const particleProvider = useParticleProvider()
+
   const fetchData = async (amount) => {
     setIsLoading(true);
 
@@ -17,7 +15,7 @@ const useApproveAllowanceHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(getProviderTransaction())
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -37,7 +35,6 @@ const useApproveAllowanceHook = () => {
       await transaction.wait();
       data = transaction;
     } catch (e) {
-      console.log(e)
       error = "Fail to approve";
     } finally {
       setIsLoading(false);

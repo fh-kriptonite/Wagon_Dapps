@@ -5,10 +5,11 @@ import { numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
 import { Button } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
+import { useAccount } from '@particle-network/connectkit';
 
 export default function LendToPoolDialog(props) {
-  const { chainId, address } = useWeb3WalletState();
+  const address = useAccount();
+  const chainId = props.chainId;
 
   const [stableNumber,setStableNumber] = useState("")
   const [wagNumber,setWagNumber] = useState("")
