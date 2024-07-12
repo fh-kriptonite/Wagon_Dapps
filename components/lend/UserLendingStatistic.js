@@ -9,7 +9,6 @@ import useGetLendWagBalanceHook from './utils/useGetLendWagBalanceHook';
 import useGetPoolFeeHook from './utils/useGetPoolFeeHook';
 import LendToPoolButton from './LendToPoolButton';
 import TimelinePool from './TimelinePool';
-import LendToPoolFiatButton from './LendToPoolFIATButton';
 import { useAccount } from '@particle-network/connectkit';
 
 export default function UserLendingStatistic(props) {
@@ -112,25 +111,15 @@ export default function UserLendingStatistic(props) {
                         !address
                             ? <ButtonConnect/>
                             : 
-                            <div className='space-y-2'>
-                                <LendToPoolFiatButton
-                                    {...props}
-                                    fees={fees}
-                                    refreshUser={()=>{
-                                        getStableBalance(address, poolId);
-                                        getWagBalance(address, poolId)
-                                    }}
-                                />
-                                <LendToPoolButton 
-                                    {...props}
-                                    fees={fees}
-                                    poolId={poolId}
-                                    refreshUser={()=>{
-                                        getStableBalance(address, poolId);
-                                        getWagBalance(address, poolId)
-                                    }}
-                                />
-                            </div>
+                            <LendToPoolButton 
+                                {...props}
+                                fees={fees}
+                                poolId={poolId}
+                                refreshUser={()=>{
+                                    getStableBalance(address, poolId);
+                                    getWagBalance(address, poolId)
+                                }}
+                            />
                         }
                     </>
                 }
