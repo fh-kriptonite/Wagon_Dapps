@@ -87,7 +87,7 @@ export default function TimelinePool(props) {
   return (
     <div>
       {
-        !isConnected
+        !address
         ? <ButtonConnect/>
         : <Button color={"dark"} size={"sm"} style={{marginLeft:"auto"}}
             disabled={isUnclaimable()}
