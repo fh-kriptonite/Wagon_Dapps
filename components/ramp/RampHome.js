@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import fiatJson from "../../public/files/rampFiat.json";
 import tokenJson from "../../public/files/rampToken.json";
@@ -30,15 +30,30 @@ export default function RampHome(props) {
     function reset() {
         setFiat(fiatJson[0]);
         setTokens([tokenJson[1]]);
+        setTokenValues([""]);
         setPaymentMethod(paymentJson[0]);
         setValueFiat("");
+        setPlatformFee(null);
+        setGasFee(null);
     }
 
     async function processVA() {
+        // prepare onramp details
+        let swaps = [];
+        for(let i=0; i<tokenValues.length;i++) {
+            swaps[i]={
+                amount: tokenValues[i],
+                to:tokens[i].name,
+                chain:tokens[i].network
+            }
+        }
         // create VA
-        const totalAmount = parseFloat(valueFiat) + parseFloat(platformFee) + parseFloat(gasFee.fee);
+        const gasFeeAmount = Math.ceil(parseFloat(gasFee.fee));
+        const platformFeeAmount = Math.ceil(parseFloat(platformFee));
+        const valueFiatAmount = Math.ceil(parseFloat(valueFiat));
+        const totalAmount = valueFiatAmount + platformFeeAmount + gasFeeAmount;
         try {
-            const response = await getVA(address, paymentMethod.value, totalAmount);
+            const response = await getVA(address, paymentMethod.value, totalAmount, valueFiatAmount, platformFeeAmount, gasFeeAmount, swaps);
             if(response.error) {
                 throw response.error;
             }
@@ -98,6 +113,8 @@ export default function RampHome(props) {
                         setSection(0)
                     }}
                     next={()=>{
+                        setGasFee(null);
+                        setPlatformFee(null);
                         setSection(2)
                     }}
                 />

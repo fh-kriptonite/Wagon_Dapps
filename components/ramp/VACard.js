@@ -4,7 +4,6 @@ import Jazzicon from "react-jazzicon/dist/Jazzicon";
 import { jsNumberForAddress } from "react-jazzicon";
 import { IoMdCopy } from "react-icons/io";
 import { useState } from "react";
-import CountdownTimer from "../general/CountdownTimer";
 import ExpiredTimer from "../general/ExpiredTimer";
 import { numberWithCommas } from "../../util/stringUtility";
 

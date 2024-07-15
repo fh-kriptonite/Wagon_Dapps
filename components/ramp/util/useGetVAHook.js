@@ -3,7 +3,7 @@ import { useState } from "react";
 const useGetVAHook = () => {
   const [isLoading, setIsLoading] = useState(false);
   
-  const fetchData = async (walletAddress, bankCode, amount) => {
+  const fetchData = async (walletAddress, bankCode, totalAmount, valueFiatAmount, platformFeeAmount, gasFeeAmount, swaps) => {
     setIsLoading(true);
 
     const apiUrl = process.env.RAMP_API_URL + '/ramp/create_va'; // Example API endpoint
@@ -11,8 +11,12 @@ const useGetVAHook = () => {
       wallet_address: walletAddress, 
       bank_code: bankCode, 
       name: "Wagon Network Ramp", 
-      amount: amount
-     };
+      totalAmount: totalAmount,
+      valueFiatAmount: valueFiatAmount,
+      platformFeeAmount: platformFeeAmount,
+      gasFeeAmount: gasFeeAmount,
+      swaps: swaps
+    };
 
     let data;
     let err;
