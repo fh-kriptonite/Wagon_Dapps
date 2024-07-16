@@ -79,7 +79,7 @@ export default function ActivityDetailCard(props) {
                                 {
                                     swaps.map((swap, index) => {
                                         return (
-                                            <div className="flex justify-between my-2 items-center">
+                                            <div key={`detail-${index}`} className="flex justify-between my-2 items-center">
                                                 <div className="flex-1 space-y-1">
                                                     <p className="text-xs">From</p>
                                                     <p className="text-sm font-semibold">IDR {numberWithCommas(parseFloat(swap.amount))}</p>
