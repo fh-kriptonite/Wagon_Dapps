@@ -10,6 +10,8 @@ import DetailCard from "./DetailCard";
 import VACard from "./VACard";
 import useGetVAHook from "./util/useGetVAHook";
 import { useAccount } from "@particle-network/connectkit";
+import ActivityCard from "./ActivityCard";
+import ActivityDetailCard from "./ActivityDetailCard";
 
 export default function RampHome(props) {
     const address = useAccount();
@@ -19,9 +21,11 @@ export default function RampHome(props) {
     const [tokenValues, setTokenValues] = useState([""]);
     const [paymentMethod, setPaymentMethod] = useState(paymentJson[0]);
     const [valueFiat, setValueFiat] = useState("");
-    const [platformFee, setPlatformFee] = useState(null)
-    const [gasFee, setGasFee] = useState(null)
-    const [vaDetail, setVaDetail] = useState(null)
+    const [platformFee, setPlatformFee] = useState(null);
+    const [gasFee, setGasFee] = useState(null);
+    const [vaDetail, setVaDetail] = useState(null);
+
+    const [transactionId, setTransactionId] = useState(null);
 
     const { isLoading: isLoadingVA, fetchData: getVA } = useGetVAHook();
 
@@ -64,100 +68,142 @@ export default function RampHome(props) {
         }
     }
 
+    function handleNavButtonBuy() {
+        if(section == 4) {
+            setSection(0);
+        }
+    }
+
     return (
-        <div className="h-full flex items-center justify-center">
+        <div className="h-full flex items-center justify-center flex-col">
+            <div className="card my-4 mx-auto w-full max-w-md space-y-4">
+                <div className="flex gap-4">
+                    {
+                        (section != 5) &&
+                        <div className="hover:cursor-pointer" onClick={handleNavButtonBuy}>
+                            <p className={`text-lg ${section != 4 ? "font-bold" : "text-gray-500"}`}>Buy</p>
+                        </div>
+                    }
 
-            {/* section 1 - choose fiat, token, input value */}
-            {
-                (section == 0) &&
-                <RampCard 
-                    fiat={fiat} setFiat={setFiat} 
-                    tokens={tokens}
-                    tokenValues={tokenValues}
-                    valueFiat={valueFiat} setValueFiat={(newValue)=>{
-                        setValueFiat(newValue);
-                        if(tokens.length == 1) {
-                            setTokenValues([newValue]);
-                        }
-                    }}
-                    addToken={(newToken)=>{
-                        setTokens((prevTokens) => [...prevTokens, newToken]);
-                        setTokenValues((prevTokenValues) => [...prevTokenValues, newToken]);
-                    }}
-                    removeToken={(index)=>{
-                        setTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
-                        if(tokenValues.length == 2) {
-                            setTokenValues([valueFiat]);
-                        } else {
-                            setTokenValues((prevTokenValues) => prevTokenValues.filter((_, i) => i !== index));
-                        }
-                    }}
-                    replaceToken={(index, newToken)=>{
-                        setTokens((prevTokens) => prevTokens.map((token, i) => i === index ? newToken : token));
-                    }}
-                    replaceTokenValues={(index, newTokenValue)=>{
-                        setTokenValues((prevTokenValues) => prevTokenValues.map((tokenValues, i) => i === index ? newTokenValue : tokenValues));
-                    }}
-                    next={()=>{
-                        setSection(1)
-                    }}
-                />
-            }
+                    {
+                        (section == 0 || section == 4) &&
+                        <div className="hover:cursor-pointer" onClick={()=>{setSection(4)}}>
+                            <p className={`text-lg ${section == 4 ? "font-bold" : "text-gray-500"}`}>Activity</p>
+                        </div>
+                    }
+                </div>
 
-            {/* section 2 - choose payment method */}
-            {
-                (section == 1) &&
-                <PaymentCard
-                    paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod}
-                    back={()=>{
-                        setSection(0)
-                    }}
-                    next={()=>{
-                        setGasFee(null);
-                        setPlatformFee(null);
-                        setSection(2)
-                    }}
-                />
-            }
+                {/* section 1 - choose fiat, token, input value */}
+                {
+                    (section == 0) &&
+                    <RampCard 
+                        fiat={fiat} setFiat={setFiat} 
+                        tokens={tokens}
+                        tokenValues={tokenValues}
+                        valueFiat={valueFiat} setValueFiat={(newValue)=>{
+                            setValueFiat(newValue);
+                            if(tokens.length == 1) {
+                                setTokenValues([newValue]);
+                            }
+                        }}
+                        addToken={(newToken)=>{
+                            setTokens((prevTokens) => [...prevTokens, newToken]);
+                            setTokenValues((prevTokenValues) => [...prevTokenValues, newToken]);
+                        }}
+                        removeToken={(index)=>{
+                            setTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
+                            if(tokenValues.length == 2) {
+                                setTokenValues([valueFiat]);
+                            } else {
+                                setTokenValues((prevTokenValues) => prevTokenValues.filter((_, i) => i !== index));
+                            }
+                        }}
+                        replaceToken={(index, newToken)=>{
+                            setTokens((prevTokens) => prevTokens.map((token, i) => i === index ? newToken : token));
+                        }}
+                        replaceTokenValues={(index, newTokenValue)=>{
+                            setTokenValues((prevTokenValues) => prevTokenValues.map((tokenValues, i) => i === index ? newTokenValue : tokenValues));
+                        }}
+                        next={()=>{
+                            setSection(1)
+                        }}
+                    />
+                }
 
-            {/* section 3 - detail and fee */}
-            {
-                (section == 2) &&
-                <DetailCard 
-                    fiat={fiat}
-                    tokens={tokens}
-                    valueFiat={valueFiat}
-                    tokenValues={tokenValues}
-                    platformFee={platformFee} setPlatformFee={setPlatformFee}
-                    gasFee={gasFee} setGasFee={setGasFee}
-                    isLoadingVA={isLoadingVA}
-                    back={()=>{
-                        setSection(1)
-                    }}
-                    next={()=>{
-                        processVA();
-                    }}
-                />
-            }
+                {/* section 2 - choose payment method */}
+                {
+                    (section == 1) &&
+                    <PaymentCard
+                        paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod}
+                        back={()=>{
+                            setSection(0)
+                        }}
+                        next={()=>{
+                            setGasFee(null);
+                            setPlatformFee(null);
+                            setSection(2)
+                        }}
+                    />
+                }
 
-            {/* section 4 - VA instruction */}
-            {
-                (section == 3) &&
-                <VACard 
-                    fiat={fiat}
-                    valueFiat={valueFiat}
-                    paymentMethod={paymentMethod}
-                    platformFee={platformFee}
-                    gasFee={gasFee}
-                    vaDetail={vaDetail}
-                    next={()=>{
-                        reset();
-                        setSection(0)
-                    }}
-                />
-            }
+                {/* section 3 - detail and fee */}
+                {
+                    (section == 2) &&
+                    <DetailCard 
+                        fiat={fiat}
+                        tokens={tokens}
+                        valueFiat={valueFiat}
+                        tokenValues={tokenValues}
+                        platformFee={platformFee} setPlatformFee={setPlatformFee}
+                        gasFee={gasFee} setGasFee={setGasFee}
+                        isLoadingVA={isLoadingVA}
+                        back={()=>{
+                            setSection(1)
+                        }}
+                        next={()=>{
+                            processVA();
+                        }}
+                    />
+                }
 
-        
+                {/* section 4 - VA instruction */}
+                {
+                    (section == 3) &&
+                    <VACard 
+                        fiat={fiat}
+                        valueFiat={valueFiat}
+                        paymentMethod={paymentMethod}
+                        platformFee={platformFee}
+                        gasFee={gasFee}
+                        vaDetail={vaDetail}
+                        next={()=>{
+                            reset();
+                            setSection(4)
+                        }}
+                    />
+                }
+
+                {/* section 5 - activity history */}
+                {
+                    (section == 4) &&
+                    <ActivityCard 
+                        showDetail={(transactionId)=>{
+                            setTransactionId(transactionId);
+                            setSection(5);
+                        }}
+                    />
+                }
+
+                {/* section 5 - activity history */}
+                {
+                    (section == 5) &&
+                    <ActivityDetailCard
+                        transactionId={transactionId}
+                        back={()=>{setSection(4)}}
+                    />
+                }
+
+            </div>
         </div>
         
     )

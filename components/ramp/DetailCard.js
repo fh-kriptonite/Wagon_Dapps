@@ -65,88 +65,84 @@ export default function DetailCard(props) {
     }
 
     return (
-        <div className="h-full flex items-center">
+        <div>
 
-            <div className="card max-w-md mx-auto">
+            <div className="hover:cursor-pointer w-fit"
+                onClick={props.back}
+            >
+                <BiArrowBack/>
+            </div>
 
-                <div className="hover:cursor-pointer w-fit"
-                    onClick={props.back}
-                >
-                    <BiArrowBack/>
-                </div>
-
-                <p className="text-sm font-bold mt-4">Buy</p>
-
-                <div className="bg-blue-100 py-4 mt-4 flex gap-4 px-4 items-center rounded-lg">
+            <div className="bg-blue-100 py-4 mt-4 flex gap-4 px-4 items-center rounded-lg">
+                <div className="flex-initial w-fit flex items-center">
                     <Jazzicon diameter={32} seed={jsNumberForAddress(address)}/>
-                    <div className="grow">
-                        <p className="text-xs font-bold">
-                            Account
-                        </p>
-                        <p className="text-xs font-semibold mt-1">
-                            { address }
-                        </p>
-                    </div>
                 </div>
-
-                <div className="mt-6">
-                    <p className="text-xs">You send exactly</p>
-                    <RampInputFiatCard {...props} disabled={true}/>
+                <div className="grow overflow-hidden">
+                    <p className="text-xs font-bold">
+                        Account
+                    </p>
+                    <p className="text-xs font-semibold mt-1">
+                        { address }
+                    </p>
                 </div>
+            </div>
 
-                <div className="space-y-2 px-4 my-6">
-                    <div className="flex justify-between">
-                        <p className="text-xs">Platform Fee</p>
-                        <p className="text-xs font-semibold">
-                            {
-                                isLoadingPlatform
-                                ? "~"
-                                : numberWithCommas(platformFee)
-                            } IDR
-                        </p>
-                    </div>
-                    <div className="flex justify-between">
-                        <p className="text-xs">Gas Fee</p>
-                        <p className="text-xs font-semibold">
-                            {
-                                isLoadingGas && gasFee == null
-                                ? "~"
-                                : numberWithCommas(gasFee?.fee, 0)
-                            } IDR
-                        </p>
-                    </div>
+            <div className="mt-6">
+                <p className="text-xs">You send exactly</p>
+                <RampInputFiatCard {...props} disabled={true}/>
+            </div>
+
+            <div className="space-y-2 px-4 my-6">
+                <div className="flex justify-between">
+                    <p className="text-xs">Platform Fee</p>
+                    <p className="text-xs font-semibold">
+                        {
+                            isLoadingPlatform
+                            ? "~"
+                            : numberWithCommas(platformFee)
+                        } IDR
+                    </p>
                 </div>
-
-                <div className="mt-6">
-                    <p className="text-xs">Estimation of what you will receive</p>
-                    {
-                        tokens.map((token, index)=>{
-                            const amountBeforeFee = props.valueFiat;
-                            const amountAfterFee = amountBeforeFee - gasFee?.fee;
-                            const ratio = amountAfterFee / amountBeforeFee;
-                            let amountOutput = gasFee?.output_amounts[index].amount * ratio;
-                            return (
-                                <div key={index}>
-                                    <RampInputCard token={token} {...props} amount={amountOutput}/>
-                                </div>
-                            )
-                        }) 
-                    }
+                <div className="flex justify-between">
+                    <p className="text-xs">Gas Fee</p>
+                    <p className="text-xs font-semibold">
+                        {
+                            isLoadingGas && gasFee == null
+                            ? "~"
+                            : numberWithCommas(gasFee?.fee, 0)
+                        } IDR
+                    </p>
                 </div>
+            </div>
 
-                <div className="mt-4 w-full">
-                    {
-                        <Button color="dark" style={{width:"100%"}}
-                            disabled={handleButtonDisabled()}
-                            onClick={()=>{
-                                props.next()
-                            }}
-                        >
-                            {handleButtonLabel()}
-                        </Button>
-                    }
-                </div>
+            <div className="mt-6">
+                <p className="text-xs">Estimation of what you will receive</p>
+                {
+                    tokens.map((token, index)=>{
+                        const amountBeforeFee = props.valueFiat;
+                        const amountAfterFee = amountBeforeFee - gasFee?.fee;
+                        const ratio = amountAfterFee / amountBeforeFee;
+                        let amountOutput = gasFee?.output_amounts[index].amount * ratio;
+                        return (
+                            <div key={index}>
+                                <RampInputCard token={token} {...props} amount={amountOutput}/>
+                            </div>
+                        )
+                    }) 
+                }
+            </div>
 
+            <div className="mt-4 w-full">
+                {
+                    <Button color="dark" style={{width:"100%"}}
+                        disabled={handleButtonDisabled()}
+                        onClick={()=>{
+                            props.next()
+                        }}
+                    >
+                        {handleButtonLabel()}
+                    </Button>
+                }
             </div>
 
         </div>
