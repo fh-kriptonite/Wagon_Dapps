@@ -60,9 +60,13 @@ export default function ActivityCard(props) {
                     ? <div className="h-full w-full flex items-center justify-center">
                         <Spinner/>
                     </div>
-                    : <div className="space-y-2">
+                    : <div className="space-y-2 h-full">
                         {
-                            activities.map((activity, index) => {
+                            !activities
+                            ? <div className="w-full h-full flex items-center justify-center pb-12">
+                                <p className="text-sm font-bold">No activity found</p>
+                            </div>
+                            : activities.map((activity, index) => {
                                 return (
                                     <div key={`activity-${index}`} className="bg-gray-100 px-3 py-4 rounded-lg flex gap-8 items-center hover:cursor-pointer hover:bg-gray-200"
                                         onClick={()=>{
