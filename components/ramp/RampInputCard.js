@@ -1,3 +1,5 @@
+import { numberWithCommas } from "../../util/stringUtility";
+
 export default function RampInputCard(props) {
 
     const token = props.token;
@@ -6,14 +8,12 @@ export default function RampInputCard(props) {
     return (
         <div className="mt-2 border rounded-xl overflow-hidden">
             <div className='flex gap-2 items-center justify-between mt-2 px-4 pb-2'>
-                <input type="number"
+                <input 
+                    type="text"
                     disabled={true}
                     min="0"
-                    value={amount}
+                    value={numberWithCommas(amount, (props.token == "IDRT") ? 2 : 4)}
                     className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
-                    onChange={(e)=>{
-                        
-                    }}
                     placeholder="0" required
                 />
                 <div className="flex gap-2 items-center hover:cursor-pointer">

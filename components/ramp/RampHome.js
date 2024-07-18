@@ -76,7 +76,7 @@ export default function RampHome(props) {
 
     return (
         <div className="h-full flex items-center justify-center flex-col">
-            <div className="card my-4 mx-auto w-full max-w-md space-y-4">
+            <div className="card mx-auto w-full max-w-md space-y-4">
                 <div className="flex gap-4">
                     {
                         (section != 5) &&

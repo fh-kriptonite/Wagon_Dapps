@@ -35,13 +35,11 @@ export default function VACard(props) {
                 </div>
             }
 
-            <p className="text-sm font-bold mt-4">Buy</p>
-
             <div className="bg-blue-100 py-4 mt-4 flex gap-4 px-4 items-center rounded-lg">
                 <div className="flex-initial w-fit flex items-center">
                     <Jazzicon diameter={32} seed={jsNumberForAddress(address)}/>
                 </div>
-                <div className="grow">
+                <div className="grow overflow-hidden">
                     <p className="text-xs font-bold">
                         Account
                     </p>

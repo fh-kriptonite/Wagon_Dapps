@@ -29,11 +29,11 @@ export function formatDate(date) {
   return formattedDate;
 }
 
-export function shortenAddress(address) {
+export function shortenAddress(address, length = 4) {
   if (address.length <= 8) return address; // Address is already short
 
-  const prefix = address.slice(0, 4);
-  const suffix = address.slice(-4);
+  const prefix = address.slice(0, length);
+  const suffix = address.slice(-length);
 
   return `${prefix}...${suffix}`;
 }

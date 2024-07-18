@@ -67,7 +67,7 @@ export default function ActivityDetailCard(props) {
 
     function getGasFee() {
         if(!activity) return 0;
-        if(pancakeswapSwap == [] && onrampDisburse == []) {
+        if(pancakeswapSwap.length == 0 && onrampDisburse.length == 0) {
             return parseFloat(activity.gas_fee_amount)
         } else {
             return parseFloat(activity.value_fiat_amount) - parseFloat(activity.platform_fee_amount) - getValueToBeOnramp()
@@ -76,7 +76,7 @@ export default function ActivityDetailCard(props) {
 
     function getValueToBeOnramp() {
         if(!activity) return 0
-        if(pancakeswapSwap == [] && onrampDisburse == []) {
+        if(pancakeswapSwap.length == 0 && onrampDisburse.length == 0) {
             const _amountTotal = parseFloat(activity.amount);
             const _platformFee = parseFloat(activity.platform_fee_amount);
             const _gasFee = parseFloat(activity.gas_fee_amount);
@@ -93,9 +93,9 @@ export default function ActivityDetailCard(props) {
     }
 
     function getOnrampAmountIn(tokenName) {
-        if(pancakeswapSwap == [] && onrampDisburse == []) {
+        if(pancakeswapSwap.length == 0 && onrampDisburse.length == 0) {
             for (let i=0; i<swaps.length; i++) {
-                if(swaps[i].name == tokenName) {
+                if(swaps[i].to == tokenName) {
                     const amount = parseFloat(swaps[i].amount);
                     return amount;
                 }
@@ -115,7 +115,7 @@ export default function ActivityDetailCard(props) {
     }
 
     function getOnrampAmountOut(tokenName) {
-        if(onrampDisburse == []) return "";
+        if(onrampDisburse.length == 0) return 0;
 
         for (let i=0; i<onrampDisburse.length; i++) {
             if(onrampDisburse[i].token_name == tokenName) {
@@ -176,28 +176,28 @@ export default function ActivityDetailCard(props) {
                                 
                                 <p className="text-xs text-gray-500 mt-2">{formatDate(new Date(activity.created_at))}</p>
 
-                                <p className="text-xs text-gray-500 mt-2">ID: {activity.external_id}</p>
+                                <p className="text-xs text-gray-500 mt-2 text-ellipsis overflow-hidden">ID: {activity.external_id}</p>
                             </div>
 
-                            <div className="px-4 py-3 bg-gray-100 rounded-lg">
+                            <div className="px-4 py-4 bg-gray-100 rounded-lg">
                                 <div className="flex gap-4 items-end justify-between">
-                                    <p className="text-sm">Payment</p>
-                                    <p className="text-sm">IDR {numberWithCommas(parseFloat(activity.value_fiat_amount))}</p>
+                                    <p className="flex-1 text-sm">Payment</p>
+                                    <p className="flex-1 text-sm text-end">IDR {numberWithCommas(parseFloat(activity.value_fiat_amount))}</p>
                                 </div>
 
                                 <div className="flex gap-4 justify-between mt-1">
-                                    <p className="text-xs text-red-400">Platform Fee</p>
-                                    <p className="text-xs text-red-400">- IDR {numberWithCommas(parseFloat(activity.platform_fee_amount))}</p>
+                                    <p className="flex-1 text-xs text-red-400">Platform Fee</p>
+                                    <p className="flex-1 text-xs text-red-400 text-end">- IDR {numberWithCommas(parseFloat(activity.platform_fee_amount))}</p>
                                 </div>
 
-                                <div className="flex gap-4 justify-between">
-                                    <p className="text-xs text-red-400">Gas Fee Estimation</p>
-                                    <p className="text-xs text-red-400">- IDR {numberWithCommas(getGasFee())}</p>
+                                <div className="flex gap-4 justify-between mt-1">
+                                    <p className="flex-1 text-xs text-red-400">{ (pancakeswapSwap.length == 0 && onrampDisburse == 0) ? "Gas Fee Estimation" : "Gas Fee"}</p>
+                                    <p className="flex-1 text-end text-xs text-red-400">- IDR {numberWithCommas(getGasFee())}</p>
                                 </div>
 
                                 <div className="flex gap-4 justify-between mt-2">
-                                    <p className="font-semibold text-green-400">Value to be onramp</p>
-                                    <p className="font-semibold text-green-400">IDR {numberWithCommas(getValueToBeOnramp())}</p>
+                                    <p className="flex-1 text-sm font-semibold text-green-400">Value to be onramp</p>
+                                    <p className="flex-1  text-end text-sm font-semibold text-green-400">IDR {numberWithCommas(getValueToBeOnramp())}</p>
                                 </div>
 
                                 <div className="border-t border-gray-300 my-4"/>
@@ -206,12 +206,14 @@ export default function ActivityDetailCard(props) {
                                     swaps.map((swap, index) => {
                                         return (
                                             <div key={`detail-${index}`} className="my-2">
-                                                <div className="flex justify-between items-center">
+                                                <div className="flex justify-between gap-2 items-stretch">
                                                     <div className="flex-1 space-y-1">
                                                         <p className="text-xs">From</p>
-                                                        <p className="text-sm font-semibold">IDR {numberWithCommas(getOnrampAmountIn(swap.to), (swap.to == "IDRT") ? 2 : 4)}</p>
+                                                        <p className="text-sm font-semibold">IDR {numberWithCommas(getOnrampAmountIn(swap.to), 2)}</p>
                                                     </div>
-                                                    <FaArrowCircleRight/>
+                                                    <div className="flex-none flex items-center">
+                                                        <FaArrowCircleRight/>
+                                                    </div>
                                                     <div className="flex-1 space-y-1 text-end">
                                                         <p className="text-xs">to</p>
                                                         <p className="text-sm font-semibold">{numberWithCommas(getOnrampAmountOut(swap.to), (swap.to == "IDRT") ? 2 : 4)} {swap.to}</p>
@@ -223,7 +225,7 @@ export default function ActivityDetailCard(props) {
                                                         onClick={()=>{window.open("https://bscscan.com/tx/" + onrampDisburse[index]?.tx_hash, '_blank');}}
                                                     >
                                                         <div className="overflow-hidden mt-1">
-                                                            <p className="text-xs">{shortenAddress(onrampDisburse[index]?.tx_hash)}</p>
+                                                            <p className="text-xs">{shortenAddress(onrampDisburse[index]?.tx_hash, 6)}</p>
                                                         </div>
                                                         
                                                         <MdOpenInNew size={12} className=""/>

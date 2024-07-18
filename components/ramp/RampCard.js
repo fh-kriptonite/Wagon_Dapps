@@ -6,6 +6,7 @@ import { jsNumberForAddress } from "react-jazzicon";
 import RampInputFiatCard from "./RampInputFiatCard";
 
 import SelectTokenDialog from "./dialog/SelectTokenDialog";
+import { numberWithCommas } from "../../util/stringUtility";
 
 export default function RampCard(props) {
     const address = useAccount();
@@ -66,13 +67,15 @@ export default function RampCard(props) {
                             <div key={"token-"+index}>
                                 <div className="px-2 flex items-center justify-around border rounded-lg py-4 gap-2 md:gap-4">
                                     <div className="grow flex gap-2 items-center">
-                                        <input type="number"
+                                        <input 
+                                            type="text"
                                             min="0"
                                             disabled={tokens.length == 1}
-                                            value={ tokenValues[index] }
+                                            value={ numberWithCommas(tokenValues[index]) }
                                             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
                                             onChange={(e)=>{
-                                                props.replaceTokenValues(index, e.target.value);
+                                                const rawValue = e.target.value.replace(/,/g, '');
+                                                props.replaceTokenValues(index, rawValue);
                                             }}
                                             placeholder="0" required
                                         />
