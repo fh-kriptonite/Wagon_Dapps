@@ -119,10 +119,13 @@ export default function DetailCard(props) {
                 <p className="text-xs">Estimation of what you will receive</p>
                 {
                     tokens.map((token, index)=>{
-                        const amountBeforeFee = props.valueFiat;
-                        const amountAfterFee = amountBeforeFee - gasFee?.fee;
-                        const ratio = amountAfterFee / amountBeforeFee;
-                        let amountOutput = gasFee?.output_amounts[index].amount * ratio;
+                        let amountOutput = 0;
+                        if(gasFee) {
+                            const amountBeforeFee = props.valueFiat;
+                            const amountAfterFee = amountBeforeFee - gasFee?.fee;
+                            const ratio = amountAfterFee / amountBeforeFee;
+                            amountOutput = gasFee?.output_amounts[index].amount * ratio;
+                        }
                         return (
                             <div key={index}>
                                 <RampInputCard token={token} {...props} amount={amountOutput}/>
