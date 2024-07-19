@@ -60,7 +60,7 @@ export default function TimelinePool(props) {
 
   async function handleClaimButton() {
     // switch network
-    const chainId = await getChainId()
+    const chainId = (await getChainId()).data;
     if(chainId != process.env.BNB_CHAIN_ID) {
       try {
         const resultSwitchNetwork = await switchNetwork(process.env.BNB_CHAIN_ID);

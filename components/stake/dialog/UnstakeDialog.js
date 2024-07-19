@@ -27,7 +27,7 @@ export default function UnstakeDialog(props) {
   const { fetchData: switchNetwork } = useSwitchNetworkHook();
 
   async function handleUnstake() {
-    const chainId = await getChain();
+    const chainId = (await getChain()).data;
     if(chainId != process.env.ETH_CHAIN_ID) {
       try {
         const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);

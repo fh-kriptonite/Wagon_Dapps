@@ -47,7 +47,7 @@ export default function StakeDialog(props) {
     if(number == "") return;
     if(parseFloat(number) == 0) return;
 
-    const chainId = await getChain();
+    const chainId = (await getChain()).data;
     if(chainId != process.env.ETH_CHAIN_ID) {
       try {
         const resultSwitchNetwork = await switchNetwork(process.env.ETH_CHAIN_ID);
