@@ -209,7 +209,7 @@ export default function PoolCard(props) {
           <p className="text-2xl font-bold">{numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}</p>
 
           <p className="text-sm mt-2 font-semibold text-gray-700">
-            Progress ({ getPoolProgress() }%)</p>
+            Progress ({ numberWithCommas(getPoolProgress(), 2) }%)</p>
           
           <div className="mt-2">
             <Progress progress={ getPoolProgress() } color="dark"/>

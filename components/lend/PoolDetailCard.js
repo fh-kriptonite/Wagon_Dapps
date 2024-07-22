@@ -129,7 +129,7 @@ export default function PoolDetailCard(props) {
 
                 <div>
                     <p className="text-sm font-semibold text-gray-700">
-                        Progress ({getPoolProgress()}%)
+                        Progress ({ numberWithCommas(getPoolProgress(), 2) }%)
                     </p>
                 
                     <div className="mt-1">
