@@ -70,7 +70,7 @@ export default function ActivityDetailCard(props) {
         if(pancakeswapSwap.length == 0 && onrampDisburse.length == 0) {
             return parseFloat(activity.gas_fee_amount)
         } else {
-            return parseFloat(activity.value_fiat_amount) - parseFloat(activity.platform_fee_amount) - getValueToBeOnramp()
+            return parseFloat(activity.amount) - parseFloat(activity.platform_fee_amount) - getValueToBeOnramp()
         }
     }
 
@@ -138,16 +138,17 @@ export default function ActivityDetailCard(props) {
         if(status == "PAYMENT_PAID") return "ON RAMPING"
         if(status == "DISBURSEMENT_IDRT_PENDING") return "ON RAMPING"
         if(status == "DISBURSEMENT_IDRT_RECEIVED") return "ON RAMPING"
+        if(status == "DISBURSEMENT_IDRT_RECEIVED_2") return "ON RAMPING"
         if(status == "DISBURSEMENT_IDRT_FAILED") return "FAILED"
         if(status == "ONRAMP_IDRT_PENDING") return "ON RAMPING"
         if(status == "ONRAMP_IDRT_SUCCESS") return "ON RAMPING"
         if(status == "ONRAMP_IDRT_FAILED") return "FAILED"
+        if(status == "TRANSFER_0_SUCCESS") return "ON RAMPING"
         if(status == "TRANSFER_1_SUCCESS") return "ON RAMPING"
         if(status == "TRANSFER_2_SUCCESS") return "ON RAMPING"
-        if(status == "TRANSFER_3_SUCCESS") return "ON RAMPING"
+        if(status == "SWAP_0_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_1_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_2_SUCCESS") return "ON RAMPING"
-        if(status == "SWAP_3_SUCCESS") return "ON RAMPING"
         if(status == "COMPLETED") return "COMPLETED"
         return "Call for admin"
     }
