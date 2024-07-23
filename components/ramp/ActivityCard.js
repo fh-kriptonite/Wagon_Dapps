@@ -93,7 +93,7 @@ export default function ActivityCard(props) {
 
                                         <div className="flex-1 space-y-1 flex flex-col items-end">
                                             <p className="text-xs">
-                                                { numberWithCommas(parseFloat(activity.value_fiat_amount), 2) } IDR
+                                                { numberWithCommas(parseFloat(activity.amount), 2) } IDR
                                             </p>
                                             <p className={`text-xs font-bold ${getStatusColor(activity.status)}`}>
                                                 { getStatus(activity.status) }

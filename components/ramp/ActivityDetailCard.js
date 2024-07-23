@@ -182,7 +182,7 @@ export default function ActivityDetailCard(props) {
                             <div className="px-4 py-4 bg-gray-100 rounded-lg">
                                 <div className="flex gap-4 items-end justify-between">
                                     <p className="flex-1 text-sm">Payment</p>
-                                    <p className="flex-1 text-sm text-end">IDR {numberWithCommas(parseFloat(activity.value_fiat_amount))}</p>
+                                    <p className="flex-1 text-sm text-end">IDR {numberWithCommas(parseFloat(activity.amount))}</p>
                                 </div>
 
                                 <div className="flex gap-4 justify-between mt-1">

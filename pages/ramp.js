@@ -12,8 +12,8 @@ export default function Ramp(props) {
         <Head>
           <title>Bridge | Wagon Network</title>
         </Head>
-        <Maintenance/>
-        {/* {
+        {/* <Maintenance/> */}
+        {
             !account 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
@@ -21,7 +21,7 @@ export default function Ramp(props) {
             : <div className='h-full'>
                 <RampHome {...props}/>
             </div>
-        } */}
+        }
     </div>
   )
 }
