@@ -20,7 +20,6 @@ export default function RampHome(props) {
     const [tokens, setTokens] = useState([tokenJson[1]]);
     const [tokenValues, setTokenValues] = useState([""]);
     const [paymentMethod, setPaymentMethod] = useState(paymentJson[0]);
-    const [valueFiat, setValueFiat] = useState("");
     const [platformFee, setPlatformFee] = useState(null);
     const [gasFee, setGasFee] = useState(null);
     const [vaDetail, setVaDetail] = useState(null);
@@ -31,12 +30,20 @@ export default function RampHome(props) {
 
     const [section, setSection] = useState(0);
 
+    function getTotalFiat() {
+        let total = 0;
+        for(let i=0; i<tokenValues.length; i++) {
+            const amount = parseFloat(tokenValues[i]);
+            total += amount;
+        }
+        return total;
+    }
+
     function reset() {
         setFiat(fiatJson[0]);
         setTokens([tokenJson[1]]);
         setTokenValues([""]);
         setPaymentMethod(paymentJson[0]);
-        setValueFiat("");
         setPlatformFee(null);
         setGasFee(null);
     }
@@ -54,7 +61,7 @@ export default function RampHome(props) {
         // create VA
         const gasFeeAmount = Math.ceil(parseFloat(gasFee.fee));
         const platformFeeAmount = Math.ceil(parseFloat(platformFee));
-        const valueFiatAmount = Math.ceil(parseFloat(valueFiat));
+        const valueFiatAmount = Math.ceil(getTotalFiat());
         const totalAmount = valueFiatAmount + platformFeeAmount + gasFeeAmount;
         try {
             const response = await getVA(address, paymentMethod.value, totalAmount, valueFiatAmount, platformFeeAmount, gasFeeAmount, swaps);
@@ -100,11 +107,9 @@ export default function RampHome(props) {
                         fiat={fiat} setFiat={setFiat} 
                         tokens={tokens}
                         tokenValues={tokenValues}
-                        valueFiat={valueFiat} setValueFiat={(newValue)=>{
-                            setValueFiat(newValue);
-                            if(tokens.length == 1) {
-                                setTokenValues([newValue]);
-                            }
+                        gasFee={gasFee} setGasFee={setGasFee}
+                        valueFiat={tokenValues[0]} setValueFiat={(newValue)=>{
+                            setTokenValues([newValue]);
                         }}
                         addToken={(newToken)=>{
                             setTokens((prevTokens) => [...prevTokens, newToken]);
@@ -112,11 +117,7 @@ export default function RampHome(props) {
                         }}
                         removeToken={(index)=>{
                             setTokens((prevTokens) => prevTokens.filter((_, i) => i !== index));
-                            if(tokenValues.length == 2) {
-                                setTokenValues([valueFiat]);
-                            } else {
-                                setTokenValues((prevTokenValues) => prevTokenValues.filter((_, i) => i !== index));
-                            }
+                            setTokenValues((prevTokenValues) => prevTokenValues.filter((_, i) => i !== index));
                         }}
                         replaceToken={(index, newToken)=>{
                             setTokens((prevTokens) => prevTokens.map((token, i) => i === index ? newToken : token));
@@ -152,7 +153,7 @@ export default function RampHome(props) {
                     <DetailCard 
                         fiat={fiat}
                         tokens={tokens}
-                        valueFiat={valueFiat}
+                        valueFiat={getTotalFiat()}
                         tokenValues={tokenValues}
                         platformFee={platformFee} setPlatformFee={setPlatformFee}
                         gasFee={gasFee} setGasFee={setGasFee}
@@ -171,7 +172,7 @@ export default function RampHome(props) {
                     (section == 3) &&
                     <VACard 
                         fiat={fiat}
-                        valueFiat={valueFiat}
+                        valueFiat={getTotalFiat()}
                         paymentMethod={paymentMethod}
                         platformFee={platformFee}
                         gasFee={gasFee}

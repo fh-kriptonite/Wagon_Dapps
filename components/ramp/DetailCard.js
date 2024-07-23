@@ -121,10 +121,7 @@ export default function DetailCard(props) {
                     tokens.map((token, index)=>{
                         let amountOutput = 0;
                         if(gasFee) {
-                            const amountBeforeFee = props.valueFiat;
-                            const amountAfterFee = amountBeforeFee - platformFee - gasFee?.fee;
-                            const ratio = amountAfterFee / amountBeforeFee;
-                            amountOutput = gasFee?.output_amounts[index].amount * ratio;
+                            amountOutput = gasFee?.output_amounts[index].amount;
                         }
                         return (
                             <div key={index}>

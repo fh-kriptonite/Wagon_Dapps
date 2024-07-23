@@ -9,12 +9,52 @@ import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardC
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
-import { useAccount } from "@particle-network/connectkit";
+import { useAccount, useParticleProvider } from "@particle-network/connectkit";
+import { ethers } from "ethers";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountComponent(props) {
     const address = useAccount();
+
+    // const particleProvider = useParticleProvider();
+    // const provider = new ethers.BrowserProvider(particleProvider)
+
+    // async function test() {
+    //     const network = await provider.getNetwork();
+    //     console.log(network.url)
+    // }
+
+    // async function addNetwork() {
+    //     try {
+    //       const newNetwork = {
+    //         chainId: '0x38', // Hexadecimal chain ID (e.g., 80001 for Polygon Mumbai Testnet)
+    //         chainName: 'BNB Smart Chain Mainnet',
+    //         nativeCurrency: {
+    //           name: 'BNB',
+    //           symbol: 'BNB',
+    //           decimals: 18,
+    //         },
+    //         rpcUrls: ['https://bsc-dataseed1.ninicoin.io'],
+    //         blockExplorerUrls: ['https://bscscan.com/'],
+    //       };
+    
+    //       // Request the user to add the new network
+    //       await window.ethereum.request({
+    //         method: 'wallet_addEthereumChain',
+    //         params: [newNetwork],
+    //       });
+    
+    //       console.log('Network added successfully');
+    //     } catch (error) {
+    //       console.error('Error adding the network:', error);
+    //     }
+    // }
+
+    // useEffect(()=>{
+    //     test()
+    //     addNetwork()
+    // }, [])
 
     const [pools, setPools] = useState([]);
     const [wagPrice, setWagPrice] = useState(0);

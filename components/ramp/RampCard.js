@@ -1,4 +1,4 @@
-import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { IoIosArrowDown, IoIosArrowForward, IoMdAdd } from "react-icons/io";
 import { Button } from "flowbite-react";
 import { useAccount } from "@particle-network/connectkit";
 import Jazzicon from "react-jazzicon/dist/Jazzicon";
@@ -7,6 +7,9 @@ import RampInputFiatCard from "./RampInputFiatCard";
 
 import SelectTokenDialog from "./dialog/SelectTokenDialog";
 import { numberWithCommas } from "../../util/stringUtility";
+import useGetGasFeeHook from "./util/useGetGasFeeHook";
+import { useEffect } from "react";
+import RampOutputCard from "./RampOutputCard";
 
 export default function RampCard(props) {
     const address = useAccount();
@@ -15,18 +18,10 @@ export default function RampCard(props) {
     const fiat = props.fiat;
     const tokenValues = props.tokenValues;
     const valueFiat = props.valueFiat;
-
-    function isSumEqual(value, array) {
-        const targetValue = parseInt(value, 10);
-        const sum = array.reduce((acc, curr) => acc + parseInt(curr, 10), 0);
-        return sum === targetValue;
-      }
+    const gasFee = props.gasFee;
 
     function handleTransferButtonDisabled() {
         if(valueFiat == "") return true;
-        if(tokens.length > 1) {
-            if(!isSumEqual(valueFiat, tokenValues)) return true;
-        }
         for (let i = 0; i < tokens.length; i++) {
             if (tokens[i] === null) {
                 return true;
@@ -53,42 +48,36 @@ export default function RampCard(props) {
 
             <div className="mt-6">
                 <p className="text-xs">How much would you like to transfer?</p>
-                <RampInputFiatCard {...props} disabled={false}/>
-            </div>
-
-            <div className="w-full mt-6">
-                <IoIosArrowDown className="mx-auto"/>
+                {
+                    tokens.length <= 1 &&
+                    <>
+                        <RampInputFiatCard {...props} disabled={false}/>
+                        <div className="w-full mt-6">
+                            <IoIosArrowDown className="mx-auto"/>
+                        </div>
+                    </>
+                }
             </div>
 
             <div className="space-y-4 mt-6">
                 {
                     tokens.map((token, index)=>{
+                        let amountOutput = 0;
+                        if(gasFee) {
+                            amountOutput = gasFee?.output_amounts[index]?.amount;
+                        }
                         return (
-                            <div key={"token-"+index}>
-                                <div className="px-2 flex items-center justify-around border rounded-lg py-4 gap-2 md:gap-4">
-                                    <div className="grow flex gap-2 items-center">
-                                        <input 
-                                            type="text"
-                                            min="0"
-                                            disabled={tokens.length == 1}
-                                            value={ numberWithCommas(tokenValues[index]) }
-                                            className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
-                                            onChange={(e)=>{
-                                                const rawValue = e.target.value.replace(/,/g, '');
-                                                props.replaceTokenValues(index, rawValue);
-                                            }}
-                                            placeholder="0" required
-                                        />
-                                        <p className="text-sm font-semibold"> { fiat.name }</p>
+                            <>
+                                {
+                                    index > 0 && 
+                                    <div className="flex justify-center">
+                                        <IoMdAdd/>
                                     </div>
-                                    <div className="flex-initial w-fit">
-                                        <IoIosArrowForward/>
-                                    </div>
-                                    <div className="flex-initial w-fit">
-                                        <SelectTokenDialog index={index} token={token} {...props}/>
-                                    </div>
+                                }
+                                <div key={"token-"+index}>
+                                    <RampOutputCard fiat={fiat} token={token} index={index} value={tokenValues[index]} {...props}/>
                                 </div>
-                            </div>
+                            </>
                         )
                     })
                 }
