@@ -2,6 +2,7 @@ import Disconnected from '../components/general/Disconnected';
 import Head from 'next/head';
 import { useAccount } from '@particle-network/connectkit';
 import RampHome from '../components/ramp/RampHome';
+import Maintenance from '../components/general/Maintenance';
 
 export default function Ramp(props) {
   const account = useAccount();
@@ -11,7 +12,8 @@ export default function Ramp(props) {
         <Head>
           <title>Bridge | Wagon Network</title>
         </Head>
-        {
+        <Maintenance/>
+        {/* {
             !account 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
@@ -19,7 +21,7 @@ export default function Ramp(props) {
             : <div className='h-full'>
                 <RampHome {...props}/>
             </div>
-        }
+        } */}
     </div>
   )
 }
