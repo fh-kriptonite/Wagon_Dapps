@@ -46,6 +46,7 @@ export default function ActivityCard(props) {
         if(status == "TRANSFER_0_SUCCESS") return "ON RAMPING"
         if(status == "TRANSFER_1_SUCCESS") return "ON RAMPING"
         if(status == "TRANSFER_2_SUCCESS") return "ON RAMPING"
+        if(status == "SWAP_IDRT_USDT_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_0_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_1_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_2_SUCCESS") return "ON RAMPING"
