@@ -12,7 +12,7 @@ export default function RampInputCard(props) {
                     type="text"
                     disabled={true}
                     min="0"
-                    value={numberWithCommas(amount, (props.token == "IDRT") ? 2 : 4)}
+                    value={numberWithCommas(amount, (token.name == "IDRT") ? 2 : 4)}
                     className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
                     placeholder="0" required
                 />
