@@ -1,4 +1,4 @@
-import { numberWithCommas } from "../../util/stringUtility";
+import { inputNumberFilter, inputNumberWithCommas, numberWithCommas } from "../../util/stringUtility";
 import SelectFiatDialog from "./dialog/SelectFiatDialog";
 
 export default function RampInputFiatCard(props) {
@@ -13,6 +13,11 @@ export default function RampInputFiatCard(props) {
         return false;
     }
 
+    function handleChange(e) {
+        const rawValue = inputNumberFilter(e.target.value);
+        props.setValueFiat(rawValue);
+    }
+
     return (
         <>
             <div className="mt-2 border rounded-xl overflow-hidden">
@@ -21,12 +26,9 @@ export default function RampInputFiatCard(props) {
                         type="text"
                         disabled={disabled}
                         min="0"
-                        value={numberWithCommas(props.valueFiat)}
+                        value={inputNumberWithCommas(props.valueFiat)}
                         className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow" 
-                        onChange={(e)=>{
-                            const rawValue = e.target.value.replace(/,/g, '');
-                            props.setValueFiat(rawValue);
-                        }}
+                        onChange={handleChange}
                         placeholder="0" 
                         required
                     />

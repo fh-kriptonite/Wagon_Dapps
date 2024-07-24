@@ -1,6 +1,6 @@
 import { IoIosArrowForward } from "react-icons/io";
 import SelectTokenDialog from "./dialog/SelectTokenDialog";
-import { numberWithCommas } from "../../util/stringUtility";
+import { inputNumberFilter, inputNumberWithCommas, numberWithCommas } from "../../util/stringUtility";
 import useGetGasFeeHook from "./util/useGetGasFeeHook";
 import { useEffect, useState, useRef } from "react";
 
@@ -15,6 +15,11 @@ export default function RampOutputCard(props) {
   const { isLoading: isLoadingGas, fetchData: getGasFee } = useGetGasFeeHook();
 
   const debounceTimeoutRef = useRef(null);
+
+  function handleChange(e) {
+    const rawValue = inputNumberFilter(e.target.value);
+    props.replaceTokenValues(index, rawValue);
+  }
 
   useEffect(() => {
     if (token && value) {
@@ -53,12 +58,9 @@ export default function RampOutputCard(props) {
           <input
             type="text"
             min="0"
-            value={numberWithCommas(value)}
+            value={inputNumberWithCommas(value)}
             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none grow"
-            onChange={(e) => {
-              const rawValue = e.target.value.replace(/,/g, "");
-              props.replaceTokenValues(index, rawValue);
-            }}
+            onChange={handleChange}
             placeholder="0"
             required
           />

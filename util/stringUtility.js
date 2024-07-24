@@ -4,6 +4,28 @@ export function numberWithCommas(x, digits) {
   return parts.join(".");
 }
 
+export function inputNumberWithCommas(x) {
+  if (!x) return x; // Handle undefined, null, or empty string
+  const parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
+export function inputNumberFilter(value) {
+  let rawValue = value.replace(/[^0-9.]/g, '');
+  
+  // If there are multiple decimal points, keep only the first one
+  const parts = rawValue.split('.');
+  if (parts.length > 2) {
+    rawValue = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  if (/^\d*\.?\d*$/.test(rawValue)) {
+    return(rawValue);
+  }
+  return ""
+}
+
 export function numberWithLetter(num, digits) {
     const lookup = [
       { value: 1, symbol: "" },
