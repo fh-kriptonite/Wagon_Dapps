@@ -50,6 +50,10 @@ export default function ActivityCard(props) {
         if(status == "SWAP_0_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_1_SUCCESS") return "ON RAMPING"
         if(status == "SWAP_2_SUCCESS") return "ON RAMPING"
+        if(status == "SWAP_IDRT_USDT_FAILED") return "FAILED"
+        if(status == "SWAP_0_FAILED") return "FAILED"
+        if(status == "SWAP_1_FAILED") return "FAILED"
+        if(status == "SWAP_2_FAILED") return "FAILED"
         if(status == "COMPLETED") return "COMPLETED"
         return "Call for admin"
     }
