@@ -236,7 +236,8 @@ module.exports = {
                         FROM lending_balances
                         LEFT JOIN lending_pools ON lending_balances.pool_id = lending_pools.pool_id
                         WHERE lending_balances.lender = ?
-                        AND lending_pools.status <= 3`,
+                        AND lending_pools.status <= 3
+                        AND lending_balances.balance > 0`,
                         [address],
                         (err, results, fields) => {
                             if(err) reject(err);
