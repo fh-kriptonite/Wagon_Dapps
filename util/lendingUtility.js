@@ -80,6 +80,8 @@ export function getTokenDecimals(TokenName) {
             return 18;
         case "IDRT":
             return 2;
+        case "IDRX":
+            return 0;
         default:
             return 0;
     }

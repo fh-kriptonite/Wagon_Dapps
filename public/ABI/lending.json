@@ -525,6 +525,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "defaultVault",
+        "type": "address"
       }
     ],
     "name": "addDefaultForDisburse",
@@ -583,6 +588,11 @@
         "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
       }
     ],
     "name": "claimCancelPool",
@@ -596,6 +606,11 @@
         "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
       }
     ],
     "name": "claimDefault",
@@ -609,9 +624,32 @@
         "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
       }
     ],
     "name": "claimInterest",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poolId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
+      }
+    ],
+    "name": "claimInterestBeforeTransfer",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -931,45 +969,6 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "termStart",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "loanTerm",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "paymentFrequency",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "latestRepayment",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "gracePeriod",
-        "type": "uint256"
-      }
-    ],
-    "name": "getCurrentTermWithGracePeriod",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
         "name": "poolId",
         "type": "uint256"
       },
@@ -1092,6 +1091,25 @@
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "poolId",
+        "type": "uint256"
+      }
+    ],
+    "name": "isRepaid",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "",
         "type": "uint256"
       },
@@ -1126,6 +1144,29 @@
       }
     ],
     "name": "lendToPool",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "poolId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "onBehalfOf",
+        "type": "address"
+      }
+    ],
+    "name": "lendToPoolOnBehalfOf",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1295,6 +1336,11 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "defaultVault",
+        "type": "address"
       }
     ],
     "name": "setPoolDefault",

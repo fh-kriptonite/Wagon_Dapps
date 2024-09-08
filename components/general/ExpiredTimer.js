@@ -50,13 +50,13 @@ export default function ExpiredTimer({ targetEpoch }){
 
 
   return (
-    <div className="flex gap-1 text-lg font-semibold">
+    <div className="flex gap-1 text-xs font-semibold">
       {days > 0 && <p>{days ? days : "00"} days, </p>}
-      <p>{hours? hours.toString().padStart(2, '0') : "00"}</p>
-      <p>:</p>
-      <p>{minutes ? minutes.toString().padStart(2, '0') : "00"}</p>
-      <p>:</p>
-      <p>{seconds ? seconds.toString().padStart(2, '0') : "00"}</p>
+      <p className="text-xs">{hours? hours.toString().padStart(2, '0') : "00"}</p>
+      <p className="text-xs">:</p>
+      <p className="text-xs">{minutes ? minutes.toString().padStart(2, '0') : "00"}</p>
+      <p className="text-xs">:</p>
+      <p className="text-xs">{seconds ? seconds.toString().padStart(2, '0') : "00"}</p>
     </div>
   );
 };

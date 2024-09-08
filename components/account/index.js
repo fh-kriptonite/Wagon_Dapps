@@ -1,4 +1,4 @@
-import { Button, Spinner } from "flowbite-react"
+import { Avatar, Button, Spinner } from "flowbite-react"
 import { Doughnut } from "react-chartjs-2"
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { FaLongArrowAltDown } from "react-icons/fa";
@@ -9,52 +9,12 @@ import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardC
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
-import { useAccount, useParticleProvider } from "@particle-network/connectkit";
-import { ethers } from "ethers";
+import { useAccount } from "@particle-network/connectkit";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function AccountComponent(props) {
     const address = useAccount();
-
-    // const particleProvider = useParticleProvider();
-    // const provider = new ethers.BrowserProvider(particleProvider)
-
-    // async function test() {
-    //     const network = await provider.getNetwork();
-    //     console.log(network.url)
-    // }
-
-    // async function addNetwork() {
-    //     try {
-    //       const newNetwork = {
-    //         chainId: '0x38', // Hexadecimal chain ID (e.g., 80001 for Polygon Mumbai Testnet)
-    //         chainName: 'BNB Smart Chain Mainnet',
-    //         nativeCurrency: {
-    //           name: 'BNB',
-    //           symbol: 'BNB',
-    //           decimals: 18,
-    //         },
-    //         rpcUrls: ['https://bsc-dataseed1.ninicoin.io'],
-    //         blockExplorerUrls: ['https://bscscan.com/'],
-    //       };
-    
-    //       // Request the user to add the new network
-    //       await window.ethereum.request({
-    //         method: 'wallet_addEthereumChain',
-    //         params: [newNetwork],
-    //       });
-    
-    //       console.log('Network added successfully');
-    //     } catch (error) {
-    //       console.error('Error adding the network:', error);
-    //     }
-    // }
-
-    // useEffect(()=>{
-    //     test()
-    //     addNetwork()
-    // }, [])
 
     const [pools, setPools] = useState([]);
     const [wagPrice, setWagPrice] = useState(0);
@@ -147,7 +107,7 @@ export default function AccountComponent(props) {
     };
 
     const dataLending = {
-        labels: ['WAG TVL', 'IDRT TVL', 'IDRT Interest'],
+        labels: ['WAG TVL', 'IDR TVL', 'IDR Interest'],
         datasets: [
           {
             label: 'USD',
@@ -237,7 +197,7 @@ export default function AccountComponent(props) {
                             <div className="grow w-full">
                                 <p className="text-lg font-semibold">Buy Wagon Token now</p>
                                 <p className="text-sm mt-0.5 text-gray-500">On ETH network Uniswap <span className="font-bold">WAG/ETH</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/IDRT</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/USDT</span></p>
                             </div>
                             <div className="flex flex-col gap-2 w-full xl:w-1/3">
                                 <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
@@ -246,7 +206,7 @@ export default function AccountComponent(props) {
                                         Uniswap
                                     </Button>
                                 </a>
-                                <a href="https://pancakeswap.finance/swap?inputCurrency=0x66207E39bb77e6B99aaB56795C7c340C08520d83&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
+                                <a href="https://pancakeswap.finance/swap?outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
                                     <Button size={"xs"} color="dark" style={{width:"100%"}}>
                                         <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
                                         PancakeSwap
@@ -331,9 +291,9 @@ export default function AccountComponent(props) {
                                 <p className="text-xs text-gray-500">Staked</p>
                                 <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(stakingBalance * wagPrice, 2)}</p>
                             </div>
-                            <div className="flex justify-between mt-1 items-center">
-                                <div className="flex gap-1 items-center">
-                                    <img src="/logo.png" className="h-4" alt="Wagon Logo" />
+                            <div className="flex flex-wrap justify-between mt-1">
+                                <div className="flex flex-wrap gap-2">
+                                    <Avatar img="/logo.png" rounded bordered size="xs" />
                                     <p className="text-sm">WAG</p>
                                 </div>
                                 <p className="text-sm font-semibold">{numberWithCommas(stakingBalance, 2)}</p>
@@ -343,9 +303,9 @@ export default function AccountComponent(props) {
                                 <p className="text-xs text-gray-500 mt-2">Rewards</p>
                                 <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(rewardBalance * wagPrice, 2)}</p>
                             </div>
-                            <div className="flex justify-between mt-1 items-center">
-                                <div className="flex gap-1 items-center">
-                                    <img src="/logo.png" className="h-4" alt="Wagon Logo" />
+                            <div className="flex flex-wrap justify-between mt-1">
+                                <div className="flex flex-wrap gap-2">
+                                    <Avatar img="/logo.png" rounded bordered size="xs" />
                                     <p className="text-sm">WAG</p>
                                 </div>
                                 <p className="text-sm font-semibold">{numberWithCommas(rewardBalance, 2)}</p>
@@ -383,17 +343,20 @@ export default function AccountComponent(props) {
                                 <p className="text-xs text-gray-500">TVL</p>
                                 <p className="text-end text-gray-500 text-xs">USD {numberWithCommas((tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
                             </div>
-                            <div className="flex justify-between mt-1 items-center">
-                                <div className="flex gap-1 items-center">
-                                    <img src="/logo.png" className="h-4" alt="Wagon Logo" />
+                            <div className="flex flex-wrap justify-between mt-1">
+                                <div className="flex flex-wrap gap-2">
+                                    <Avatar img="/logo.png" rounded bordered size="xs" />
                                     <p className="text-sm">WAG</p>
                                 </div>
                                 <p className="text-sm font-semibold">{numberWithCommas(tvlWag, 2)}</p>
                             </div>
-                            <div className="flex justify-between mt-2 items-center">
-                                <div className="flex gap-1 items-center">
-                                    <img src="/logo-idrt.png" className="h-4" alt="IDRT Logo" />
-                                    <p className="text-sm">IDRT</p>
+                            <div className="flex flex-wrap gap-2 justify-between mt-2">
+                                <div className="flex flex-wrap gap-2">
+                                    <Avatar.Group>
+                                        <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
+                                        <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
+                                    </Avatar.Group>
+                                    <p className="text-sm">IDR</p>
                                 </div>
                                 <p className="text-sm font-semibold">{numberWithCommas(tvlIdrt, 2)}</p>
                             </div>
@@ -401,10 +364,13 @@ export default function AccountComponent(props) {
                                 <p className="text-xs text-gray-500 mt-2">Interest</p>
                                 <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(interestIdrt * idrtPrice, 2)}</p>
                             </div>
-                            <div className="flex justify-between mt-1 items-center">
-                                <div className="flex gap-1 items-center">
-                                    <img src="/logo-idrt.png" className="h-4" alt="IDRT Logo" />
-                                    <p className="text-sm">IDRT</p>
+                            <div className="flex flex-wrap gap-2 justify-between mt-1">
+                                <div className="flex flex-wrap gap-2">
+                                    <Avatar.Group>
+                                        <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
+                                        <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
+                                    </Avatar.Group>
+                                    <p className="text-sm">IDR</p>
                                 </div>
                                 <p className="text-sm font-semibold">{numberWithCommas(interestIdrt, 2)}</p>
                             </div>

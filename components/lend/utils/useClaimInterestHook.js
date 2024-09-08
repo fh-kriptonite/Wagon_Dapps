@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { ethers } from 'ethers';
-import { useParticleProvider } from '@particle-network/connectkit';
+import { useAccount, useParticleProvider } from '@particle-network/connectkit';
 
 const useClaimInterestHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const particleProvider = useParticleProvider()
+  const particleProvider = useParticleProvider();
+  const address = useAccount();
 
-  const fetchData = async (poolId, amount) => {
+  const fetchData = async (poolId) => {
     setIsLoading(true);
 
     let data = null;
@@ -27,7 +28,8 @@ const useClaimInterestHook = () => {
 
       // Call smart contract function
       const transaction = await contract.claimInterest(
-        poolId
+        poolId,
+        address
       );
       
       // Wait for transaction confirmation

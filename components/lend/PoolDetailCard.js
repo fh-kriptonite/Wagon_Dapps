@@ -79,6 +79,13 @@ export default function PoolDetailCard(props) {
         return parseFloat(poolMaxSupply) * parseFloat(pool.stabletoPairRate) / Math.pow(10,18) / Math.pow(10,decimal);
     }
 
+    function showWagPair() {
+        if(!pool) return false;
+        if(pool.stabletoPairRate == 0) return false
+
+        return true;
+    }
+
   return (
     <>
         {
@@ -145,14 +152,17 @@ export default function PoolDetailCard(props) {
                         </p>
                     </div>
                     
-                    <div className="flex items-center justify-between mt-1">
-                        <p className="text-sm font-semibold text-gray-700">
-                            {getCollectedWag()} WAG
-                        </p>
-                        <p className="text-sm font-semibold text-gray-700">
-                            {numberWithCommas(getPoolMaxWag())} WAG
-                        </p>
-                    </div>
+                    {
+                        showWagPair() &&
+                        <div className="flex items-center justify-between mt-1">
+                            <p className="text-sm font-semibold text-gray-700">
+                                {getCollectedWag()} WAG
+                            </p>
+                            <p className="text-sm font-semibold text-gray-700">
+                                {numberWithCommas(getPoolMaxWag())} WAG
+                            </p>
+                        </div>
+                    }
                 </div>
 
                 <div className="border-t"/>

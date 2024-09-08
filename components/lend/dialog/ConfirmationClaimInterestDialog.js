@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Button } from 'flowbite-react';
 import { numberWithCommas } from '../../../util/stringUtility';
 import { ImCross } from 'react-icons/im';
@@ -25,6 +25,12 @@ export default function ConfirmationClaimInterestDialog(props) {
 
   const refreshLatestInterestClaimed = props.refreshLatestInterestClaimed;
 
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
+
+  useEffect(()=>{
+    getProtocolFeeAmount();
+  }, [fees, pool, latestInterestClaimed]);
+
   function closeModal() {
     props.close();
   }
@@ -47,17 +53,17 @@ export default function ConfirmationClaimInterestDialog(props) {
   }
 
   function countFee() {
-    if(fee == null) return 0;
+    if(fees == null) return 0;
     const claimable = countTotalClaimable();
     const fee = claimable * parseFloat(fees.protocolFee) / 10000;
     return fee;
   }
 
   function getProtocolFeeAmount() {
-    if (fees == null) return "~"
+    if (fees == null) return;
 
     const fee = countFee();
-    return numberWithCommas(fee, 2)
+    setProtocolFeeAmount(fee)
   }
 
   function getReceivedInterestAmount() {
@@ -181,7 +187,7 @@ export default function ConfirmationClaimInterestDialog(props) {
                                 Protocol Fee ({symbol})
                             </p>
                             <p className="text-xs text-gray-500">
-                              -{getProtocolFeeAmount()}
+                              -{numberWithCommas(protocolFeeAmount, 2)}
                             </p>
                           </div>
                       </div>

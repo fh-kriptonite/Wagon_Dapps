@@ -1,7 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
-import { numberWithCommas } from "../../../util/stringUtility";
+import { inputNumberFilter, numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
 import { Button } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
@@ -53,6 +53,13 @@ export default function LendToPoolDialog(props) {
     return (stableNumber * parseFloat(fees.adminFee) / 10000);
   }
 
+  function showAdminFee() {
+    if(!fees) return false;
+    if(fees.adminFee == 0) return false
+
+    return true;
+  }
+
   function getStableBalanceWithDecimal() {
     if(stableBalance == null) return "0";
 
@@ -72,9 +79,7 @@ export default function LendToPoolDialog(props) {
 
   function getLendToPoolButtonDisabled() {
     if(stableNumber == "") return true
-    if(wagNumber == "") return true
     if(parseFloat(stableNumber) <= 0) return true
-    if(parseFloat(wagNumber) <= 0) return true
     if(parseFloat(stableNumber) > parseFloat(stableBalance) / Math.pow(10,decimal)) return true
     if(parseFloat(wagNumber) > parseFloat(wagBalance) / Math.pow(10,18)) return true
     if(getStableBalanceWithDecimal() < getTotalStable()) return true
@@ -86,6 +91,19 @@ export default function LendToPoolDialog(props) {
     const adminFee = getAdminFee();
     props.handleLend(stableNumber, wagNumber, adminFee);
   }
+
+  function showWagPair() {
+    if(!pool) return false;
+    if(pool.stabletoPairRate == 0) return false
+
+    return true;
+  }
+
+  function handleChange(e) {
+    const rawValue = inputNumberFilter(e.target.value);
+    setStableNumber(rawValue)
+    setWagNumber(rawValue * getRatio())
+}
 
   return (
     <>
@@ -139,16 +157,12 @@ export default function LendToPoolDialog(props) {
                     </div>
                     
                     <div className='flex gap-2 items-center justify-between mt-2'>
-                        <input type="number" id="amount" 
-                            min="0"
+                        <input type="text"
                             className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
-                            value={stableNumber}
-                            onChange={(e)=>{
-                              setStableNumber(e.target.value)
-                              setWagNumber(e.target.value * getRatio())
-                            }}
+                            value={numberWithCommas(stableNumber)}
+                            onChange={handleChange}
                             placeholder="0" required/>
-                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
+                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
                             {symbol}
                         </p>
@@ -164,71 +178,77 @@ export default function LendToPoolDialog(props) {
                         </Button>
                     </div>
 
-                    <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
-                      <p className="text-xs text-gray-500">
-                        Admin Fee
-                      </p>
-                      <p className="text-xs font-semibold">
-                        + {numberWithCommas(getAdminFee(), 2)} {symbol}
-                      </p>
-                    </div>
+                    {
+                      showAdminFee() &&
+                      <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
+                        <p className="text-xs text-gray-500">
+                          Admin Fee
+                        </p>
+                        <p className="text-xs font-semibold">
+                          + {numberWithCommas(getAdminFee(), 2)} {symbol}
+                        </p>
+                      </div>
+                    }
                     
                   </div>
 
                   <p 
-                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, "buyIDRT");}}
+                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, `buy${symbol}`);}}
                     className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit ml-auto mt-2"
                   >
                     Buy more {symbol}
                   </p>
                   
+                  {
+                    showWagPair() &&
+                    <div>
+                      <p className='mt-2 text-center'>+</p>
 
-                  <p className='mt-2 text-center'>+</p>
+                      <div className="mt-4 border rounded-xl p-4">
+                        <div className='flex justify-between'>
+                            <p className="text-xs font-semibold text-gray-500">
+                                Amount
+                            </p>
+                            <p className="text-xs font-semibold text-gray-500">
+                                Available: {numberWithCommas(getWagBalanceWithDecimal(), 2)} WAG
+                            </p>
+                        </div>
+                        
+                        <div className='flex gap-2 items-center justify-between mt-2'>
+                            <input type="number" id="amount" 
+                                min="0"
+                                className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
+                                value={wagNumber}
+                                onChange={(e)=>{
+                                  setWagNumber(e.target.value)
+                                  setStableNumber(e.target.value / getRatio())
+                                }}
+                                placeholder="0" required/>
+                            <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
+                            <p className="text-lg text-gray-500">
+                                WAG
+                            </p>
+                            <Button
+                              color={"light"}
+                              size={"sm"}
+                              onClick={() => {
+                                setWagNumber(getWagBalanceWithDecimal())
+                                setStableNumber(getWagBalanceWithDecimal() / getRatio())
+                              }}
+                            >
+                              Max
+                            </Button>
+                        </div>
+                      </div>
 
-                  <div className="mt-4 border rounded-xl p-4">
-                    <div className='flex justify-between'>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Amount
-                        </p>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Available: {numberWithCommas(getWagBalanceWithDecimal(), 2)} WAG
-                        </p>
+                      <p 
+                        onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
+                        className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit  ml-auto mt-2"
+                      >
+                        Buy more WAG
+                      </p>
                     </div>
-                    
-                    <div className='flex gap-2 items-center justify-between mt-2'>
-                        <input type="number" id="amount" 
-                            min="0"
-                            className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
-                            value={wagNumber}
-                            onChange={(e)=>{
-                              setWagNumber(e.target.value)
-                              setStableNumber(e.target.value / getRatio())
-                            }}
-                            placeholder="0" required/>
-                        <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
-                        <p className="text-lg text-gray-500">
-                            WAG
-                        </p>
-                        <Button
-                          color={"light"}
-                          size={"sm"}
-                          onClick={() => {
-                            setWagNumber(getWagBalanceWithDecimal())
-                            setStableNumber(getWagBalanceWithDecimal() / getRatio())
-                          }}
-                        >
-                          Max
-                        </Button>
-                    </div>
-                  </div>
-
-                  <p 
-                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
-                    className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit  ml-auto mt-2"
-                  >
-                    Buy more WAG
-                  </p>
-                  
+                  }
                   <div className="mt-6 border rounded-xl p-4">
                     <p className="text-xs font-semibold text-gray-500 border-b pb-2">
                         Expectation and pool maturity
@@ -268,14 +288,17 @@ export default function LendToPoolDialog(props) {
                       </p>
                     </div>
 
-                    <div className='flex gap-2 items-center justify-between mt-1 text-center'>
-                      <p className="text-xs text-gray-500">
-                          Total WAG
-                      </p>
-                      <p className="text-xs font-semibold">
-                          {numberWithCommas(wagNumber , 2)} WAG
-                      </p>
-                    </div>
+                    {
+                      showWagPair() &&
+                      <div className='flex gap-2 items-center justify-between mt-1 text-center'>
+                        <p className="text-xs text-gray-500">
+                            Total WAG
+                        </p>
+                        <p className="text-xs font-semibold">
+                            {numberWithCommas(wagNumber , 2)} WAG
+                        </p>
+                      </div>
+                    }
                     
                   </div>
 

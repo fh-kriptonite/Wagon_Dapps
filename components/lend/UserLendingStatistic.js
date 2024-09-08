@@ -68,13 +68,22 @@ export default function UserLendingStatistic(props) {
         }
     }, [address])
 
+    function showWagPair() {
+        if(!pool) return false;
+        if(pool.stabletoPairRate == 0) return false
+
+        return true;
+    }
+
   return (
     <>
         {
             pool == null
             ? <LoadingUserLendingStatistic/>
             : <div className='card space-y-4 flex-1'>
-                <h6 className="!font-semibold">Your Lending Statistics</h6>
+                <div className="flex justify-between">
+                    <h6 className="!font-semibold">Your Lending Statistics</h6>
+                </div>
                 
                 <div className='flex gap-4 flex-col sm:flex-row'>
                     <div className='flex-1 flex items-center gap-2'>
@@ -93,15 +102,19 @@ export default function UserLendingStatistic(props) {
                         </p>
                     </div>
                     </div>
-                    <div className='flex-1 flex items-center gap-2'>
-                    <img src="/logo.png" className="h-8" alt="IDRT Logo" />
-                    <div>
-                        <p className='text-sm font-light'>Your Wagon Balance</p>
-                        <p className='text-base font-semibold'>
-                            { getWagString() } WAG
-                        </p>
-                    </div>
-                    </div>
+                    
+                    {
+                        showWagPair() &&
+                        <div className='flex-1 flex items-center gap-2'>
+                            <img src="/logo.png" className="h-8" alt="WAG Logo" />
+                            <div>
+                                <p className='text-sm font-light'>Your Wagon Balance</p>
+                                <p className='text-base font-semibold'>
+                                    { getWagString() } WAG
+                                </p>
+                            </div>
+                        </div>
+                    }
                 </div>
 
                 {
@@ -111,15 +124,20 @@ export default function UserLendingStatistic(props) {
                         !address
                             ? <ButtonConnect/>
                             : 
-                            <LendToPoolButton 
-                                {...props}
-                                fees={fees}
-                                poolId={poolId}
-                                refreshUser={()=>{
-                                    getStableBalance(address, poolId);
-                                    getWagBalance(address, poolId)
-                                }}
-                            />
+                            <div className="flex gap-2 flex-col md:flex-row">
+                                <div className="flex-1">
+                                    <LendToPoolButton 
+                                        {...props}
+                                        fees={fees}
+                                        poolId={poolId}
+                                        refreshUser={()=>{
+                                            getStableBalance(address, poolId);
+                                            getWagBalance(address, poolId);
+                                            props.refresh();
+                                        }}
+                                    />
+                                </div>
+                            </div>
                         }
                     </>
                 }

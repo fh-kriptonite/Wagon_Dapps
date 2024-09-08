@@ -106,6 +106,11 @@ export default function Pool() {
             decimal={getDecimal()}
             poolMaxSupply={poolMaxSupply}
             poolSupply={poolSupply}
+            refresh={()=>{
+              console.log("refreshing activepool");
+              getActivePool(poolId);
+              getPoolSupply(poolId);
+            }}
           />
 
           <PoolOverviewCard

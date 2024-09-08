@@ -79,14 +79,14 @@ export default function Sidebar(props) {
                                 </div>
                             </Link>
                         </li>
-                        <li>
-                            <Link href="/ramp">
-                                <div className={`${currentPath === '/ramp' || asPath.includes("/ramp") ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                        {/* <li>
+                            <Link href="/buy">
+                                <div className={`${currentPath === '/buy' || asPath.includes("/buy") ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
                                     <RiTokenSwapFill className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Ramp</span>
+                                    <span className="ml-3">Buy</span>
                                 </div>
                             </Link>
-                        </li>
+                        </li> */}
                         <li>
                             <Link href="/dataNetwork">
                                 <div className={`${currentPath === '/dataNetwork' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
