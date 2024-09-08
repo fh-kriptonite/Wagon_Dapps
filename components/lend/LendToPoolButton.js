@@ -1,14 +1,27 @@
 import { Button } from 'flowbite-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LendToPoolDialog from './dialog/LendToPoolDialog';
+import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
-import { useWeb3WalletState } from '../general/web3WalletContext';
-import useSwitchNetworkHook from "../../util/useSwitchNetworkHook"
+import { useParticleProvider } from '@particle-network/connectkit';
+import { ethers } from 'ethers';
 
 export default function LendToPoolButton(props) {
-  const { chainId } = useWeb3WalletState();
+  const [chainId, setChainId] = useState(null);
+  const particleProvider = useParticleProvider();
+    
+  useEffect(()=>{
+      async function getChainId() {
+          const provider = new ethers.BrowserProvider(particleProvider);
+          const chain = await provider.getNetwork()
+          setChainId(parseFloat(chain.chainId));
+      }
+      
+      getChainId();
+  }, [])
 
-  const { isLoading: isLoadingSwitchNetwork, switchChain } = useSwitchNetworkHook();
+  const {fetchData: switchNetwork} = useSwitchNetworkHook();
+
   const pool = props.pool;
   const symbol = props.symbol;
 
@@ -24,17 +37,21 @@ export default function LendToPoolButton(props) {
 
   async function openModal() {
     // switch network
-    try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID)
-      if (resultSwitchNetwork.error) {
-        throw resultSwitchNetwork.error
+    if(chainId != process.env.BNB_CHAIN_ID) {
+      try {
+        const resultSwitchNetwork = await switchNetwork(process.env.BNB_CHAIN_ID);
+        if (resultSwitchNetwork.error) {
+            throw resultSwitchNetwork.error
+        }
+        setChainId(resultSwitchNetwork.data)
+        setIsOpen(true)
+      } catch (error) {
+        console.log(error)
+        return
       }
-    } catch (error) {
-      console.log(error)
-      return
+    } else {
+      setIsOpen(true)
     }
-    
-    setIsOpen(true)
   }
 
   function handleLend(stableNumber, wagNumber, adminFee) {
@@ -46,17 +63,16 @@ export default function LendToPoolButton(props) {
   }
 
   function handleDisableLendButton() {
-    if(isLoadingSwitchNetwork) return true
     if(parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return true
     if(poolSupply == poolMaxSupply) return true
     return false;
   }
 
-  function handleLendButtonString() {
-    if(isLoadingSwitchNetwork) return "Loading..."
-    if(poolSupply == poolMaxSupply) return "Pool Fullfilled"
-    if(parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return "Pool Collection Time Ended"
-    return "Lend To Pool";
+  function showWagPair() {
+    if(pool) return false;
+    if(pool.stabletoPairRate == 0) return false
+
+    return true;
   }
 
   return (
@@ -65,29 +81,37 @@ export default function LendToPoolButton(props) {
         disabled={handleDisableLendButton()}
         onClick={openModal}
       >
-        {handleLendButtonString()}
+        Lend Your Cryptocurrency
       </Button>
 
       <div className='flex justify-between mt-2'>
-        <p 
-          onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, "buyIDRT");}}
-          className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-        >
-          Do you need more {symbol}?
-        </p>
+        <div>
+          <p 
+            onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, `buy${symbol}`);}}
+            className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
+          >
+            Do you need more {symbol}?
+          </p>
+        </div>
 
-        <p 
-          onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
-          className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-        >
-          Do you need more WAG?
-        </p>
+        <div>
+          {
+            showWagPair() &&
+            <p 
+              onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
+              className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
+            >
+              Do you need more WAG?
+            </p>
+          }
+        </div>
       </div>
 
       <LendToPoolDialog {...props} 
         isOpen={isOpen} 
         closeModal={()=>{setIsOpen(false)}}
         handleLend={handleLend}
+        chainId={chainId}
       />
 
       <ConfirmationLendToPoolDialog {...props} 

@@ -242,7 +242,7 @@ export default function ConfirmationLendToPoolDialog(props) {
                         <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
                             {stableNumber}
                         </p>
-                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
+                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
                             {symbol}
                         </p>
@@ -265,7 +265,7 @@ export default function ConfirmationLendToPoolDialog(props) {
                     </p>
                     <div className='mt-2'>
                       <Button
-                        color={"dark"}
+                        color={handleStableApproveButtonString() == "Approved" ? "success" : "dark"}
                         size={"sm"}
                         style={{width:"100%"}}
                         disabled={handleStableApproveButtonDisabled()}
@@ -278,48 +278,58 @@ export default function ConfirmationLendToPoolDialog(props) {
                     </div>
                   </div>
 
-                  <div className="mt-4 border rounded-xl p-4">
-                    <div className='flex justify-between'>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Amount
-                        </p>
-                    </div>
-                    
-                    <div className='flex gap-2 items-center justify-between mt-2'>
-                        <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
-                            {wagNumber}
-                        </p>
-                        <img src={"/logo.png"} className="h-7" alt="WAG Logo"/>
-                        <p className="text-lg text-gray-500">
-                            WAG
-                        </p>
-                    </div>
+                  { 
+                    wagNumber != "" &&
+                    <div>
+                      <div className="mt-4 border rounded-xl p-4">
+                        <div className='flex justify-between'>
+                            <p className="text-xs font-semibold text-gray-500">
+                                Amount
+                            </p>
+                        </div>
+                        
+                        <div className='flex gap-2 items-center justify-between mt-2'>
+                            <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
+                                {wagNumber}
+                            </p>
+                            <img src={"/logo.png"} className="h-7" alt="WAG Logo"/>
+                            <p className="text-lg text-gray-500">
+                                WAG
+                            </p>
+                        </div>
+                      </div>
 
-                  </div>
+                      <div className="mt-4">
+                        <p className='text-base'>
+                          <span className='font-bold'>Step 2. </span> Approving contract to spend <span className='font-semibold'>{numberWithCommas(parseFloat(wagNumber), 2)} WAG</span>
+                        </p>
+                        <div className='mt-2'>
+                          <Button
+                            color={handleWagApproveButtonString() == "Approved" ? "success" : "dark"}
+                            size={"sm"}
+                            style={{width:"100%"}}
+                            disabled={handleWagApproveButtonDisabled()}
+                            onClick={()=>{
+                              handleApproveWag()
+                            }}
+                          >
+                            {handleWagApproveButtonString()}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  }
 
                   <div className="mt-4">
-                    <p className='text-base'>
-                      <span className='font-bold'>Step 2. </span> Approving contract to spend <span className='font-semibold'>{numberWithCommas(parseFloat(wagNumber), 2)} WAG</span>
-                    </p>
-                    <div className='mt-2'>
-                      <Button
-                        color={"dark"}
-                        size={"sm"}
-                        style={{width:"100%"}}
-                        disabled={handleWagApproveButtonDisabled()}
-                        onClick={()=>{
-                          handleApproveWag()
-                        }}
-                      >
-                        {handleWagApproveButtonString()}
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <p className='text-base'>
-                      <span className='font-bold'>Step 3. </span> Lend <span className='font-bold'>{symbol}</span> and <span className='font-bold'>WAG</span> to pool
-                    </p>
+                    { 
+                      wagNumber != ""
+                      ? <p className='text-base'>
+                        <span className='font-bold'>Step 3. </span> Lend <span className='font-bold'>{symbol}</span> and <span className='font-bold'>WAG</span> to pool
+                      </p>
+                      : <p className='text-base'>
+                        <span className='font-bold'>Step 2. </span> Lend <span className='font-bold'>{symbol}</span> to pool
+                      </p>
+                    }
                     <div className='mt-2'>
                       <Button
                         color={"dark"}

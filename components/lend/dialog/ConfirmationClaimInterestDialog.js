@@ -1,12 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Button } from 'flowbite-react';
 import { numberWithCommas } from '../../../util/stringUtility';
 import { ImCross } from 'react-icons/im';
 import useClaimInterestHook from '../utils/useClaimInterestHook';
 import { useRouter } from 'next/router';
-import useSwitchNetworkHook from '../../../util/useSwitchNetworkHook';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
 
 export default function ConfirmationClaimInterestDialog(props) {
 
@@ -27,8 +25,11 @@ export default function ConfirmationClaimInterestDialog(props) {
 
   const refreshLatestInterestClaimed = props.refreshLatestInterestClaimed;
 
-  const { chainId } = useWeb3WalletState()
-  const { isLoading: isLoadingSwitchChain, switchChain } = useSwitchNetworkHook();
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
+
+  useEffect(()=>{
+    getProtocolFeeAmount();
+  }, [fees, pool, latestInterestClaimed]);
 
   function closeModal() {
     props.close();
@@ -59,10 +60,10 @@ export default function ConfirmationClaimInterestDialog(props) {
   }
 
   function getProtocolFeeAmount() {
-    if (fees == null) return "~"
+    if (fees == null) return;
 
     const fee = countFee();
-    return numberWithCommas(fee, 2)
+    setProtocolFeeAmount(fee)
   }
 
   function getReceivedInterestAmount() {
@@ -83,16 +84,6 @@ export default function ConfirmationClaimInterestDialog(props) {
 
   async function handleClaimInterest() {
     try {
-      const resultSwitchNetwork = await switchChain(chainId, process.env.BNB_CHAIN_ID);
-      if (resultSwitchNetwork.error) {
-          throw resultSwitchNetwork.error
-      }
-    } catch (error) {
-      console.log(error)
-      return
-    }
-    
-    try {
       const resultClaim = await claimInterest(poolId)
       if (resultClaim.error) {
           throw resultClaim.error
@@ -104,14 +95,7 @@ export default function ConfirmationClaimInterestDialog(props) {
     }
   }
 
-  function handleClaimButtonDisable() {
-    if (isLoadingSwitchChain) return true
-    if (isLoadingClaimInterest) return true
-    return false;
-  }
-
   function handleClaimButtonString() {
-    if (isLoadingSwitchChain) return "Loading..."
     if (isLoadingClaimInterest) return "Claiming..."
     return "Claim";
   }
@@ -203,7 +187,7 @@ export default function ConfirmationClaimInterestDialog(props) {
                                 Protocol Fee ({symbol})
                             </p>
                             <p className="text-xs text-gray-500">
-                              -{getProtocolFeeAmount()}
+                              -{numberWithCommas(protocolFeeAmount, 2)}
                             </p>
                           </div>
                       </div>
@@ -236,7 +220,7 @@ export default function ConfirmationClaimInterestDialog(props) {
 
                   <div className='mt-6'>
                     <Button color={"dark"} style={{ width: '100%' }} size={"sm"} 
-                      disabled={handleClaimButtonDisable()}
+                      disabled={isLoadingClaimInterest}
                       onClick={()=>{
                         handleClaimInterest();
                       }}

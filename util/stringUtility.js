@@ -1,7 +1,29 @@
 export function numberWithCommas(x, digits) {
-    var parts = (Math.round((x + Number.EPSILON) * 100) / 100).toFixed(digits).toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
+  var parts = Number(x).toFixed(digits).toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
+export function inputNumberWithCommas(x) {
+  if (!x) return x; // Handle undefined, null, or empty string
+  const parts = x.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
+export function inputNumberFilter(value) {
+  let rawValue = value.replace(/[^0-9.]/g, '');
+  
+  // If there are multiple decimal points, keep only the first one
+  const parts = rawValue.split('.');
+  if (parts.length > 2) {
+    rawValue = parts[0] + '.' + parts.slice(1).join('');
+  }
+
+  if (/^\d*\.?\d*$/.test(rawValue)) {
+    return(rawValue);
+  }
+  return ""
 }
 
 export function numberWithLetter(num, digits) {
@@ -29,11 +51,11 @@ export function formatDate(date) {
   return formattedDate;
 }
 
-export function shortenAddress(address) {
+export function shortenAddress(address, length = 4) {
   if (address.length <= 8) return address; // Address is already short
 
-  const prefix = address.slice(0, 4);
-  const suffix = address.slice(-4);
+  const prefix = address.slice(0, length);
+  const suffix = address.slice(-length);
 
   return `${prefix}...${suffix}`;
 }

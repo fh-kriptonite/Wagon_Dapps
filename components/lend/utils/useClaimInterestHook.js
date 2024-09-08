@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { ethers } from 'ethers';
-import { useWeb3WalletState } from '../../general/web3WalletContext';
+import { useAccount, useParticleProvider } from '@particle-network/connectkit';
 
 const useClaimInterestHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  
-  const { getProviderTransaction } = useWeb3WalletState();
+  const particleProvider = useParticleProvider();
+  const address = useAccount();
 
-  const fetchData = async (poolId, amount) => {
+  const fetchData = async (poolId) => {
     setIsLoading(true);
 
     let data = null;
@@ -16,7 +16,7 @@ const useClaimInterestHook = () => {
 
     try {
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(getProviderTransaction())
+      const provider = new ethers.BrowserProvider(particleProvider)
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -28,7 +28,8 @@ const useClaimInterestHook = () => {
 
       // Call smart contract function
       const transaction = await contract.claimInterest(
-        poolId
+        poolId,
+        address
       );
       
       // Wait for transaction confirmation
