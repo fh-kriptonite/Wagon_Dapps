@@ -1,0 +1,93 @@
+[
+    {
+        "title": "Platform Overview",
+        "label": "The Platform enables Lenders to invest in decentralized lending pools, where each pool represents a corporate bond equivalent, providing liquidity to specific projects or companies in exchange for interest payments and principal repayment, both of which must be claimed by Lenders via the Platform’s decentralized application (dApp)."
+    },
+    {
+        "title": "Lending Pools",
+        "points": [
+            "Lending Pool Definition: Each lending pool operates as a smart contract-based decentralized financial instrument where Lenders supply assets to borrowers.",
+            "Corporate Bond Equivalent: Lending pools are structured similarly to corporate bonds, with each pool representing a debt instrument issued through decentralized protocols.",
+            "Pool Details: The interest rate, maturity period, and collateral (if any) for each pool are provided on the respective pool’s information page."
+        ]
+    },
+    {
+        "title": "Investment Terms",
+        "points": [
+            "Investment Amount: Lenders may contribute assets (such as [accepted tokens, e.g., USDT, IDRT]) in the amounts specified for each pool.",
+            "Maturity and Tenure: The lending pools have varying maturity periods, as indicated in each pool’s details.",
+            "Interest Rate: Each lending pool specifies a fixed interest rate, with interest accruing over the loan period."
+        ]
+    },
+    {
+        "title": "Yield and Interest Payments",
+        "points": [
+            "Interest Accumulation: Interest is calculated based on the amount invested in each lending pool and accrues according to the terms specified in the pool.",
+            "Claim Process: Interest payments will not be automatically transferred to the Lender’s wallet. Instead, the Lender must manually claim the interest from the Platform’s dApp. Claimed interest will be transferred directly to the Lender’s designated wallet after the claim is initiated.",
+            "Principal Repayment: At the end of the lending pool's term, the Lender is responsible for claiming the repayment of the principal amount from the dApp. The claim process will initiate the transfer of the principal to the Lender’s wallet."
+        ]
+    },
+    {
+        "title": "Pool Risk and Collateral",
+        "points": [
+            "Risk: Lenders acknowledge the risk associated with participating in lending pools, which may include the partial or total loss of the invested amount.",
+            "Collateralization: Some lending pools are secured by collateral, while others may not be. The specific collateral details are disclosed in the pool information."
+        ]
+    },
+    {
+        "title": "Liquidity Withdrawal",
+        "points": [
+            "Secondary Market: A secondary market may be offered to facilitate the transfer of lending pool positions, but liquidity is not guaranteed."
+        ]
+    },
+    {
+        "title": "Governance and Smart Contracts",
+        "points": [
+            "Smart Contract Operations: Lending pools are governed by smart contracts deployed on the [blockchain network, e.g., Binance Smart Chain]. Transactions are immutable and governed strictly by smart contract logic.",
+            "Contract Upgrades: The Platform reserves the right to upgrade or modify the smart contracts, provided that Lenders are notified in advance of any changes."
+        ]
+    },
+    {
+        "title": "Fees and Costs",
+        "points": [
+            "Platform Fees: The Platform may charge a variety of fees, including management or performance fees. All fees will be disclosed in the respective lending pool’s details.",
+            "Gas Fees: Lenders are responsible for paying the blockchain transaction (gas) fees when claiming interest or principal."
+        ]
+    },
+    {
+        "title": "Borrower Default and Remedies",
+        "points": [
+            "Default Risk: In the event of a borrower default, the smart contract may automatically liquidate any collateral (if applicable) or trigger other predefined processes to attempt recovery of funds.",
+            "No Guarantees: The Platform does not guarantee the return of interest or principal in cases of default. Recovery actions will follow the lending pool’s specific rules."
+        ]
+    },
+    {
+        "title": "Claiming Interest and Principal",
+        "points": [
+            "Manual Claim Process: Lenders must manually claim both interest and principal repayments through the Platform’s dApp. The dApp will display available funds and allow Lenders to initiate the transfer to their wallet.",
+            "Claim Window: There may be a limited claim window for interest and principal, as specified by each lending pool’s terms. Lenders are encouraged to claim their funds within the provided window to avoid any forfeiture of rights."
+        ]
+    },
+    {
+        "title": "Platform’s Liability",
+        "points": [
+            "No Fiduciary Duty: The Platform does not serve as a financial advisor or fiduciary. Lenders must independently evaluate the risks associated with each pool.",
+            "Smart Contract Risk: Lenders understand and accept the risks inherent to smart contracts, including the potential for bugs, vulnerabilities, or exploits that could result in financial loss."
+        ]
+    },
+    {
+        "title": "Amendments to Terms",
+        "label": "The Platform reserves the right to amend these Terms and Conditions. Lenders will be notified of significant changes via the Platform’s interface. Continued participation constitutes acceptance of such amendments."
+    },
+    {
+        "title": "Compliance and Legal",
+        "points": [
+            "Regulatory Compliance: Lenders are responsible for complying with applicable legal and regulatory requirements, including tax obligations and reporting.",
+            "Governing Law: This agreement is governed by the laws of British Virgin Islands (BVI). Disputes arising under these Terms shall be resolved in BVI or via arbitration."
+        ]
+    },
+    {
+        "title": "Termination",
+        "label": "These Terms and Conditions remain in effect as long as the Lender holds positions in any lending pool. Termination occurs upon the full redemption of all assets or upon breach of these Terms."
+    }
+]

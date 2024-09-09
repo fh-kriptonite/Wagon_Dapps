@@ -3,9 +3,10 @@ import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { inputNumberFilter, numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
-import { Button } from 'flowbite-react';
+import { Button, Checkbox, Label } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
 import { useAccount } from '@particle-network/connectkit';
+import Link from 'next/link';
 
 export default function LendToPoolDialog(props) {
   const address = useAccount();
@@ -13,6 +14,7 @@ export default function LendToPoolDialog(props) {
 
   const [stableNumber,setStableNumber] = useState("")
   const [wagNumber,setWagNumber] = useState("")
+  const [checkedTnc, setCheckedTnc] = useState(false)
 
   const isOpen = props.isOpen;
   const closeModal = props.closeModal;
@@ -78,6 +80,7 @@ export default function LendToPoolDialog(props) {
   }
 
   function getLendToPoolButtonDisabled() {
+    if(!checkedTnc) return true
     if(stableNumber == "") return true
     if(parseFloat(stableNumber) <= 0) return true
     if(parseFloat(stableNumber) > parseFloat(stableBalance) / Math.pow(10,decimal)) return true
@@ -300,6 +303,17 @@ export default function LendToPoolDialog(props) {
                       </div>
                     }
                     
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-4">
+                    <Checkbox id="tnc" onClick={()=>{setCheckedTnc(!checkedTnc)}}/>
+                    <p className="text-xs text-gray-500">I confirm acceptance of these 
+                      <span>
+                        <Link href="/lendTnc" passHref>
+                          <a target="_blank" className="font-bold text-black hover:cursor-pointer ml-1">terms and conditions</a>
+                        </Link>
+                      </span>.
+                    </p>
                   </div>
 
                   <div className="mt-4 text-center">
