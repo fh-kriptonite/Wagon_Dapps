@@ -68,13 +68,6 @@ export default function LendToPoolButton(props) {
     return false;
   }
 
-  function showWagPair() {
-    if(pool) return false;
-    if(pool.stabletoPairRate == 0) return false
-
-    return true;
-  }
-
   return (
     <div>
       <Button color={"dark"} size={"sm"} style={{width:"100%"}}
@@ -83,29 +76,6 @@ export default function LendToPoolButton(props) {
       >
         Lend Your Cryptocurrency
       </Button>
-
-      <div className='flex justify-between mt-2'>
-        <div>
-          <p 
-            onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool.lendingCurrency}`, `buy${symbol}`);}}
-            className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-          >
-            Do you need more {symbol}?
-          </p>
-        </div>
-
-        <div>
-          {
-            showWagPair() &&
-            <p 
-              onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool.lendingCurrency}&outputCurrency=${pool.pairingCurrency}`, "buyWAG");}}
-              className="text-sm text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
-            >
-              Do you need more WAG?
-            </p>
-          }
-        </div>
-      </div>
 
       <LendToPoolDialog {...props} 
         isOpen={isOpen} 
