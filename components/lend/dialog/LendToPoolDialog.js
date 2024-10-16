@@ -306,7 +306,7 @@ export default function LendToPoolDialog(props) {
                   </div>
 
                   <div className="flex items-center gap-2 mt-4">
-                    <Checkbox id="tnc" onClick={()=>{setCheckedTnc(!checkedTnc)}}/>
+                    <Checkbox id="tnc" checked={checkedTnc} onClick={()=>{setCheckedTnc(!checkedTnc)}}/>
                     <p className="text-xs text-gray-500">I confirm acceptance of these 
                       <span>
                         <Link href="/lendTnc" passHref>
