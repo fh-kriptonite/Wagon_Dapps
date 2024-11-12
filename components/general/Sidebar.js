@@ -5,6 +5,7 @@ import {FaCoins, FaBook, FaQuestionCircle} from 'react-icons/fa'
 import {AiFillDatabase} from 'react-icons/ai'
 import { useRouter } from 'next/router';
 import { RiTokenSwapFill } from "react-icons/ri";
+import { CgProfile } from "react-icons/cg";
 
 import Link from 'next/link'
 import { ConnectButton } from '@particle-network/connectkit';
@@ -50,6 +51,14 @@ export default function Sidebar(props) {
                                 <div className={`${currentPath === '/' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
                                     <MdDashboard className='w-5 h-5 text-gray-500'/>
                                     <span className="ml-3">Account</span>
+                                </div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/account/profile">
+                                <div className={`${currentPath === '/account/profile' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                    <CgProfile className='w-5 h-5 text-gray-500'/>
+                                    <span className="ml-3">Profile</span>
                                 </div>
                             </Link>
                         </li>

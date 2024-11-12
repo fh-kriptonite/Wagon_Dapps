@@ -177,8 +177,8 @@ export default function AccountComponent(props) {
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
                             <div className="grow w-full">
                                 <p className="text-base font-semibold">Wagon Lending <span className="text-xs"> on BSC Network</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Lend</span> your stable coin and <span className="font-bold">earn</span> stable interest</p>
                                 <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Stabilize</span> your portfolio with <span className="font-bold">Real World Asset and Businesses</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">stable</span> coin and get stable interest</p>
                             </div>
                             <div className="w-full xl:w-1/3">
                                 <Link href="/lend">
@@ -221,13 +221,13 @@ export default function AccountComponent(props) {
                     <div className="card w-full h-full !bg-blue-50">
                         <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
                             <div className="grow w-full">
-                                <p className="text-base font-semibold">Wagon Bridge</p>
-                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Wagon Token</span> and <span className="font-bold">DeFi</span> are available on multiple network</p>
-                                <p className="text-sm mt-0.5 text-gray-500">Transfer your <span className="font-bold">WAG</span> across network and start gaining</p>
+                                <p className="text-base font-semibold">Account Verification</p>
+                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Verify</span> your account <span className="font-bold">information</span></p>
+                                <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">FIAT</span> through our pools.</p>
                             </div>
                             <div className="w-full xl:w-1/3">
-                                <Link href="/bridge">
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Start Bridge</Button>
+                                <Link href="/account/verification">
+                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Verification</Button>
                                 </Link>
                             </div>
                         </div>

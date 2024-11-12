@@ -59,7 +59,10 @@ const nextConfig = {
     PARTICLE_NETWORK_APP_ID: process.env.PARTICLE_NETWORK_APP_ID,
 
     // RAMP
-    RAMP_API_URL: process.env.RAMP_API_URL
+    RAMP_API_URL: process.env.RAMP_API_URL,
+
+    // IDRX
+    IDRX_ADDRESS: process.env.IDRX_ADDRESS
   },
   trailingSlash: true
 }
