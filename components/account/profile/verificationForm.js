@@ -155,7 +155,7 @@ export default function VerificationForm(props) {
                     id="documentId" 
                     type="text" 
                     placeholder="Your document ID" 
-                    value={address} 
+                    value={documentId} 
                     onChange={(e) => setDocumentId(e.target.value)} 
                     required
                 />
