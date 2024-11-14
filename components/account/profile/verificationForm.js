@@ -13,6 +13,7 @@ export default function VerificationForm(props) {
     const [fullName, setFullName] = useState('');
     const [address, setAddress] = useState('');
     const [documentType, setDocumentType] = useState('');
+    const [documentId, setDocumentId] = useState('');
     const [file, setFile] = useState(null);
     const [dragActive, setDragActive] = useState(false);
 
@@ -43,7 +44,7 @@ export default function VerificationForm(props) {
     };
 
     const handleSaveProfile = async () => {
-        if (!email || !fullName || !address || !documentType || !file) {
+        if (!email || !fullName || !address || !documentType || !documentId || !file) {
             alert("Please fill in all fields and upload a document.");
             return;
         }
@@ -54,6 +55,7 @@ export default function VerificationForm(props) {
         formData.append('full_name', fullName);
         formData.append('address', address);
         formData.append('document_type', documentType);
+        formData.append('document_id', documentId);
         formData.append('document_file', file);
 
         try {
@@ -143,6 +145,20 @@ export default function VerificationForm(props) {
                     <option value="Driving Licence">Driving Licence</option>
                     <option value="Passport">Passport</option>
                 </Select>
+            </div>
+
+            <div>
+                <div className="mb-2 block">
+                    <Label htmlFor="documentId" value="Document ID" />
+                </div>
+                <TextInput 
+                    id="documentId" 
+                    type="text" 
+                    placeholder="Your document ID" 
+                    value={address} 
+                    onChange={(e) => setDocumentId(e.target.value)} 
+                    required
+                />
             </div>
 
             <div>

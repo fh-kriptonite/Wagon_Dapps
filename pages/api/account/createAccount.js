@@ -50,14 +50,14 @@ export default async function handler(req, res) {
       fs.renameSync(documentFile.filepath, destinationFilePath);
 
       // Now you can save account information along with the file path
-      const { wallet_address, email, full_name, address, document_type } = fields;
+      const { wallet_address, email, full_name, address, document_type, document_id } = fields;
       
       // Ensure all fields are defined
-      if (!wallet_address || !email || !full_name || !address || !document_type) {
+      if (!wallet_address || !email || !full_name || !address || !document_type || !document_id) {
         return res.status(400).json({ message: 'Missing required fields' }); // Handle missing fields
       }
 
-      const response = await createAccountController(wallet_address[0], email[0], full_name[0], address[0], document_type[0], destinationFilePath);
+      const response = await createAccountController(wallet_address[0], email[0], full_name[0], address[0], document_type[0], document_id[0], destinationFilePath);
       
       return res.status(200).json({ data: response }); // Send success response
     } catch (error) {

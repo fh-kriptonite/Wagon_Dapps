@@ -1,7 +1,7 @@
 import connection from '../util/db';
 
 module.exports = {
-    createAccountController: (wallet_address, email, full_name, address, document_type, document_file) => {
+    createAccountController: (wallet_address, email, full_name, address, document_type, document_id, document_file) => {
         return new Promise(async (resolve, reject) => {
             try {
                 connection.getConnection(function(err, conn) {
@@ -10,8 +10,8 @@ module.exports = {
                         throw err;
                     }
                     conn.query(
-                        `INSERT INTO accounts (wallet_address, email, full_name, address, document_type, document_file) values ( ?, ?, ?, ?, ?, ? )`, 
-                        [wallet_address, email, full_name, address, document_type, document_file],
+                        `INSERT INTO accounts (wallet_address, email, full_name, address, document_type, document_id, document_file) values ( ?, ?, ?, ?, ?, ?, ? )`, 
+                        [wallet_address, email, full_name, address, document_type, document_id, document_file],
                         (err, results, fields) => {
                             if(err) reject(err);
                             resolve(results);
