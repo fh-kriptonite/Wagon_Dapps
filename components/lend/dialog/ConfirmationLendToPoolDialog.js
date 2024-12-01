@@ -199,7 +199,7 @@ export default function ConfirmationLendToPoolDialog(props) {
                     
                     <div className='flex gap-2 items-center justify-between mt-2'>
                         <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
-                            {stableNumber}
+                            {numberWithCommas(stableNumber)}
                         </p>
                         <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
