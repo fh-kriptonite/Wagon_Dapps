@@ -155,11 +155,6 @@ export default function UserLendingStatistic(props) {
                         }
                     </>
                 }
-
-                {
-                    pool?.status > 1 &&
-                    <TimelinePool {...props} stableBalance={stableBalance} fees={fees} wagBalance={wagBalance}/>
-                }
             </div>
         }
     </>

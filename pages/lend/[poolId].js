@@ -1,13 +1,15 @@
 // pages/[postId].js
 import { useRouter } from 'next/router';
-import { Alert, Breadcrumb } from 'flowbite-react';
+import { Alert, Breadcrumb, Card, Tabs } from 'flowbite-react';
+import { GrTransaction } from "react-icons/gr";
+import { MdOutlinePayments } from "react-icons/md";
+import { PiPackage } from "react-icons/pi";
+import { FaTruckFront } from "react-icons/fa6";
 import { useEffect, useState } from "react";
 
 import PoolDetailCard from '../../components/lend/PoolDetailCard';
 import UserLendingStatistic from '../../components/lend/UserLendingStatistic';
 import PoolOverviewCard from '../../components/lend/PoolOverviewCard';
-import PoolHighlightsCard from '../../components/lend/PoolHighlightsCard';
-import PoolRepaymentTermCard from '../../components/lend/PoolRepaymentTermCard';
 import PoolActivityCard from '../../components/lend/PoolActivityCard';
 import useGetPoolJsonHook from '../../components/lend/utils/useGetPoolJsonHook';
 import useGetLendingPoolHook from '../../components/lend/utils/useGetLendingPoolHook';
@@ -16,6 +18,12 @@ import useGetPoolMaxSupplyHook from '../../components/lend/utils/useGetPoolMaxSu
 import useGetPoolSupplyHook from '../../components/lend/utils/useGetPoolSupplyHook';
 import { getTokenDecimals } from '../../util/lendingUtility';
 import Head from 'next/head';
+import TimelinePool from '../../components/lend/TimelinePool';
+import AssetReports from '../../components/lend/AssetReports';
+import AssetList from '../../components/lend/AssetList';
+
+import { getAssetsPoolService, getShipmentsPoolService } from "../../services/service_lending";
+import ShipmentList from '../../components/lend/ShipmentList';
 
 export default function Pool() {
   const router = useRouter();
@@ -28,7 +36,6 @@ export default function Pool() {
   const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
   const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
   const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
-
   
   function getSymbol() {
     if(poolJson == null) return "";
@@ -67,6 +74,46 @@ export default function Pool() {
     setIsLate(Math.floor((Date.now()-paymentTime)/millisecondsPerDay));
   }
 
+  useEffect(()=>{
+    if(poolJson != null) {
+      if(poolJson.properties.type == "Asset Leasing") {
+        getShipments();
+        getAssetsPool();
+      }
+    }
+  }, [poolJson])
+
+  const [assets, setAssets] = useState(null);
+  const [isLoadingAsset, setIsLoadingAsset] = useState(false);
+
+  async function getAssetsPool() {
+    setIsLoadingAsset(true)
+      try {
+          const data = await getAssetsPoolService(poolId);
+          setAssets(data.data)
+          setIsLoadingAsset(false)
+      } catch (error) {
+          console.log(error)
+          setIsLoadingAsset(false)
+      }
+  }
+
+  const [shipments, setShipments] = useState(null);
+  const [isLoadingShipment, setIsLoadingShipment] = useState(false);
+
+  async function getShipments() {
+    setIsLoadingShipment(true)
+      try {
+          const data = await getShipmentsPoolService(poolId);
+          console.log(data.data)
+          setShipments(data.data)
+          setIsLoadingShipment(false)
+      } catch (error) {
+          console.log(error)
+          setIsLoadingShipment(false)
+      }
+  }
+
   return (
     <div className='container mx-auto px-4 md:px-10 space-y-6 pb-4 max-w-7xl'>
       <Head>
@@ -98,46 +145,88 @@ export default function Pool() {
           />
         </div>
 
-        <div className='flex-1 space-y-4'>
-          <UserLendingStatistic
-            pool={pool}
-            poolJson={poolJson}
-            symbol={getSymbol()}
-            decimal={getDecimal()}
-            poolMaxSupply={poolMaxSupply}
-            poolSupply={poolSupply}
-            refresh={()=>{
-              console.log("refreshing activepool");
-              getActivePool(poolId);
-              getPoolSupply(poolId);
-            }}
-          />
+        <div className='flex-1'>
+          <div className='sticky top-20 space-y-4'>
+            <UserLendingStatistic
+              pool={pool}
+              poolJson={poolJson}
+              symbol={getSymbol()}
+              decimal={getDecimal()}
+              poolMaxSupply={poolMaxSupply}
+              poolSupply={poolSupply}
+              refresh={()=>{
+                console.log("refreshing activepool");
+                getActivePool(poolId);
+                getPoolSupply(poolId);
+              }}
+            />
 
-          <PoolOverviewCard
-            pool={pool}
-            symbol={getSymbol()}
-            decimal={getDecimal()}
-          />
-
-          <PoolHighlightsCard
-            poolJson={poolJson}
-          />
-
-          <PoolRepaymentTermCard
-            poolJson={poolJson}
-          />
-
-          <div className='card'>
-            <h6 className="!font-semibold">Announcement</h6>
-            <p className='text-sm mt-6'>No announcement found</p>
+            <PoolOverviewCard
+              poolId={poolId}
+              poolJson={poolJson}
+              pool={pool}
+              symbol={getSymbol()}
+              decimal={getDecimal()}
+              activePool={activePool}
+              poolMaxSupply={poolMaxSupply}
+              poolSupply={poolSupply}
+            />
           </div>
-
-          <PoolActivityCard
-            poolId={poolId}
-            decimal={getDecimal()}
-          />
-
         </div>
+      </div>
+
+      {
+        poolJson?.properties.type == "Asset Leasing" &&
+        <AssetReports 
+          shipments={shipments}
+          assets={assets}
+        />
+      }
+
+      <div className='card !pt-2'>
+        <Tabs variant="underline">
+          <Tabs.Item active title="Transactions" icon={GrTransaction}>
+            <div className='min-h-60'>
+              <PoolActivityCard
+                poolId={poolId}
+                decimal={getDecimal()}
+              />
+              </div>
+          </Tabs.Item>
+          {
+            pool?.status > 1 &&
+            <Tabs.Item title="Repayments" icon={MdOutlinePayments}>
+              <div className='min-h-60'>
+                <TimelinePool 
+                  pool={pool}
+                  symbol={getSymbol()}
+                  decimal={getDecimal()}
+                />
+              </div>
+            </Tabs.Item>
+          }
+          {
+            poolJson?.properties.type == "Asset Leasing" &&
+            <Tabs.Item title="Shipments" icon={PiPackage}>
+                <div className='min-h-60'>
+                  <ShipmentList
+                    shipments={shipments}
+                  />
+                </div>
+            </Tabs.Item>
+          }
+          {
+            poolJson?.properties.type == "Asset Leasing" &&
+            <Tabs.Item title="Assets" icon={FaTruckFront}>
+                <div className='min-h-60'>
+                  <AssetList
+                    assets={assets}
+                  />
+                </div>
+            </Tabs.Item>
+          }
+          
+        </Tabs>
       </div>
     </div>
   );

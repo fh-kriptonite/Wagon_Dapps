@@ -250,5 +250,66 @@ module.exports = {
                 reject(error);
             }
         });
+    },
+    getAssetsPoolService: (poolId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                connection.getConnection(function(err, conn) {
+                    if(err) {
+                        connection.releaseConnection(conn);
+                        throw err;
+                    }
+                    conn.query(
+                        `SELECT id, type, status, created_at
+                        FROM assets
+                        WHERE pool_id = ?`,
+                        [poolId],
+                        (err, results, fields) => {
+                            if(err) reject(err);
+                            resolve(results);
+                    });
+                    connection.releaseConnection(conn);
+                })
+            } catch (error) {
+                console.log(error);
+                reject(error);
+            }
+        });
+    },
+    getShipmentsPoolService: (poolId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                connection.getConnection(function(err, conn) {
+                    if(err) {
+                        connection.releaseConnection(conn);
+                        throw err;
+                    }
+                    conn.query(
+                        `SELECT shipments.id, 
+                            shipments.date, 
+                            shipments.from, 
+                            shipments.to, 
+                            shipments.weight, 
+                            shipments.distance, 
+                            shipments.created_at,
+                            assets.id as asset_id,
+                            assets.type as asset_type,
+                            assets.created_at as asset_created_at
+                        FROM shipments
+                        LEFT JOIN assets ON shipments.truck_id = assets.id
+                        WHERE assets.pool_id = ?
+                        ORDER BY shipments.date DESC;`,
+                        [poolId],
+                        (err, results, fields) => {
+                            if(err) reject(err);
+                            resolve(results);
+                    });
+                    connection.releaseConnection(conn);
+                })
+            } catch (error) {
+                console.log(error);
+                reject(error);
+            }
+        });
     }
 }

@@ -25,8 +25,8 @@ export default function PoolActivityCard(props) {
     
   
     return (
-        <div className='card space-y-6'>
-            <div className="flex justify-between">
+        <div className='space-y-6'>
+            {/* <div className="flex justify-between">
                 <h6 className="!font-semibold">Recent activity</h6>
                 <div className="flex items-center gap-1 text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit"
                     onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
@@ -34,11 +34,11 @@ export default function PoolActivityCard(props) {
                     <p className="text-sm">{shortenAddress(process.env.LENDING_ADDRESS_BNB)}</p>
                     <MdOpenInNew size={16} className=""/>
                 </div>
-            </div>
+            </div> */}
             <div className='space-y-1'>
                 <div className="overflow-x-auto">
                     <Table>
-                        <Table.Head className="!bg-blue-100">
+                        <Table.Head className="">
                             <Table.HeadCell>Block</Table.HeadCell>
                             <Table.HeadCell className='text-start'>Address</Table.HeadCell>
                             <Table.HeadCell className='text-right'>Event</Table.HeadCell>
@@ -53,7 +53,7 @@ export default function PoolActivityCard(props) {
                             {
                                 activities.map((activity, index) => {
                                     return (
-                                        <Table.Row className="bg-blue-100 text-xs" key={`activity_-${index}`}>
+                                        <Table.Row className="text-sm" key={`activity_-${index}`}>
                                             <Table.Cell className='!py-2'>{activity.block}</Table.Cell>
                                             <Table.Cell className='!py-2'>{shortenAddress(activity.address)}</Table.Cell>
                                             <Table.Cell className='!py-2 text-right'>{activity.event}</Table.Cell>

@@ -9,6 +9,7 @@ import useGetActivePoolHook from "./utils/useGetActivePoolHook";
 import useGetPoolJsonHook from "./utils/useGetPoolJsonHook";
 import useGetPoolMaxSupplyHook from "./utils/useGetPoolMaxSupplyHook";
 import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
+import { MdSecurity } from "react-icons/md";
 
 export default function PoolCard(props) {
   const router = useRouter();
@@ -173,28 +174,34 @@ export default function PoolCard(props) {
             <div className="card !p-0">
               <img src={poolJson?.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
             </div>
-            <div className="space-y-4">
+            <div className="space-y-2.5">
               {
                 (isLoadingPool)
                 ? <div className="w-fit ml-auto">
                     <Spinner/>
                   </div>
-                : <Badge color={getBadgeColor()} size={"sm"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
+                : <Badge color={getBadgeColor()} size={"xs"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
                     <div className="flex gap-2 items-center">
-                      <span className="relative flex h-3 w-3">
+                      <span className="relative flex h-2 w-2">
                         <span className={`${getBadgePulseColor()} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
-                        <span className={`${getBadgePulseColor()} relative inline-flex rounded-full h-3 w-3`}></span>
+                        <span className={`${getBadgePulseColor()} relative inline-flex rounded-full h-2 w-2s`}></span>
                       </span>
                       {getBadgeString()}
                     </div>
                   </Badge>
               }
-              <div className="flex gap-2">
-                <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
-                <img src={poolJson?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
-                <div className="bg-green-500 h-10 w-10 rounded-xl text-white flex items-center justify-center">
+
+              <div className="flex gap-2 justify-end">
+                <img src="/network/logo-bnb.png" className="h-8" alt="Stable coin Logo" />  
+                <img src={poolJson?.properties.currency_logo} className="h-8" alt="Stable coin Logo" />  
+                <div className="bg-green-500 h-8 w-8 rounded-xl text-white flex items-center justify-center">
                   <p className="text-base font-bold">{poolJson?.properties.rating}</p>
                 </div>
+              </div>
+
+              <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-2 py-0.5 rounded-xl'>
+                <MdSecurity size={10} />
+                <p className='text-xs'>Secured <span className='font-bold'>{poolJson?.properties.type}</span></p>
               </div>
             </div>
           </div>
@@ -204,11 +211,11 @@ export default function PoolCard(props) {
             <p className="text-base text-gray-500">{poolJson?.sub_name}</p>
           </div>
 
-          <div className="border-t my-4"/>
+          <div className="border-t my-2"/>
 
           <p className="text-2xl font-bold">{numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}</p>
 
-          <p className="text-sm mt-2 font-semibold text-gray-700">
+          <p className="text-sm mt-1 font-semibold text-gray-700">
             Progress ({ numberWithCommas(getPoolProgress(), 2) }%)</p>
           
           <div className="mt-2">
@@ -224,7 +231,7 @@ export default function PoolCard(props) {
             </p>
           </div>
 
-          <div className="border-t my-4"/>
+          <div className="border-t my-2"/>
 
           <div className="text-center">
             <div className="h-full flex justify-between items-center">
@@ -243,7 +250,7 @@ export default function PoolCard(props) {
           {
             getPoolStatus() == 1 &&
             <>
-              <div className="border-t my-4"/>    
+              <div className="border-t my-2"/>
               <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
             </>
           }
