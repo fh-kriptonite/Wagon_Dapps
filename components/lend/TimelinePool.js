@@ -103,7 +103,7 @@ export default function TimelinePool(props) {
       <div className="mt-2 space-y-1">
         <div className="overflow-x-auto">
           <Table>
-            <Table.Head className="!bg-blue-100">
+            <Table.Head className="">
               <Table.HeadCell></Table.HeadCell>
               <Table.HeadCell>Repayment Deadline</Table.HeadCell>
               <Table.HeadCell className='text-right'>Amount</Table.HeadCell>
@@ -116,7 +116,7 @@ export default function TimelinePool(props) {
                     const durationBetweenPayment = parseFloat(pool.loanTerm) / parseFloat(pool.paymentFrequency) * 1000;
                     const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
                     return (     
-                      <Table.Row className="bg-blue-100 text-xs" key={`repayment-${index}`}>
+                      <Table.Row className="text-sm" key={`repayment-${index}`}>
                         <Table.Cell className='!py-2'>{index+1}</Table.Cell>
                         <Table.Cell className='!py-2'>{formatDate(new Date(paymentTime))}</Table.Cell>
                         <Table.Cell className='!py-2 text-right'>
