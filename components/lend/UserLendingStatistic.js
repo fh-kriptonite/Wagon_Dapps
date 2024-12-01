@@ -10,6 +10,7 @@ import useGetPoolFeeHook from './utils/useGetPoolFeeHook';
 import LendToPoolButton from './LendToPoolButton';
 import TimelinePool from './TimelinePool';
 import { useAccount } from '@particle-network/connectkit';
+import LendFiatToPoolButton from './fiat/LendFiatToPoolButton';
 
 export default function UserLendingStatistic(props) {
     const address = useAccount();
@@ -137,6 +138,19 @@ export default function UserLendingStatistic(props) {
                                         }}
                                     />
                                 </div>
+                                {
+                                    pool?.lendingCurrency == process.env.IDRX_ADDRESS &&
+                                    <div className="flex-1">
+                                        <LendFiatToPoolButton 
+                                            {...props}
+                                            fees={fees}
+                                            poolId={poolId}
+                                            refreshUser={()=>{
+                                                props.refresh();
+                                            }}
+                                        />
+                                    </div>
+                                }
                             </div>
                         }
                     </>
