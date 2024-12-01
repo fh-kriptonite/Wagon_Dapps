@@ -20,7 +20,7 @@ export default function LendTnc(props) {
           </p>
 
           <p className="text-sm text-gray-500 font-light mt-4">
-            These Terms and Conditions govern participation in the lending pools ("Lending Pools") issued by the Web3 DeFi platform ("Platform"), operated by Wagon Network. By participating in any Lending Pool, users ("Lenders" or "Investors") agree to these terms.
+            These Terms and Conditions govern participation in the lending pools (&quot;Lending Pools&quot;) issued by the Web3 DeFi platform (&quot;Platform&quot;), operated by Wagon Network. By participating in any Lending Pool, users (&quot;Lenders&quot; or &quot;Investors&quot;) agree to these terms.
           </p>
 
           {

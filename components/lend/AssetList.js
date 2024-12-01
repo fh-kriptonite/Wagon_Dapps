@@ -64,7 +64,7 @@ export default function AssetList(props) {
       {
         assets?.map((asset, index) => {
           return (
-            <div className="card">
+            <div className="card" key={asset.id}>
               <div className="flex gap-2 justify-between">
                 <p className="text-base font-bold">
                   {getDisplayId(asset)}
