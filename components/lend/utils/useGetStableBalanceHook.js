@@ -3,7 +3,7 @@ import { getErc20BalanceService } from '../../../services/service_erc20';
 
 const useGetStableBalanceHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(0);
   const [error, setError] = useState(null);
 
   const fetchData = async (chainId, address, erc20Address) => {
