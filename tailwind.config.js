@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: 'class',
   content: [
-    "./node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}",
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './node_modules/flowbite-react/**/*.{js,jsx,ts,tsx}',
+    './node_modules/flowbite/**/*.{js,jsx,ts,tsx}',
     "./public/**/*.html",
-    "./node_modules/flowbite/**/*.js"
   ],
   theme: {
     extend: {
@@ -15,6 +15,5 @@ module.exports = {
   },
   plugins: [
     require("flowbite/plugin"),
-    require('@tailwindcss/line-clamp'),
   ],
 }

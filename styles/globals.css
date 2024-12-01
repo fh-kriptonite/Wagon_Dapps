@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import 'flowbite';
+
 
 html {
   background-color: #F8F9FD;
