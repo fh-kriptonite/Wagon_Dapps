@@ -91,7 +91,7 @@ export default function AssetReports(props) {
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-2 justify-between items-center card">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-2 justify-between items-center card">
         <div className="flex-1 grid grid-cols md:grid-cols-2 gap-8">
 
           <div className="flex-1">
@@ -148,7 +148,7 @@ export default function AssetReports(props) {
 
         </div>
 
-        <div className="flex-1">
+        <div className="flex-1 w-full">
           <ShipmentChart data={aggregateShipments(shipments)}/>
         </div>
       </div>
