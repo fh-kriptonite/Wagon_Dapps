@@ -1,5 +1,5 @@
 import { numberWithCommas } from "../../util/stringUtility";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import { Badge, Progress, Spinner } from "flowbite-react";
 import CountdownTimer from "../general/CountdownTimer";
@@ -21,6 +21,9 @@ export default function PoolCard(props) {
   const {isLoading: isLoadingPoolMaxSupply, data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
   const {isLoading: isLoadingPoolSupply, data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
 
+  const [progress, setProgress] = useState(0);
+  const [progressSupply, setProgressSupply] = useState(0);
+
   useEffect(()=>{
     if (poolId != null) {
       getPoolJson(poolId)
@@ -29,7 +32,12 @@ export default function PoolCard(props) {
       getPoolMaxSupply(poolId);
       getPoolSupply(poolId);
     }
-  }, [])
+  }, [poolId])
+
+  useEffect(()=>{
+    setProgress(getPoolProgress());
+    setProgressSupply(getPoolProgressSupply());
+  }, [poolMaxSupply, poolSupply])
 
   function getCollectedPrincipalDecimal() {
     if(activePool == null) return 0;
@@ -209,15 +217,15 @@ export default function PoolCard(props) {
           <p className="text-2xl font-bold">{numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}</p>
 
           <p className="text-sm mt-2 font-semibold text-gray-700">
-            Progress ({ numberWithCommas(getPoolProgress(), 2) }%)</p>
+            Progress ({ numberWithCommas(progress, 2) }%)</p>
           
           <div className="mt-2">
-            <Progress progress={ getPoolProgress() } color="dark"/>
+            <Progress progress={ progress } color="dark"/>
           </div>
 
           <div className="flex items-center justify-between mt-2">
             <p className="text-sm font-semibold text-gray-700">
-              { getPoolProgressSupply() } {getSymbol()}
+              { progressSupply } {getSymbol()}
             </p>
             <p className="text-sm font-semibold text-gray-700">
               {numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}
