@@ -53,7 +53,7 @@ export default function ShipmentChart({ data }) {
   };
 
   return (
-    <div className='h-60 w-full flex justify-center'>
+    <div className='w-full flex justify-center'>
         <Bar data={chartData} options={options}/>
     </div>
   );
