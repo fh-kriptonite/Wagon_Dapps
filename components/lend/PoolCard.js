@@ -118,13 +118,6 @@ export default function PoolCard(props) {
     return "bg-gray-400"
   }
 
-  useEffect(()=>{
-    console.log(pool)
-    console.log(isLoadingPool)
-    console.log(poolJson)
-    console.log(isLoadingPoolJson)
-  }, [pool, isLoadingPool, poolJson, isLoadingPoolJson])
-
   return (
     <>
       {  
