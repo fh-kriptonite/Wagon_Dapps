@@ -111,7 +111,7 @@ export default function PoolCard(props) {
   return (
     <>
       {  
-        poolJson == null || isLoadingPoolJson
+        pool == null || isLoadingPool || poolJson == null || isLoadingPoolJson
         ? <div className="card animate-pulse">
               <div className="flex items-start gap-4 justify-between">
                 <div className="card !p-0 !bg-gray-300">
