@@ -39,7 +39,7 @@ export default function PoolCard(props) {
     setProgress(getPoolProgress());
     setProgressSupply(getPoolProgressSupply());
     setMaxSupplyDecimal(getPoolMaxSupplyDecimal());
-  }, [poolMaxSupply, poolSupply])
+  }, [poolMaxSupply, poolSupply, poolJson])
 
   function getCollectedPrincipalDecimal() {
     if(activePool == null) return 0;
