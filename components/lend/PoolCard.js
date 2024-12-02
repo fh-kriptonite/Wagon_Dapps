@@ -23,6 +23,7 @@ export default function PoolCard(props) {
 
   const [progress, setProgress] = useState(0);
   const [progressSupply, setProgressSupply] = useState(0);
+  const [maxSupplyDecimal, setMaxSupplyDecimal] = useState(0);
 
   useEffect(()=>{
     if (poolId != null) {
@@ -37,6 +38,7 @@ export default function PoolCard(props) {
   useEffect(()=>{
     setProgress(getPoolProgress());
     setProgressSupply(getPoolProgressSupply());
+    setMaxSupplyDecimal(getPoolMaxSupplyDecimal());
   }, [poolMaxSupply, poolSupply])
 
   function getCollectedPrincipalDecimal() {
@@ -115,6 +117,13 @@ export default function PoolCard(props) {
 
     return "bg-gray-400"
   }
+
+  useEffect(()=>{
+    console.log(pool)
+    console.log(isLoadingPool)
+    console.log(poolJson)
+    console.log(isLoadingPoolJson)
+  }, [pool, isLoadingPool, poolJson, isLoadingPoolJson])
 
   return (
     <>
@@ -214,7 +223,7 @@ export default function PoolCard(props) {
 
           <div className="border-t my-4"/>
 
-          <p className="text-2xl font-bold">{numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}</p>
+          <p className="text-2xl font-bold">{numberWithCommas(maxSupplyDecimal)} {getSymbol()}</p>
 
           <p className="text-sm mt-2 font-semibold text-gray-700">
             Progress ({ numberWithCommas(progress, 2) }%)</p>
@@ -228,7 +237,7 @@ export default function PoolCard(props) {
               { progressSupply } {getSymbol()}
             </p>
             <p className="text-sm font-semibold text-gray-700">
-              {numberWithCommas(getPoolMaxSupplyDecimal())} {getSymbol()}
+              {numberWithCommas(maxSupplyDecimal)} {getSymbol()}
             </p>
           </div>
 
