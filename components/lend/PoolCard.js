@@ -201,7 +201,7 @@ export default function PoolCard(props) {
 
               <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-2 py-0.5 rounded-xl'>
                 <MdSecurity size={10} />
-                <p className='text-xs'>Secured <span className='font-bold'>{poolJson?.properties.type}</span></p>
+                <p className='text-xs'><span className='font-bold'>{poolJson?.properties.type}</span></p>
               </div>
             </div>
           </div>

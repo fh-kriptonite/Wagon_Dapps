@@ -68,7 +68,7 @@ export default function LendFiatToPoolButton(props) {
 
   return (
     <div>
-      <Button color={"dark"} style={{width:"100%"}}
+      <Button color={"dark"} size={"sm"} style={{width:"100%"}}
         disabled={handleDisableLendButton()}
         onClick={openModal}
       >
