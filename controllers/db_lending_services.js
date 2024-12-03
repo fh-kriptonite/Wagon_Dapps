@@ -260,7 +260,7 @@ module.exports = {
                         throw err;
                     }
                     conn.query(
-                        `SELECT id, type, status, created_at
+                        `SELECT id, type, image_url, status, created_at
                         FROM assets
                         WHERE pool_id = ?`,
                         [poolId],

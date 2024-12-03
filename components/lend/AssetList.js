@@ -1,5 +1,4 @@
 import { Badge } from "flowbite-react";
-
 export default function AssetList(props) {
 
   const assets = props.assets;
@@ -26,11 +25,13 @@ export default function AssetList(props) {
   }
 
   function getImage(asset) {
-    if (asset.type == "TRL-T")
-      return "/trucks/truck7.jpeg";
+    if (asset.id == 1)
+      // return "/trucks/truck7.jpeg";
+      return "/trucks/tank1.jpeg";
 
-    if (asset.type == "LTANK")
-      return "/trucks/truck2.jpeg";
+    if (asset.id == 2)
+      // return "/trucks/truck2.jpeg";
+      return "/trucks/tank2.jpeg";
   }
 
   function getBadgeColor(status) {
@@ -51,38 +52,32 @@ export default function AssetList(props) {
     return "bg-green-400"
   }
 
-  function getTypeString(asset) {
-    if (asset.type == "TRL-T")
-      return "Trailer Tronton";
-
-    if (asset.type == "LTANK")
-      return "Tank Tronton";
-  }
-  
   return (
-    <div className="space-y-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {
         assets?.map((asset, index) => {
           return (
-            <div className="card" key={asset.id}>
-              <div className="flex gap-2 justify-between">
-                <p className="text-base font-bold">
-                  {getDisplayId(asset)}
-                </p>
+            <div className="card !px-0 !pt-0 overflow-hidden" key={asset.id}>
+              <div
+                className="h-52 bg-cover bg-center"
+                style={{ backgroundImage: `url(${asset.image_url})` }}
+              />
+              <div className="flex gap-2 justify-between mt-4 px-4">
+                <div>
+                  <p className="text-base font-bold">
+                    {getDisplayId(asset)}
+                  </p>
+                </div>
                 <Badge color={getBadgeColor(asset.status)} size={"xs"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
-                  <div className="flex gap-2 items-center">
-                    <span className="relative flex h-2 w-2">
-                      <span className={`${getBadgePulseColor(asset.status)} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
-                      <span className={`${getBadgePulseColor(asset.status)} relative inline-flex rounded-full h-2 w-2s`}></span>
-                    </span>
-                    {getBadgeString(asset.status)}
-                  </div>
-                </Badge>
+                    <div className="flex gap-2 items-center">
+                      <span className="relative flex h-2 w-2">
+                        <span className={`${getBadgePulseColor(asset.status)} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
+                        <span className={`${getBadgePulseColor(asset.status)} relative inline-flex rounded-full h-2 w-2s`}></span>
+                      </span>
+                      {getBadgeString(asset.status)}
+                    </div>
+                  </Badge>
               </div>
-              <img src={getImage(asset)} className="h-20 mx-auto mt-2" alt="Truck"/>
-              <p className="text-sm font-semibold text-center mt-1">
-                {getTypeString(asset)}
-              </p>
             </div>
           )
         })
