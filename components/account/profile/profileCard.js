@@ -43,7 +43,7 @@ export default function UnverifiedProfileCard(props) {
         <div className="card w-full divide-y">
             <div className="flex gap-4 pb-4 items-center">
                 <Jazzicon diameter={60} seed={jsNumberForAddress(profile.wallet_address)}/>
-                <div>
+                <div className="w-full">
                     <div className="flex gap-4 items-center mb-1">
                         <h4 className="">{profile.full_name}</h4>
                         <div className={`flex gap-1 items-center ${getStatusColor()} w-fit px-4 py-1 rounded-full text-white`}>
@@ -54,7 +54,12 @@ export default function UnverifiedProfileCard(props) {
                             }
                         </div>
                     </div>
-                    <p className="text-sm font-bold mb-1">{profile.wallet_address}</p>
+                    <p 
+                        className="text-sm font-bold mb-1 overflow-hidden text-ellipsis whitespace-nowrap"
+                        title={profile.wallet_address} // Optional: Show the full text on hover
+                    >
+                        {profile.wallet_address}
+                    </p>
                     <div className="flex gap-2">
                         <p className="text-sm">Email :</p>
                         <p className="text-sm">{profile.email}</p>
