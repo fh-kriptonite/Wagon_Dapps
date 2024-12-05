@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 /public/pools
+/public/trucks
 
 # testing
 /coverage
