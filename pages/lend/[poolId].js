@@ -5,6 +5,7 @@ import { GrTransaction } from "react-icons/gr";
 import { MdOutlinePayments } from "react-icons/md";
 import { PiPackage } from "react-icons/pi";
 import { FaTruckFront } from "react-icons/fa6";
+import { PiUserFill } from "react-icons/pi";
 import { useEffect, useState } from "react";
 
 import PoolDetailCard from '../../components/lend/PoolDetailCard';
@@ -24,6 +25,7 @@ import AssetList from '../../components/lend/AssetList';
 
 import { getAssetsPoolService, getShipmentsPoolService } from "../../services/service_lending";
 import ShipmentList from '../../components/lend/ShipmentList';
+import AboutBorrower from '../../components/lend/AboutBorrower';
 
 export default function Pool() {
   const router = useRouter();
@@ -191,6 +193,13 @@ export default function Pool() {
                 poolId={poolId}
                 decimal={getDecimal()}
               />
+              </div>
+          </Tabs.Item>
+          <Tabs.Item title="Borrowers" icon={PiUserFill}>
+              <div className='min-h-60'>
+                <AboutBorrower
+                  poolJson={poolJson}
+                />
               </div>
           </Tabs.Item>
           {

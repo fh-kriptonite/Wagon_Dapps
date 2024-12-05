@@ -2,6 +2,7 @@ import { MdSecurity } from "react-icons/md";
 
 import { FaTruck } from "react-icons/fa";
 import LoadingPoolDetailCard from './LoadingPoolDetailCard';
+import ReactMarkdown from 'react-markdown';
 
 export default function PoolDetailCard(props) {
 
@@ -25,13 +26,12 @@ export default function PoolDetailCard(props) {
                             <h5 className="italic font-light text-gray-500">{poolJson?.sub_name}</h5>
                         </div>
                         <div className='flex gap-4 items-center'>
-                            <div>
+                            
                             <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-4 py-1 rounded-xl'>
                                 <MdSecurity size={12} />
                                 <p className='text-xs'>Secured <span className='font-bold'>{poolJson?.properties.type}</span></p>
                             </div>
-                            </div>
-
+                            
                             <div className="flex gap-2">
                                 <img src="/network/logo-bnb.png" className="h-10" alt="Stable coin Logo" />  
                                 <img src={poolJson?.properties.currency_logo} className="h-10" alt="Stable coin Logo" />  
@@ -49,9 +49,7 @@ export default function PoolDetailCard(props) {
                     </div>
                 </div>
 
-                <p className='text-sm whitespace-pre-line text-justify'>
-                    {poolJson?.description}
-                </p>
+                <ReactMarkdown>{poolJson?.description}</ReactMarkdown>
 
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                   {
