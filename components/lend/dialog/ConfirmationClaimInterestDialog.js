@@ -89,6 +89,7 @@ export default function ConfirmationClaimInterestDialog(props) {
           throw resultClaim.error
       }
       refreshLatestInterestClaimed();
+      props.refresh();
       closeModal();
     } catch (error) {
       console.log(error)

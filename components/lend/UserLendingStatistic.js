@@ -1,14 +1,10 @@
 import { useRouter } from 'next/router';
 import ButtonConnect from '../../components/general/ButtonConnect';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { numberWithCommas } from '../../util/stringUtility';
 import LoadingUserLendingStatistic from './LoadingUserLendingStatistic';
-import useGetLendStableBalanceHook from './utils/useGetLendStableBalanceHook';
-import useGetLendWagBalanceHook from './utils/useGetLendWagBalanceHook';
-import useGetPoolFeeHook from './utils/useGetPoolFeeHook';
 import LendToPoolButton from './LendToPoolButton';
-import TimelinePool from './TimelinePool';
 import { useAccount } from '@particle-network/connectkit';
 import LendFiatToPoolButton from './fiat/LendFiatToPoolButton';
 
@@ -22,9 +18,9 @@ export default function UserLendingStatistic(props) {
     const symbol = props.symbol;
     const decimal = props.decimal;
 
-    const {data: stableBalance, fetchData: getStableBalance} = useGetLendStableBalanceHook();
-    const {data: wagBalance, fetchData: getWagBalance} = useGetLendWagBalanceHook();
-    const {data: fees, fetchData: getFees} = useGetPoolFeeHook();
+    const stableBalance = props.stableBalance;
+    const wagBalance = props.wagBalance;
+    const fees = props.fees;
     
     function getStableString() {
         if(stableBalance == null) return 0;
@@ -53,21 +49,6 @@ export default function UserLendingStatistic(props) {
         setLoadingImage(false);
         setErrorImage(true);
     };
-
-    useEffect(()=>{
-        if(pool != null) {
-            getStableBalance(address, poolId);
-            getWagBalance(address, poolId)
-            getFees(poolId);
-        }
-    }, [pool])
-    
-    useEffect(()=>{
-        if(pool != null) {
-            getStableBalance(address, poolId);
-            getWagBalance(address, poolId)
-        }
-    }, [address])
 
     function showWagPair() {
         if(!pool) return false;
@@ -132,8 +113,6 @@ export default function UserLendingStatistic(props) {
                                         fees={fees}
                                         poolId={poolId}
                                         refreshUser={()=>{
-                                            getStableBalance(address, poolId);
-                                            getWagBalance(address, poolId);
                                             props.refresh();
                                         }}
                                     />

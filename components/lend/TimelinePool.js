@@ -9,7 +9,6 @@ import useGetLatestInterestClaimedHook from './utils/useGetLatestInterestClaimed
 import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestDialog'
 import { useAccount } from '@particle-network/connectkit';
 import useChainHook from '../../util/useChainHook';
-import useGetStableBalanceHook from './utils/useGetStableBalanceHook';
 
 export default function TimelinePool(props) {
   const address = useAccount();
@@ -20,11 +19,11 @@ export default function TimelinePool(props) {
   const router = useRouter();
   const { poolId } = router.query;
 
-  const {data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook();
-
   const pool = props.pool;
   const symbol = props.symbol;
   const decimal = props.decimal;
+  const stableBalance = props.stableBalance;
+  const wagBalance = props.wagBalance;
   
   const [repayments, setRepayments] = useState([]);
   const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
@@ -35,7 +34,6 @@ export default function TimelinePool(props) {
   useEffect(() => {
     getInterestAmountShare(address, poolId)
     getLatestInterestClaimed(address, poolId)
-    getStableBalance(address, poolId)
   }, [])
 
   useEffect(() => {
@@ -145,6 +143,8 @@ export default function TimelinePool(props) {
         interestAmountShare={interestAmountShare}
         latestInterestClaimed={latestInterestClaimed}
         refreshLatestInterestClaimed={()=>{getLatestInterestClaimed(address, poolId);}}
+        stableBalance={stableBalance}
+        wagBalance={wagBalance}
       />
       
     </div>

@@ -27,9 +27,15 @@ import { getAssetsPoolService, getShipmentsPoolService } from "../../services/se
 import ShipmentList from '../../components/lend/ShipmentList';
 import AboutBorrower from '../../components/lend/AboutBorrower';
 
+import useGetLendStableBalanceHook from '../../components/lend/utils/useGetLendStableBalanceHook';
+import useGetLendWagBalanceHook from '../../components/lend/utils/useGetLendWagBalanceHook';
+import useGetPoolFeeHook from '../../components/lend/utils/useGetPoolFeeHook';
+import { useAccount } from '@particle-network/connectkit';
+
 export default function Pool() {
   const router = useRouter();
   const { poolId } = router.query;
+  const address = useAccount();
 
   const [isLate, setIsLate] = useState(false);
 
@@ -38,7 +44,11 @@ export default function Pool() {
   const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
   const {data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
   const {data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
-  
+
+  const {data: stableBalance, fetchData: getStableBalance} = useGetLendStableBalanceHook();
+  const {data: wagBalance, fetchData: getWagBalance} = useGetLendWagBalanceHook();
+  const {data: fees, fetchData: getFees} = useGetPoolFeeHook();
+    
   function getSymbol() {
     if(poolJson == null) return "";
     return poolJson.properties.currency;
@@ -56,6 +66,7 @@ export default function Pool() {
       getActivePool(poolId);
       getPoolMaxSupply(poolId);
       getPoolSupply(poolId);
+      getFees(poolId);
     }
   }, [poolId])
 
@@ -63,6 +74,14 @@ export default function Pool() {
     if(pool != null && poolJson != null)
       checkIsLate();
   }, [poolJson, pool])
+
+  useEffect(()=>{
+    console.log(address)
+    if(address != null) {
+      getStableBalance(address, poolId);
+      getWagBalance(address, poolId)
+    }
+  }, [address])
 
   function checkIsLate() {
     if(parseFloat(pool.status) == 1) return;
@@ -160,7 +179,12 @@ export default function Pool() {
                 console.log("refreshing activepool");
                 getActivePool(poolId);
                 getPoolSupply(poolId);
+                getStableBalance(address, poolId);
+                getWagBalance(address, poolId);
               }}
+              stableBalance={stableBalance}
+              wagBalance={wagBalance}
+              fees={fees}
             />
 
             <PoolOverviewCard
@@ -210,6 +234,14 @@ export default function Pool() {
                   pool={pool}
                   symbol={getSymbol()}
                   decimal={getDecimal()}
+                  stableBalance={stableBalance}
+                  wagBalance={wagBalance}
+                  fees={fees}
+                  refresh={()=>{
+                    console.log("refreshing user");
+                    getStableBalance(address, poolId);
+                    getWagBalance(address, poolId);
+                  }}
                 />
               </div>
             </Tabs.Item>
