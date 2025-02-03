@@ -1,5 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/trucks/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, must-revalidate", // Forces fresh load
+          },
+        ],
+      },
+    ];
+  },
   reactStrictMode: true,
   swcMinify: true,
   env: {

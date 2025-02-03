@@ -24,16 +24,6 @@ export default function AssetList(props) {
     return shortHash
   }
 
-  function getImage(asset) {
-    if (asset.id == 1)
-      // return "/trucks/truck7.jpeg";
-      return "/trucks/tank1.jpeg";
-
-    if (asset.id == 2)
-      // return "/trucks/truck2.jpeg";
-      return "/trucks/tank2.jpeg";
-  }
-
   function getBadgeColor(status) {
     if(status == "ONROAD") return "success"
     
