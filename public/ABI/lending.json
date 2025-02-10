@@ -433,6 +433,25 @@
       {
         "indexed": false,
         "internalType": "uint256",
+        "name": "deploymentGracePeriodDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdatePoolDeploymentGracePeriodDuration",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "poolId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
         "name": "status",
         "type": "uint256"
       }
@@ -778,6 +797,19 @@
   },
   {
     "inputs": [],
+    "name": "defaultDeploymentGracePeriodDuration",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "defaultGracePeriodDuration",
     "outputs": [
       {
@@ -818,6 +850,25 @@
   {
     "inputs": [],
     "name": "defaultProtocolFee",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "deploymentGracePeriodDurations",
     "outputs": [
       {
         "internalType": "uint256",
@@ -955,6 +1006,45 @@
   {
     "inputs": [],
     "name": "getCurrentPoolId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "termStart",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "loanTerm",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "paymentFrequency",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "latestRepayment",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "gracePeriod",
+        "type": "uint256"
+      }
+    ],
+    "name": "getCurrentTermWithGracePeriod",
     "outputs": [
       {
         "internalType": "uint256",
@@ -1470,6 +1560,19 @@
         "type": "uint256"
       }
     ],
+    "name": "updateDefaultDeploymentGracePeriodDuration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_value",
+        "type": "uint256"
+      }
+    ],
     "name": "updateDefaultGracePeriodDuration",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -1510,6 +1613,24 @@
       }
     ],
     "name": "updateDefaultProtocolFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_poolId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deploymentGracePeriodDuration",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateDeploymentGracePeriod",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -1562,6 +1683,11 @@
       {
         "internalType": "uint256",
         "name": "_gracePeriodDuration",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deploymentGracePeriodDuration",
         "type": "uint256"
       }
     ],

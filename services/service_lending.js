@@ -372,4 +372,16 @@ module.exports = {
             }
         })
     },
+
+    getDeploymentGracePeriodService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                let response = await contract.deploymentGracePeriodDurations(poolId);
+                resolve(response);
+            } catch (error) {
+                console.error('Error:', error);
+                reject(error);
+            }
+        })
+    },
 }

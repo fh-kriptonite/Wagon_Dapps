@@ -9,6 +9,7 @@ import useGetLatestInterestClaimedHook from './utils/useGetLatestInterestClaimed
 import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestDialog'
 import { useAccount } from '@particle-network/connectkit';
 import useChainHook from '../../util/useChainHook';
+import useGetDeploymentGracePeriodHook from './utils/useGetDeploymentGracePeriodHook';
 
 export default function TimelinePool(props) {
   const address = useAccount();
@@ -30,15 +31,18 @@ export default function TimelinePool(props) {
 
   const {data: interestAmountShare, fetchData: getInterestAmountShare}  = useGetInterestAmountSharedHook();
   const {data: latestInterestClaimed, fetchData: getLatestInterestClaimed}  = useGetLatestInterestClaimedHook();
+  const {data: deploymentGracePeriod, fetchData: getDeploymentGracePeriod}  = useGetDeploymentGracePeriodHook();
 
   useEffect(() => {
     getInterestAmountShare(address, poolId)
     getLatestInterestClaimed(address, poolId)
+    getDeploymentGracePeriod(poolId)
   }, [])
 
   useEffect(() => {
     getInterestAmountShare(address, poolId)
     getLatestInterestClaimed(address, poolId)
+    getDeploymentGracePeriod(poolId)
   }, [address])
 
   useEffect(()=>{
@@ -110,7 +114,7 @@ export default function TimelinePool(props) {
             <Table.Body className="divide-y">
               {
                 repayments.map((repayment, index) => {
-                    const loanStart = parseFloat(pool.termStart) * 1000;
+                    const loanStart = (parseFloat(pool.termStart) + parseFloat(deploymentGracePeriod)) * 1000;
                     const durationBetweenPayment = parseFloat(pool.loanTerm) / parseFloat(pool.paymentFrequency) * 1000;
                     const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
                     return (     
