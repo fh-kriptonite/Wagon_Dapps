@@ -11,15 +11,9 @@ export default function Home(props) {
       <Head>
         <title>Account | Wagon Network</title>
       </Head>
-        {
-            !account 
-            ? <div className='h-full'>
-                <Disconnected {...props}/>
-              </div>
-            : <div>
-                <AccountComponent {...props}/>
-            </div>
-        }
+      <div>
+        <AccountComponent {...props}/>
+      </div>
     </div>
   )
 }

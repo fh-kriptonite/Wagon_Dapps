@@ -13,12 +13,16 @@ export default function UserCard(props) {
     const { data: stakedBalance, fetchData: getStakedWagBalance } = useGetStakedWagBalanceHook();
 
     useEffect(()=>{
-        getClaimableDuration();
-        getStakedWagBalance(address);
+        if(address) {
+            getClaimableDuration();
+            getStakedWagBalance(address);
+        }
     }, [])
 
     useEffect(()=>{
-        getStakedWagBalance(address);
+        if(address) {
+            getStakedWagBalance(address);
+        }
     }, [props.fetch])
 
     return (

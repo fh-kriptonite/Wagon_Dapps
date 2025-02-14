@@ -12,11 +12,15 @@ export default function StakeSection(props) {
     const { isLoading, data: balance, fetchData: getBalance } = useGetWagBalanceHook();
 
     useEffect(()=>{
-        getBalance(address)
+        if(address) {
+            getBalance(address)
+        }
     }, [])
 
     useEffect(()=>{
-        getBalance(address)
+        if(address) {
+            getBalance(address)
+        }
     }, [props.fetch])
     
     return (
@@ -27,7 +31,7 @@ export default function StakeSection(props) {
 
             <div className="flex mt-6 gap-2 justify-between">
                 <p className="text-sm font-light text-gray-500">Available balance:</p>
-                <p className="text-sm font-medium text-gray-500">{ isLoading ? "~" : numberWithCommas(parseFloat(balance) / 1e18) } WAG</p>
+                <p className="text-sm font-medium text-gray-500">{ (isLoading || balance == null) ? "~" : numberWithCommas(parseFloat(balance) / 1e18) } WAG</p>
             </div>
             
             <div className="flex gap-2 mt-3">

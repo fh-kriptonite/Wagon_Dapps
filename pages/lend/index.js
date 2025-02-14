@@ -11,15 +11,9 @@ export default function Lend(props) {
         <Head>
           <title>Lend | Wagon Network</title>
         </Head>
-        {
-            !address 
-            ? <div className='h-full'>
-                <Disconnected {...props}/>
-              </div>
-            : <div>
-                <LendHome {...props}/>
-            </div>
-        }
+        <div>
+          <LendHome {...props}/>
+        </div>
     </div>
   )
 }

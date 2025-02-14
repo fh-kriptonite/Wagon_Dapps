@@ -16,13 +16,17 @@ export default function WithdrawCard(props) {
     const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
+        if(address) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
     }, [])
 
     useEffect(()=>{
-        getUserReward(address);
-        getUserClaimable(address);
+        if(address) {
+            getUserReward(address);
+            getUserClaimable(address);
+        }
     }, [props.fetch])
 
     const { isLoading: isLoadingClaimWag, fetchData: claimWag } = useClaimWagHook();

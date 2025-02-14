@@ -11,15 +11,9 @@ export default function Stake(props) {
         <Head>
           <title>Stake | Wagon Network</title>
         </Head>
-        {
-            !address 
-            ? <div className='h-full'>
-                <Disconnected {...props}/>
-              </div>
-            : <div>
-                <StakeComponent {...props}/>
-            </div>
-        }
+        <div>
+          <StakeComponent {...props}/>
+        </div>
     </div>
   )
 }

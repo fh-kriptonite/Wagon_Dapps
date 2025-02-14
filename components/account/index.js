@@ -48,11 +48,13 @@ export default function AccountComponent(props) {
     const [totalRewardClaimed, setTotalRewardClaimed] = useState(0)
 
     async function getStaking() {
+        if(!address) return;
         const balance = await getStakingBalance(address);
         setStakingBalance(parseFloat(balance) / 1e18);
     }
 
     async function getRewards() {
+        if(!address) return;
         const balance = await getRewardBalance(address);
         setRewardBalance(parseFloat(balance) / 1e18);
     }
@@ -63,12 +65,14 @@ export default function AccountComponent(props) {
     }
 
     async function getStakingUserTotalRewardClaimed() {
+        if(!address) return;
         const totalRewardClaimedData = await getUserTotalRewardClaimedService(address);
         setTotalRewardClaimed(parseFloat(totalRewardClaimedData) / 1e18);
     }
 
     const [isLoadingPools, setIsLoadingPools] = useState(false);
     async function getUserPools() {
+        if(!address) return;
         setIsLoadingPools(true)
         try {
             const data = await getUserPoolsService(address);
