@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Disconnected from '../../components/general/Disconnected';
 import LendHome from '../../components/lend/LendHome';
 import { useAccount } from '@particle-network/connectkit';
 
