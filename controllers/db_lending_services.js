@@ -150,9 +150,12 @@ module.exports = {
                     if (err) {
                         return reject(err); // Reject the promise with the error
                     }
-                    let query = 'SELECT pool_id, currency, network, status FROM `lending_pools` WHERE status = ?';
+                    let query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ?';
                     if (status == 1) {
-                        query = 'SELECT pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 0';
+                        query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 0';
+                    } else
+                    if (status == 2) {
+                        query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 7';
                     }
                     conn.query(
                         query,

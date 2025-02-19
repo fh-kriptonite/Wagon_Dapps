@@ -31,6 +31,7 @@ import useGetLendStableBalanceHook from '../../components/lend/utils/useGetLendS
 import useGetLendWagBalanceHook from '../../components/lend/utils/useGetLendWagBalanceHook';
 import useGetPoolFeeHook from '../../components/lend/utils/useGetPoolFeeHook';
 import { useAccount } from '@particle-network/connectkit';
+import PoolCustody from '../../components/lend/PoolCustody';
 
 export default function Pool() {
   const router = useRouter();
@@ -126,7 +127,6 @@ export default function Pool() {
     setIsLoadingShipment(true)
       try {
           const data = await getShipmentsPoolService(poolId);
-          console.log(data.data)
           setShipments(data.data)
           setIsLoadingShipment(false)
       } catch (error) {
@@ -176,7 +176,6 @@ export default function Pool() {
               poolMaxSupply={poolMaxSupply}
               poolSupply={poolSupply}
               refresh={()=>{
-                console.log("refreshing activepool");
                 getActivePool(poolId);
                 getPoolSupply(poolId);
                 getStableBalance(address, poolId);
@@ -196,6 +195,10 @@ export default function Pool() {
               activePool={activePool}
               poolMaxSupply={poolMaxSupply}
               poolSupply={poolSupply}
+            />
+
+            <PoolCustody
+              poolJson={poolJson}
             />
           </div>
         </div>

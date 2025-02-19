@@ -5,6 +5,7 @@ import { MdOpenInNew } from "react-icons/md";
 
 import { getPoolsService } from "../../services/service_lending";
 import PoolCardComingSoon from "./PoolCardComingSoon";
+import PoolCardOffChain from "./PoolCardOffChain";
 
 export default function LendHome(props) {
   const [selectedStatus, setSelectedStatus] = useState(1)
@@ -80,7 +81,9 @@ export default function LendHome(props) {
                       {
                         (pool.status == 0)
                         ? <PoolCardComingSoon poolId={pool.pool_id}/>
-                        : <PoolCard poolId={pool.pool_id}/>
+                        : (pool.network == "OFFCHAIN")
+                          ? <PoolCardOffChain pool={pool} poolId={pool.id}/>
+                          : <PoolCard poolId={pool.pool_id}/>
                       }
                     </div>
                   )
