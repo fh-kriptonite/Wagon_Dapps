@@ -64,7 +64,7 @@ export default function Sidebar(props) {
                 id="logo-sidebar"
                 className={`fixed top-0 left-0 z-40 w-56 h-screen pt-20 transition-transform bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700
                     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                    lg:translate-x-0`} // Always visible on large screens
+                    md:translate-x-0`} // Always visible on large screens
                 aria-label="Sidebar"
             >    
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
