@@ -33,7 +33,7 @@ export default function PoolCustody(props) {
           <h6 className="!font-semibold">Asset Custody & Security</h6>
 
           <div className="flex items-center justify-center text-blue-600 font-bold text-2xl !my-6">
-            <IoShieldCheckmarkSharp className="w-6 h-6 mr-2" /> PROTECTED
+            <IoShieldCheckmarkSharp className="w-6 h-6 mr-2" /> SECURED
           </div>
           <div className="space-y-1">
             <div className='flex justify-between gap-4'>
