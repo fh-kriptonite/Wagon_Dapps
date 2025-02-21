@@ -45,7 +45,7 @@ export default function Pool() {
   async function getAssetsPool() {
     setIsLoadingAsset(true)
       try {
-          const data = await getAssetsPoolService(poolId);
+          const data = await getAssetsPoolService("off-"+poolId);
           setAssets(data.data)
           setIsLoadingAsset(false)
       } catch (error) {
@@ -60,7 +60,7 @@ export default function Pool() {
   async function getShipments() {
     setIsLoadingShipment(true)
       try {
-          const data = await getShipmentsPoolService(poolId);
+          const data = await getShipmentsPoolService("off-"+poolId);
           setShipments(data.data)
           setIsLoadingShipment(false)
       } catch (error) {
