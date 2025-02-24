@@ -10,7 +10,7 @@ import PoolDetailCard from '../../../components/lend/PoolDetailCard';
 import Head from 'next/head';
 import AssetReports from '../../../components/lend/AssetReports';
 
-import { getAssetsPoolService, getShipmentsPoolService } from "../../../services/service_lending";
+import { getOffchainAssetsPoolService, getOffchainShipmentsPoolService } from "../../../services/service_lending";
 import ShipmentList from '../../../components/lend/ShipmentList';
 import AboutBorrower from '../../../components/lend/AboutBorrower';
 
@@ -45,7 +45,7 @@ export default function Pool() {
   async function getAssetsPool() {
     setIsLoadingAsset(true)
       try {
-          const data = await getAssetsPoolService("off-"+poolId);
+          const data = await getOffchainAssetsPoolService("off%2D"+poolId);
           setAssets(data.data)
           setIsLoadingAsset(false)
       } catch (error) {
@@ -60,7 +60,7 @@ export default function Pool() {
   async function getShipments() {
     setIsLoadingShipment(true)
       try {
-          const data = await getShipmentsPoolService("off-"+poolId);
+          const data = await getOffchainShipmentsPoolService("off%2D"+poolId);
           setShipments(data.data)
           setIsLoadingShipment(false)
       } catch (error) {

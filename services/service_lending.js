@@ -357,10 +357,42 @@ module.exports = {
         })
     },
 
+    getOffchainAssetsPoolService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                const response = await fetch('../../../api/lending/getAssetsPool/?pool_id=' + poolId);
+                if (!response.ok) {
+                    reject('Failed to fetch data');
+                }
+                const jsonData = await response.json();
+                resolve(jsonData);
+            } catch (error) {
+                console.error('Error fetching JSON:', error);
+                reject(error);
+            }
+        })
+    },
+
     getShipmentsPoolService : async (poolId) => {
         return new Promise( async (resolve, reject) => {
             try {
                 const response = await fetch('../../api/lending/getShipmentsPool/?pool_id=' + poolId);
+                if (!response.ok) {
+                    reject('Failed to fetch data');
+                }
+                const jsonData = await response.json();
+                resolve(jsonData);
+            } catch (error) {
+                console.error('Error fetching JSON:', error);
+                reject(error);
+            }
+        })
+    },
+
+    getOffchainShipmentsPoolService : async (poolId) => {
+        return new Promise( async (resolve, reject) => {
+            try {
+                const response = await fetch('../../../api/lending/getShipmentsPool/?pool_id=' + poolId);
                 if (!response.ok) {
                     reject('Failed to fetch data');
                 }
