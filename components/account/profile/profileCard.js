@@ -74,7 +74,7 @@ export default function UnverifiedProfileCard(props) {
                         <HiMiniBanknotes className="w-6 h-6 mb-1 text-gray-900"/>
                         <div>
                             <p className="text-sm font-bold">Effortless FIAT Lending</p>
-                            <p className="text-xs mb-4">Transfer funds from your bank to contribute to the Wagon lending pool.</p>    
+                            <p className="text-xs mb-4">Transfer funds from your bank to contribute to the lending pool.</p>    
                         </div>
                     </div>
 

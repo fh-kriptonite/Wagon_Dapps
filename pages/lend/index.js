@@ -1,14 +1,16 @@
 import Head from 'next/head';
 import LendHome from '../../components/lend/LendHome';
-import { useAccount } from '@particle-network/connectkit';
 
 export default function Lend(props) {
-  const address = useAccount();
 
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>
         <Head>
-          <title>Lend | Wagon Network</title>
+          {
+            process.env.THEME_SKIN == 1
+            ? <title>Lend | Wagon Network</title>
+            : <title>Lending</title>
+          }
         </Head>
         <div>
           <LendHome {...props}/>

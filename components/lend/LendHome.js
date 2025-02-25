@@ -33,10 +33,18 @@ export default function LendHome(props) {
       <OverviewCard/>
       
       <div className="card ">
-        <h2 className="font-semibold">Wagon Lending Pools</h2>
+        {
+          process.env.THEME_SKIN == 1
+          ? <h2 className="font-semibold">Wagon Lending Pools</h2>
+          : <h2 className="font-semibold">Lending Pools</h2>
+        }
         
-        <p className="text-sm mt-4">Lend to pools managed by Wagon Network DAO, where borrowers and loans are reviewed and approved by WAG stakers.</p>
-  
+        {
+          process.env.THEME_SKIN == 1
+          ? <p className="text-sm mt-4">Lend to pools managed by Wagon Network DAO, where borrowers and loans are reviewed and approved by WAG stakers.</p>
+          : <p className="text-sm mt-4">Lend to pools managed by DAO, where borrowers and loans are reviewed and approved by votes.</p>
+        }
+
         <div className="flex gap-2 mt-1">
           <p className="text-sm truncate overflow-hidden">BSC Smart contract:</p>
           <div className="flex items-center gap-1 text-blue-500 hover:text-blue-800 hover:cursor-pointer w-full md:w-fit"

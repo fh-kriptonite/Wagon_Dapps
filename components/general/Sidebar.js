@@ -48,7 +48,18 @@ export default function Sidebar(props) {
                             </button>
                             
                             <Link href='/'>
-                                <img src="/logo-title.png" className="ml-2 md:mr-24 h-8 sm:h-10 hover:cursor-pointer" alt="Wagon Logo" />
+                                <>
+                                    {
+                                        process.env.THEME_SKIN == 1
+                                        ? <img src="/logo-title-waresix.png" className="ml-2 md:mr-24 h-6 hidden sm:block hover:cursor-pointer" alt="Logo" />
+                                        : <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 hidden sm:block hover:cursor-pointer" alt="Logo" />
+                                    }
+                                    {
+                                        process.env.THEME_SKIN == 1
+                                        ? <img src="/logo-waresix-square.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
+                                        : <img src="/logo_pad.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
+                                    }
+                                </>
                             </Link>
                         </div>
                         <div className="flex items-center">
@@ -87,22 +98,28 @@ export default function Sidebar(props) {
                         </li>
                     </ul>
                     <ul className="pt-2 mt-2 space-y-2 font-medium text-sm">
-                        <li>
-                            <Link href="/bridge">
-                                <div className={`${currentPath === '/bridge' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
-                                    <BiTransferAlt className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Bridge</span>
-                                </div>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/stake">
-                                <div className={`${currentPath === '/stake' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
-                                    <FaCoins className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Stake</span>
-                                </div>
-                            </Link>
-                        </li>
+                        {
+                            process.env.THEME_SKIN == 1 &&
+                            <li>
+                                <Link href="/bridge">
+                                    <div className={`${currentPath === '/bridge' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                        <BiTransferAlt className='w-5 h-5 text-gray-500'/>
+                                        <span className="ml-3">Bridge</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            process.env.THEME_SKIN == 1 &&
+                            <li>
+                                <Link href="/stake">
+                                    <div className={`${currentPath === '/stake' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                        <FaCoins className='w-5 h-5 text-gray-500'/>
+                                        <span className="ml-3">Stake</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        }
                         <li>
                             <Link href="/lend">
                                 <div className={`${currentPath === '/lend' || asPath.includes("/lend") ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
@@ -119,49 +136,61 @@ export default function Sidebar(props) {
                                 </div>
                             </Link>
                         </li> */}
-                        <li>
-                            <Link href="/dataNetwork">
-                                <div className={`${currentPath === '/dataNetwork' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
-                                    <AiFillDatabase className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Data Network</span>
-                                </div>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/dataAnalytics">
-                                <div className={`${currentPath === '/dataAnalytics' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
-                                    <MdOutlineQueryStats className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Data Analytics</span>
-                                </div>
-                            </Link>
-                        </li>
-                        <li>
-                            <Link href="/governance">
-                                <div className={`${currentPath === '/governance' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
-                                    <MdHowToVote className='w-5 h-5 text-gray-500'/>
-                                    <span className="ml-3">Governance</span>
-                                </div>
-                            </Link>
-                        </li>
+                        {
+                            process.env.THEME_SKIN == 1 &&
+                            <li>
+                                <Link href="/dataNetwork">
+                                    <div className={`${currentPath === '/dataNetwork' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                        <AiFillDatabase className='w-5 h-5 text-gray-500'/>
+                                        <span className="ml-3">Data Network</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            process.env.THEME_SKIN == 1 &&
+                            <li>
+                                <Link href="/dataAnalytics">
+                                    <div className={`${currentPath === '/dataAnalytics' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                        <MdOutlineQueryStats className='w-5 h-5 text-gray-500'/>
+                                        <span className="ml-3">Data Analytics</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        }
+                        {
+                            process.env.THEME_SKIN == 1 &&
+                            <li>
+                                <Link href="/governance">
+                                    <div className={`${currentPath === '/governance' ? "bg-gray-100" : ""} flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}>
+                                        <MdHowToVote className='w-5 h-5 text-gray-500'/>
+                                        <span className="ml-3">Governance</span>
+                                    </div>
+                                </Link>
+                            </li>
+                        }
                     </ul>
-                    <ul className="space-y-2 font-medium pt-2 border-t border-gray-200 dark:border-gray-700 text-sm mt-2">
-                        <li>
-                            
-                            <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
-                                onClick={()=>{window.open("https://docs.wagon.network/", '_docs');}}
-                            >
-                                <FaBook className='w-5 h-5 text-gray-500'/>
-                                <span className="ml-3">Docs</span>
-                            </div>
-                            
-                            <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
-                                onClick={()=>{window.open("https://wagon.network/faq/", '_faq');}}
-                            >
-                                <FaQuestionCircle className='w-5 h-5 text-gray-500'/>
-                                <span className="ml-3">FAQ</span>
-                            </div>
-                        </li>
-                    </ul>
+                    {
+                        process.env.THEME_SKIN == 1 &&
+                        <ul className="space-y-2 font-medium pt-2 border-t border-gray-200 dark:border-gray-700 text-sm mt-2">
+                            <li>
+                                
+                                <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
+                                    onClick={()=>{window.open("https://docs.wagon.network/", '_docs');}}
+                                >
+                                    <FaBook className='w-5 h-5 text-gray-500'/>
+                                    <span className="ml-3">Docs</span>
+                                </div>
+                                
+                                <div className={`flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 hover:cursor-pointer`}
+                                    onClick={()=>{window.open("https://wagon.network/faq/", '_faq');}}
+                                >
+                                    <FaQuestionCircle className='w-5 h-5 text-gray-500'/>
+                                    <span className="ml-3">FAQ</span>
+                                </div>
+                            </li>
+                        </ul>
+                    }
                     <div id="dropdown-cta" className="p-4 mt-2 rounded-lg bg-yellow-50 dark:bg-blue-900" role="alert">
                         <p className="text-xs text-yellow-800 dark:text-blue-400">
                             In certain countries, VPN connection is required to interact with BSC Network and successfully make a transaction. 

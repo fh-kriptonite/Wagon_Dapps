@@ -159,87 +159,93 @@ export default function AccountComponent(props) {
 
     return (
         <div className="max-w-7xl mx-auto space-y-4 pb-4">
-            <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1">
-                    <div className="card w-full h-full !bg-blue-50">
-                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow w-full">
-                                <p className="text-lg font-semibold">Wagon Staking <span className="text-xs">on ETH Network</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Earn</span> your stable interest now</p>
-                                <p className="text-sm mt-0.5 text-gray-500">Stake your <span className="font-bold">WAG</span> and get your <span className="font-bold">WAG</span> rewards</p>
+            {
+                process.env.THEME_SKIN == 1 &&
+                <>
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        <div className="flex-1">
+                            <div className="card w-full h-full !bg-blue-50">
+                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                                    <div className="grow w-full">
+                                        <p className="text-lg font-semibold">Wagon Staking <span className="text-xs">on ETH Network</span></p>
+                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Earn</span> your stable interest now</p>
+                                        <p className="text-sm mt-0.5 text-gray-500">Stake your <span className="font-bold">WAG</span> and get your <span className="font-bold">WAG</span> rewards</p>
+                                    </div>
+                                    <div className="flex flex-col gap-2 w-full xl:w-1/3">
+                                        <Link href="/stake">
+                                            <Button color={"dark"} size={"xs"} style={{width:"100%"}}>Stake Now</Button>    
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2 w-full xl:w-1/3">
-                                <Link href="/stake">
-                                    <Button color={"dark"} size={"xs"} style={{width:"100%"}}>Stake Now</Button>    
-                                </Link>
+                        </div>
+                        <div className="flex-1">
+                            <div className="card w-full h-full !bg-blue-50">
+                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                                    <div className="grow w-full">
+                                        <p className="text-base font-semibold">Wagon Lending <span className="text-xs"> on BSC Network</span></p>
+                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Lend</span> your stable coin and <span className="font-bold">earn</span> stable interest</p>
+                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Stabilize</span> your portfolio with <span className="font-bold">Real World Asset and Businesses</span></p>
+                                    </div>
+                                    <div className="w-full xl:w-1/3">
+                                        <Link href="/lend">
+                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>Lend Now</Button>
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="flex-1">
-                    <div className="card w-full h-full !bg-blue-50">
-                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow w-full">
-                                <p className="text-base font-semibold">Wagon Lending <span className="text-xs"> on BSC Network</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Lend</span> your stable coin and <span className="font-bold">earn</span> stable interest</p>
-                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Stabilize</span> your portfolio with <span className="font-bold">Real World Asset and Businesses</span></p>
-                            </div>
-                            <div className="w-full xl:w-1/3">
-                                <Link href="/lend">
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Lend Now</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col lg:flex-row gap-4">
-                <div className="flex-1">
+                    
+                    <div className="flex flex-col lg:flex-row gap-4">
+                        <div className="flex-1">
 
-                    <div className="card w-full h-full !bg-blue-50">
-                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow w-full">
-                                <p className="text-lg font-semibold">Buy Wagon Token now</p>
-                                <p className="text-sm mt-0.5 text-gray-500">On ETH network Uniswap <span className="font-bold">WAG/ETH</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/USDT</span></p>
+                            <div className="card w-full h-full !bg-blue-50">
+                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                                    <div className="grow w-full">
+                                        <p className="text-lg font-semibold">Buy Wagon Token now</p>
+                                        <p className="text-sm mt-0.5 text-gray-500">On ETH network Uniswap <span className="font-bold">WAG/ETH</span></p>
+                                        <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/USDT</span></p>
+                                    </div>
+                                    <div className="flex flex-col gap-2 w-full xl:w-1/3">
+                                        <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
+                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>
+                                                <img src={"./network/logo-eth.png"} className="h-5 w-5 mr-2" alt="ETH Logo"/>
+                                                Uniswap
+                                            </Button>
+                                        </a>
+                                        <a href="https://pancakeswap.finance/swap?outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
+                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>
+                                                <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
+                                                PancakeSwap
+                                            </Button>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="flex flex-col gap-2 w-full xl:w-1/3">
-                                <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>
-                                        <img src={"./network/logo-eth.png"} className="h-5 w-5 mr-2" alt="ETH Logo"/>
-                                        Uniswap
-                                    </Button>
-                                </a>
-                                <a href="https://pancakeswap.finance/swap?outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>
-                                        <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
-                                        PancakeSwap
-                                    </Button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
 
-                </div>
-                <div className="flex-1">
-                    <div className="card w-full h-full !bg-blue-50">
-                        <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                            <div className="grow w-full">
-                                <p className="text-base font-semibold">Account Verification</p>
-                                <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Verify</span> your account <span className="font-bold">information</span></p>
-                                <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">FIAT</span> through our pools.</p>
-                            </div>
-                            <div className="w-full xl:w-1/3">
-                                <Link href="/account/verification">
-                                    <Button size={"xs"} color="dark" style={{width:"100%"}}>Verification</Button>
-                                </Link>
+                        </div>
+                        <div className="flex-1">
+                            <div className="card w-full h-full !bg-blue-50">
+                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
+                                    <div className="grow w-full">
+                                        <p className="text-base font-semibold">Account Verification</p>
+                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Verify</span> your account <span className="font-bold">information</span></p>
+                                        <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">FIAT</span> through our pools.</p>
+                                    </div>
+                                    <div className="w-full xl:w-1/3">
+                                        <Link href="/account/verification">
+                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>Verification</Button>
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </>
+            }
             <div className="card w-full flex flex-col xl:flex-row gap-4">
-                <div className="w-full xl:w-1/4">
+                <div className={`w-full ${ process.env.THEME_SKIN == 1 ? "xl:w-1/4" : "xl:w-2/5"}`}>
                     <div className="flex flex-col justify-between h-full gap-4">
                         <p className="text-base font-semibold">Balance</p>
                         <p className="text-4xl font-semibold mt-1">USD {numberWithCommas((stakingBalance * wagPrice) + (tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
@@ -265,58 +271,63 @@ export default function AccountComponent(props) {
                         </div>
                     </div>
                 </div>
-                <div className="border"/>
-                <div className="flex-1">
-                    <div className="flex justify-between">
-                        <p className="text-base font-semibold">Staking</p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
-                        <div className="w-40 relative mx-auto">
-                            <div
-                                className="absolute top-8 left-8"
-                            >
-                                <div className="bg-blue-100 h-24 w-24 flex items-center jutify-center rounded-full border-2 border-dashed border-blue-800">
-                                    <div className="w-full">
-                                    <p className="text-center text-sm">APY</p>
-                                    <p className="text-center text-xl font-semibold">{numberWithCommas(apy, 2)}%</p>
+                {
+                    process.env.THEME_SKIN == 1 &&
+                    <>
+                        <div className="border"/>
+                        <div className="flex-1">
+                            <div className="flex justify-between">
+                                <p className="text-base font-semibold">Staking</p>
+                            </div>
+                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
+                                <div className="w-40 relative mx-auto">
+                                    <div
+                                        className="absolute top-8 left-8"
+                                    >
+                                        <div className="bg-blue-100 h-24 w-24 flex items-center jutify-center rounded-full border-2 border-dashed border-blue-800">
+                                            <div className="w-full">
+                                            <p className="text-center text-sm">APY</p>
+                                            <p className="text-center text-xl font-semibold">{numberWithCommas(apy, 2)}%</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {
+                                        (stakingBalance > 0 || rewardBalance > 0)
+                                        ? <div className="z-40 relative">
+                                            <Doughnut data={data} options={options} key={"doughnut-1"}/>  
+                                        </div>
+                                        : <div className="w-40 h-40 bg-gray-200 rounded-full"></div>
+                                    }
+                                </div>
+                                <div className="grow">
+                                    <div className="flex justify-between items-end">
+                                        <p className="text-xs text-gray-500">Staked</p>
+                                        <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(stakingBalance * wagPrice, 2)}</p>
+                                    </div>
+                                    <div className="flex flex-wrap justify-between mt-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            <Avatar img="/logo.png" rounded bordered size="xs" />
+                                            <p className="text-sm">WAG</p>
+                                        </div>
+                                        <p className="text-sm font-semibold">{numberWithCommas(stakingBalance, 2)}</p>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-end mt-2">
+                                        <p className="text-xs text-gray-500 mt-2">Rewards</p>
+                                        <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(rewardBalance * wagPrice, 2)}</p>
+                                    </div>
+                                    <div className="flex flex-wrap justify-between mt-1">
+                                        <div className="flex flex-wrap gap-2">
+                                            <Avatar img="/logo.png" rounded bordered size="xs" />
+                                            <p className="text-sm">WAG</p>
+                                        </div>
+                                        <p className="text-sm font-semibold">{numberWithCommas(rewardBalance, 2)}</p>
                                     </div>
                                 </div>
                             </div>
-                            {
-                                (stakingBalance > 0 || rewardBalance > 0)
-                                ? <div className="z-40 relative">
-                                    <Doughnut data={data} options={options} key={"doughnut-1"}/>  
-                                </div>
-                                : <div className="w-40 h-40 bg-gray-200 rounded-full"></div>
-                            }
                         </div>
-                        <div className="grow">
-                            <div className="flex justify-between items-end">
-                                <p className="text-xs text-gray-500">Staked</p>
-                                <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(stakingBalance * wagPrice, 2)}</p>
-                            </div>
-                            <div className="flex flex-wrap justify-between mt-1">
-                                <div className="flex flex-wrap gap-2">
-                                    <Avatar img="/logo.png" rounded bordered size="xs" />
-                                    <p className="text-sm">WAG</p>
-                                </div>
-                                <p className="text-sm font-semibold">{numberWithCommas(stakingBalance, 2)}</p>
-                            </div>
-                            
-                            <div className="flex justify-between items-end mt-2">
-                                <p className="text-xs text-gray-500 mt-2">Rewards</p>
-                                <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(rewardBalance * wagPrice, 2)}</p>
-                            </div>
-                            <div className="flex flex-wrap justify-between mt-1">
-                                <div className="flex flex-wrap gap-2">
-                                    <Avatar img="/logo.png" rounded bordered size="xs" />
-                                    <p className="text-sm">WAG</p>
-                                </div>
-                                <p className="text-sm font-semibold">{numberWithCommas(rewardBalance, 2)}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    </>
+                }
                 <div className="border"/>
                 <div className="flex-1">
                     <div className="flex justify-between">
@@ -347,13 +358,16 @@ export default function AccountComponent(props) {
                                 <p className="text-xs text-gray-500">TVL</p>
                                 <p className="text-end text-gray-500 text-xs">USD {numberWithCommas((tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
                             </div>
-                            <div className="flex flex-wrap justify-between mt-1">
-                                <div className="flex flex-wrap gap-2">
-                                    <Avatar img="/logo.png" rounded bordered size="xs" />
-                                    <p className="text-sm">WAG</p>
+                            {
+                                process.env.THEME_SKIN == 1 &&
+                                <div className="flex flex-wrap justify-between mt-1">
+                                    <div className="flex flex-wrap gap-2">
+                                        <Avatar img="/logo.png" rounded bordered size="xs" />
+                                        <p className="text-sm">WAG</p>
+                                    </div>
+                                    <p className="text-sm font-semibold">{numberWithCommas(tvlWag, 2)}</p>
                                 </div>
-                                <p className="text-sm font-semibold">{numberWithCommas(tvlWag, 2)}</p>
-                            </div>
+                            }
                             <div className="flex flex-wrap gap-2 justify-between mt-2">
                                 <div className="flex flex-wrap gap-2">
                                     <Avatar.Group>

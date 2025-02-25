@@ -75,7 +75,10 @@ const nextConfig = {
     RAMP_API_URL: process.env.RAMP_API_URL,
 
     // IDRX
-    IDRX_ADDRESS: process.env.IDRX_ADDRESS
+    IDRX_ADDRESS: process.env.IDRX_ADDRESS,
+
+    // THEME SKIN
+    THEME_SKIN: process.env.THEME_SKIN
   },
   trailingSlash: true
 }

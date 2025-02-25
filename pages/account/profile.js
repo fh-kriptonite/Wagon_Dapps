@@ -9,7 +9,11 @@ export default function Profile(props) {
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>
         <Head>
-          <title>Verification | Wagon Network</title>
+          {
+            process.env.THEME_SKIN == 1
+            ? <title>Verification | Wagon Network</title>
+            : <title>Account</title>
+          }
         </Head>
         {
             !address 
