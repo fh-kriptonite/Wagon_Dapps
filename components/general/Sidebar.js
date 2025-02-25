@@ -50,12 +50,12 @@ export default function Sidebar(props) {
                             <Link href='/'>
                                 <>
                                     {
-                                        process.env.THEME_SKIN == 1
+                                        process.env.THEME_SKIN == 2
                                         ? <img src="/logo-title-waresix.png" className="ml-2 md:mr-24 h-6 hidden sm:block hover:cursor-pointer" alt="Logo" />
                                         : <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 hidden sm:block hover:cursor-pointer" alt="Logo" />
                                     }
                                     {
-                                        process.env.THEME_SKIN == 1
+                                        process.env.THEME_SKIN == 2
                                         ? <img src="/logo-waresix-square.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
                                         : <img src="/logo_pad.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
                                     }
