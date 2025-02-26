@@ -11,8 +11,8 @@ export default function Profile(props) {
         <Head>
           {
             process.env.THEME_SKIN == 1
-            ? <title>Verification | Wagon Network</title>
-            : <title>Account</title>
+            ? <title>Profile | Wagon Network</title>
+            : <title>Profile</title>
           }
         </Head>
         {

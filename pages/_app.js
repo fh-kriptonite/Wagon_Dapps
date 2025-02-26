@@ -37,7 +37,11 @@ function MyApp({ Component, pageProps }) {
   return (
     <>
       <Head>
-        <title>Apps | Wagon Network</title>
+        {
+          process.env.THEME_SKIN == 1
+          ? <title>Apps | Wagon Network</title>
+          : <title>Decentralized Apps</title>
+        }
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 

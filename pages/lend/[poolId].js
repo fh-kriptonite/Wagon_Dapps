@@ -138,7 +138,11 @@ export default function Pool() {
   return (
     <div className='container mx-auto px-4 md:px-10 space-y-6 pb-4 max-w-7xl'>
       <Head>
-        <title>Lend-{poolId} | Wagon Network</title>
+        {
+          process.env.THEME_SKIN == 1
+          ? <title>Lend-{poolId} | Wagon Network</title>
+          : <title>Lend-{poolId}</title>
+        }
       </Head>
       <Breadcrumb aria-label="Default breadcrumb example">
           <Breadcrumb.Item href="/lend">Pool Explorer</Breadcrumb.Item>

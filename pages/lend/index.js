@@ -9,7 +9,7 @@ export default function Lend(props) {
           {
             process.env.THEME_SKIN == 1
             ? <title>Lend | Wagon Network</title>
-            : <title>Lending</title>
+            : <title>Lend</title>
           }
         </Head>
         <div>
