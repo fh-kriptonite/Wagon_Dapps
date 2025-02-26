@@ -40,7 +40,9 @@ function MyApp({ Component, pageProps }) {
         {
           process.env.THEME_SKIN == 1
           ? <title>Apps | Wagon Network</title>
-          : <title>Decentralized Apps</title>
+          : process.env.THEME_SKIN == 2
+            ? <title>Waresix ABS</title>
+            : <title>Decentralized Apps</title>
         }
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>

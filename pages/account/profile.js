@@ -12,7 +12,9 @@ export default function Profile(props) {
           {
             process.env.THEME_SKIN == 1
             ? <title>Profile | Wagon Network</title>
-            : <title>Profile</title>
+            : process.env.THEME_SKIN == 2
+              ? <title>Waresix ABS | Profile</title>
+              : <title>Profile</title>
           }
         </Head>
         {

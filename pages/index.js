@@ -9,7 +9,9 @@ export default function Home(props) {
         {
           process.env.THEME_SKIN == 1
           ? <title>Account | Wagon Network</title>
-          : <title>Account</title>
+          : process.env.THEME_SKIN == 2
+            ? <title>Waresix ABS | Account</title>
+            : <title>Account</title>
         }
       </Head>
       <div>

@@ -75,7 +75,9 @@ export default function Pool() {
         {
           process.env.THEME_SKIN == 1
           ? <title>Lend-{poolId} | Wagon Network</title>
-          : <title>Lend-{poolId}</title>
+          : process.env.THEME_SKIN == 2
+            ? <title>Waresix ABS | Lend-{poolId}</title>
+            : <title>Lend-{poolId}</title>
         }
       </Head>
       <Breadcrumb aria-label="Default breadcrumb example">
