@@ -231,7 +231,7 @@ export default function Pool() {
           <Tabs.Item title="Borrowers" icon={PiUserFill}>
               <div className='min-h-60'>
                 <AboutBorrower
-                  poolJson={poolJson?.properties.borrower}
+                  content={poolJson?.properties.borrower}
                 />
               </div>
           </Tabs.Item>
