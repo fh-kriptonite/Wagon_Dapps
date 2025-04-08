@@ -48,8 +48,6 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       // Initialize contract
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-      console.log(poolId, address);
-      console.log(contract);
       // Call smart contract function
       const transaction = await contract.claimInterest(
         poolId,
