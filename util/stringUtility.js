@@ -1,5 +1,16 @@
 export function numberWithCommas(x, digits) {
-  var parts = Number(x).toFixed(digits).toString().split(".");
+  if (x === null || x === undefined) return "0";
+  
+  // Convert to number, handling both string and number inputs
+  const num = typeof x === 'string' ? parseFloat(x) : Number(x);
+  if (isNaN(num)) return "0";
+  
+  // Handle very large numbers
+  if (num > Number.MAX_SAFE_INTEGER) {
+    return x.toString();
+  }
+  
+  var parts = num.toFixed(digits).toString().split(".");
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   return parts.join(".");
 }

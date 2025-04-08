@@ -4,7 +4,7 @@
         "chainId": 11155111,
         "logo": "/network/logo-eth.png",
         "wagAddress": "0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D",
-        "rpc": "https://rpc.sepolia.org/",
+        "rpc": "https://eth-sepolia.g.alchemy.com/v2/ggXvVonQFfgtACJqXsVwBeGfiNijl2Ga",
         "OFTAddress": "0x2a0304bb9Dd8F50ec04c483ddAA8d586EAe0A2ff",
         "lzEndpointId": 10161,
         "priceUrl": "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"

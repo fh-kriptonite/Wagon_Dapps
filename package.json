@@ -44,10 +44,18 @@
     "xendit-node": "^5.0.0"
   },
   "devDependencies": {
+    "@types/formidable": "^3.4.5",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
     "autoprefixer": "^10.4.20",
     "eslint": "8.23.1",
     "eslint-config-next": "12.3.1",
     "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.15"
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.3.3"
   }
 }

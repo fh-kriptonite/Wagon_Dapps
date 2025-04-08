@@ -79,8 +79,7 @@ const nextConfig = {
 
     // THEME SKIN
     THEME_SKIN: process.env.THEME_SKIN
-  },
-  trailingSlash: true
+  }
 }
 
 module.exports = nextConfig

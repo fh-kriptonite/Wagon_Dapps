@@ -1,0 +1,74 @@
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
+import { Spinner } from 'flowbite-react';
+import { Network } from "../types";
+
+interface ApproveDialogProps {
+    number: string;
+    network1: Network | null;
+    network2: Network | null;
+    isOpen: boolean;
+}
+
+export default function ApproveDialog(props: ApproveDialogProps) {
+    const { number, network1, network2, isOpen } = props;
+
+    return (
+        <>
+            <Transition appear show={isOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => {}}>
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                    <div className='text-center'>
+                                        <Spinner size={"xl"}/>
+                                    </div>
+                                    
+                                    <div className='flex justify-center mt-4'>
+                                        <Dialog.Title
+                                            as="h3"
+                                            className="text-lg font-medium leading-6 text-gray-900"
+                                        >
+                                            Approving Allowance
+                                        </Dialog.Title>
+                                    </div>
+
+                                    <div className='mt-6 overflow-auto'>
+                                        <p className='text-sm text-center'>
+                                            Transfering {number} WAG from {network1?.name} to {network2?.name}
+                                        </p>
+                                        <p className='text-xs text-center mt-6'>
+                                            Please check your wallet for transaction prompt.
+                                        </p>
+                                    </div>
+                                    
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
+        </>
+    );
+} 
