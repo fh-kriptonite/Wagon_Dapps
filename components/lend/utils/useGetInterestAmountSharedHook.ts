@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getInterestAmountShareService } from '../../../services/service_lending';
+import { services } from '../../../services/service_lending';
 
 interface UseGetInterestAmountSharedHookResult {
   isLoading: boolean;
@@ -17,7 +17,7 @@ const useGetInterestAmountSharedHook = (): UseGetInterestAmountSharedHookResult 
     setIsLoading(true);
 
     try {
-      const response = await getInterestAmountShareService(address, poolId);
+      const response = await services.getInterestAmountShareService(address, poolId) as bigint;
       setData(response);
       return response;
     } catch (e) {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getLatestInterestClaimedService } from '../../../services/service_lending';
+import { services } from '../../../services/service_lending';
 
 interface UseGetLatestInterestClaimedHookResult {
   isLoading: boolean;
@@ -17,7 +17,7 @@ const useGetLatestInterestClaimedHook = (): UseGetLatestInterestClaimedHookResul
     setIsLoading(true);
 
     try {
-      const response = await getLatestInterestClaimedService(address, poolId);
+      const response = await services.getLatestInterestClaimedService(address, poolId) as bigint;
       setData(response);
       return response;
     } catch (e) {

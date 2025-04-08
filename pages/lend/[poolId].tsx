@@ -31,7 +31,7 @@ import useGetLendWagBalanceHook from '../../components/lend/utils/useGetLendWagB
 import useGetPoolFeeHook from '../../components/lend/utils/useGetPoolFeeHook';
 import { useAccount } from '@particle-network/connectkit';
 import PoolCustody from '../../components/lend/PoolCustody';
-import { Asset, Shipment } from '@/components/lend/types';
+import { Asset, PoolFee, Shipment } from '@/components/lend/types';
 
 export default function Pool() {
   const router = useRouter();
@@ -260,7 +260,7 @@ export default function Pool() {
                   decimal={getDecimal()}
                   stableBalance={stableBalance?.toString() || ''}
                   wagBalance={wagBalance?.toString() || ''}
-                  fees={fees?.toString() || ''}
+                  fees={fees as PoolFee}
                   refresh={()=>{
                     console.log("refreshing user");
                   }}

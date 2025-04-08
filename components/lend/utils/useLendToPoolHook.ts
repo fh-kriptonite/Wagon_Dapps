@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
-import { ethers } from 'ethers';
+import { Eip1193Provider, ethers } from 'ethers';
 import { useParticleProvider } from '@particle-network/connectkit';
 
 interface UseLendToPoolHookResult {
@@ -30,7 +30,7 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
       }
 
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider);
+      const provider = new ethers.BrowserProvider(particleProvider as Eip1193Provider);
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getDeploymentGracePeriodService } from '../../../services/service_lending';
+import { services } from '../../../services/service_lending';
 
 interface UseGetDeploymentGracePeriodHookResult {
   isLoading: boolean;
@@ -17,9 +17,9 @@ const useGetDeploymentGracePeriodHook = (): UseGetDeploymentGracePeriodHookResul
     setIsLoading(true);
 
     try {
-      const response = await getDeploymentGracePeriodService(poolId);
-      setData(response);
-      return response;
+      const response = await services.getDeploymentGracePeriod(poolId) as bigint;
+      setData(Number(response));
+      return Number(response);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred');
       return null;

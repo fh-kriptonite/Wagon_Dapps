@@ -38,8 +38,8 @@ export default function LendTnc(props: LendTncProps) {
                     <div key={index} className="border-b-2">
                         <TncCard 
                             title={tnc.title} 
-                            label={tnc.label}
-                            points={tnc.points}
+                            label={tnc.label || ''}
+                            points={tnc.points || []}
                         />
                     </div>
                 )

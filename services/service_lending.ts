@@ -293,5 +293,41 @@ export const services = {
       console.error('Error in getOffchainAssetsPool:', error);
       throw error;
     }
+  },
+
+  getInterestAmountShareService : async (address: string, poolId: string) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let response = await contract.getInterestAmountShare(poolId, address);
+            resolve(response);
+        } catch (error) {
+            console.error('Error:', error);
+            reject(error);
+        }
+    })
+  },
+
+  getLatestInterestClaimedService : async (address: string, poolId: string) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let response = await contract.latestInterestClaimed(poolId, address);
+            resolve(response);
+        } catch (error) {
+            console.error('Error:', error);
+            reject(error);
+        }
+    })
+  },
+
+  getDeploymentGracePeriod : async (poolId: string) => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            let response = await contract.deploymentGracePeriodDurations(poolId);
+            resolve(response);
+        } catch (error) {
+            console.error('Error:', error);
+            reject(error);
+        }
+    })
   }
 }; 

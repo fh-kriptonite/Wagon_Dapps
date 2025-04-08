@@ -35,7 +35,7 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       }
 
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider);
+      const provider = new ethers.BrowserProvider(particleProvider as ethers.Eip1193Provider);
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -48,6 +48,8 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       // Initialize contract
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
+      console.log(poolId, address);
+      console.log(contract);
       // Call smart contract function
       const transaction = await contract.claimInterest(
         poolId,
@@ -59,7 +61,7 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       data = transaction;
     } catch (e) {
       console.log(e);
-      error = "Fail to approve";
+      error = "Fail to claim";
     } finally {
       setIsLoading(false);
     }

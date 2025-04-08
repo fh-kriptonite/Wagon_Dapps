@@ -20,10 +20,10 @@ const useGetRewardRateHook = (): UseGetRewardRateHookResult => {
 
     try {
       const response = await getStakingRewardRate();
-      setData(parseFloat(response));
+      setData(parseFloat(response.toString()));
 
       const responseFinishAt = await getStakingFinishAt();
-      setDataFinishAt(new Date(parseFloat(responseFinishAt) * 1000));
+      setDataFinishAt(new Date(parseFloat(responseFinishAt.toString()) * 1000));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred');
     } finally {

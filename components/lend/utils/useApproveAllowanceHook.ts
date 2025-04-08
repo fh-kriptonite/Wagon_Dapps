@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
-import { ethers } from 'ethers';
+import { Eip1193Provider, ethers } from 'ethers';
 import { useParticleProvider } from '@particle-network/connectkit';
 
 interface UseApproveAllowanceHookResult {
@@ -35,7 +35,7 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
       }
 
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider);
+      const provider = new ethers.BrowserProvider(particleProvider as Eip1193Provider);
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

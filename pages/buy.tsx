@@ -1,8 +1,5 @@
-import Disconnected from '../components/general/Disconnected';
 import Head from 'next/head';
 import { useAccount } from '@particle-network/connectkit';
-import RampHome from '../components/ramp/RampHome';
-import Maintenance from '../components/general/Maintenance';
 import ComingSoon from '../components/general/ComingSoon';
 
 interface RampProps {

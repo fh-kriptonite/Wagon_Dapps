@@ -5,20 +5,10 @@ import { numberWithCommas } from '../../../util/stringUtility';
 import { ImCross } from 'react-icons/im';
 import useClaimInterestHook from '../utils/useClaimInterestHook';
 import { useRouter } from 'next/router';
+import { Pool, PoolFee } from '../types';
 
 interface Repayment {
   // Add repayment properties based on your data structure
-  [key: string]: any;
-}
-
-interface Pool {
-  latestRepayment: string;
-  paymentFrequency: string;
-  [key: string]: any;
-}
-
-interface Fees {
-  protocolFee: string;
   [key: string]: any;
 }
 
@@ -32,7 +22,7 @@ interface ConfirmationClaimInterestDialogProps {
   interestAmountShare: string;
   stableBalance: string;
   decimal: number;
-  fees: Fees;
+  fees: PoolFee;
   refreshLatestInterestClaimed: () => void;
   refresh: () => void;
   close: () => void;
@@ -88,7 +78,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
   function countFee(): number {
     if (fees == null) return 0;
     const claimable = countTotalClaimable();
-    const fee = claimable * parseFloat(fees.protocolFee) / 10000;
+    const fee = claimable * Number(fees.protocolFee) / 10000;
     return fee;
   }
 
@@ -251,7 +241,9 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
                   </div>
 
                   <div className='mt-6'>
-                    <Button color={"dark"} style={{ width: '100%' }} size={"sm"}
+                    <Button color={"dark"}
+                      className='w-full disabled:bg-gray-300'
+                      size={"sm"}
                       disabled={isLoadingClaimInterest}
                       onClick={handleClaimInterest}
                     >

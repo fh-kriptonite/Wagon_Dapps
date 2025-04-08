@@ -10,21 +10,22 @@ import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestD
 import { useAccount } from '@particle-network/connectkit';
 import useChainHook from '../../util/useChainHook';
 import useGetDeploymentGracePeriodHook from './utils/useGetDeploymentGracePeriodHook';
+import { PoolFee, Pool } from './types';
 
-interface Pool {
-  paymentFrequency: string;
-  termStart: string;
-  loanTerm: string;
-  latestRepayment: string;
+interface Repayment {
+  id: number;
+  status: string;
 }
 
 interface TimelinePoolProps {
-  pool: Pool | null;
+  pool: Pool;
   symbol: string;
   decimal: number;
   stableBalance: string;
   wagBalance: string;
-  [key: string]: any; // For any additional props passed to ConfirmationClaimInterestDialog
+  fees: PoolFee;
+  refresh: () => void;
+  [key: string]: any;
 }
 
 export default function TimelinePool(props: TimelinePoolProps) {
@@ -41,8 +42,10 @@ export default function TimelinePool(props: TimelinePoolProps) {
   const decimal = props.decimal;
   const stableBalance = props.stableBalance;
   const wagBalance = props.wagBalance;
+  const fees = props.fees;
+  const refresh = props.refresh;
   
-  const [repayments, setRepayments] = useState<null[]>([]);
+  const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
 
   const {data: interestAmountShare, fetchData: getInterestAmountShare} = useGetInterestAmountSharedHook();
@@ -50,7 +53,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
   const {data: deploymentGracePeriod, fetchData: getDeploymentGracePeriod} = useGetDeploymentGracePeriodHook();
 
   useEffect(() => {
-    if (poolId && typeof poolId === 'string') {
+    if (poolId && typeof poolId === 'string' && address) {
       getInterestAmountShare(address, poolId);
       getLatestInterestClaimed(address, poolId);
       getDeploymentGracePeriod(poolId);
@@ -58,7 +61,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
   }, []);
 
   useEffect(() => {
-    if (poolId && typeof poolId === 'string') {
+    if (poolId && typeof poolId === 'string' && address) {
       getInterestAmountShare(address, poolId);
       getLatestInterestClaimed(address, poolId);
       getDeploymentGracePeriod(poolId);
@@ -67,14 +70,17 @@ export default function TimelinePool(props: TimelinePoolProps) {
 
   useEffect(()=>{
     if(pool != null) {
-      setRepayments(new Array(parseFloat(pool.paymentFrequency)).fill(null));
+      setRepayments(new Array(parseFloat(pool.paymentFrequency)).fill(null).map((_, index) => ({
+        id: index,
+        status: "pending"
+      })));
     }
   },[pool]);
 
   function isInterestClaimable(index: number): string {
     if(pool == null) return "~";
 
-    if(index < Number(latestInterestClaimed)) return "Claimed";
+    if(index < Number(latestInterestClaimed?.toString() || "0")) return "Claimed";
     if(index < Number(pool.latestRepayment)) return "Claimable";
     return "Unclaimable";
   }
@@ -87,9 +93,9 @@ export default function TimelinePool(props: TimelinePoolProps) {
     // switch network
     const chainId = (await getChainId()).data;
     const bnbChainId = process.env.BNB_CHAIN_ID;
-    if(chainId && bnbChainId && chainId.toString() !== bnbChainId.toString()) {
+    if(chainId && bnbChainId && chainId.toString() !== bnbChainId) {
       try {
-        const resultSwitchNetwork = await switchNetwork(bnbChainId);
+        const resultSwitchNetwork = await switchNetwork(Number(bnbChainId));
         if (resultSwitchNetwork.error) {
           throw resultSwitchNetwork.error;
         }
@@ -106,7 +112,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
   function isUnclaimable(): boolean {
     if(pool == null) return true;
     if(parseFloat(stableBalance) == 0) return true;
-    if(Number(latestInterestClaimed) < Number(pool.latestRepayment)) return false;
+    if(Number(latestInterestClaimed?.toString() || "0") < Number(pool.latestRepayment)) return false;
     return true;
   }
 
@@ -115,7 +121,10 @@ export default function TimelinePool(props: TimelinePoolProps) {
       {
         !address
         ? <ButtonConnect/>
-        : <Button color={"dark"} size={"sm"} style={{marginLeft:"auto"}}
+        : <Button 
+            color={"dark"} 
+            size={"sm"} 
+            className='ml-auto disabled:bg-gray-300'
             disabled={isUnclaimable()}
             onClick={handleClaimButton}
           >
@@ -135,7 +144,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
             <Table.Body className="divide-y">
               {
                 repayments.map((repayment, index) => {
-                  const loanStart = (parseFloat(pool?.termStart || "0") + parseFloat(deploymentGracePeriod || "0")) * 1000;
+                  const loanStart = (parseFloat(pool?.termStart || "0") + Number(deploymentGracePeriod || 0)) * 1000;
                   const durationBetweenPayment = parseFloat(pool?.loanTerm || "0") / parseFloat(pool?.paymentFrequency || "1") * 1000;
                   const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
                   return (     
@@ -145,8 +154,8 @@ export default function TimelinePool(props: TimelinePoolProps) {
                       <Table.Cell className='!py-2 text-right'>
                         {
                           (index+1 == Number(pool?.paymentFrequency)) 
-                            ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (parseFloat(interestAmountShare || "0") / Math.pow(10,decimal)), 2) 
-                            : numberWithCommas(parseFloat(interestAmountShare || "0") / Math.pow(10,decimal), 2)
+                            ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal)), 2) 
+                            : numberWithCommas(Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal), 2)
                         } {symbol}
                       </Table.Cell>
                       <Table.Cell className='!py-2 text-right'>{isInterestClaimable(index)}</Table.Cell>
@@ -159,21 +168,26 @@ export default function TimelinePool(props: TimelinePoolProps) {
         </div>
       </div>
 
-      <ConfirmationClaimInterestDialog
-        {...props}
-        isOpen={isOpenConfirmationDialog} 
-        close={()=>{setIsOpenConfirmationDialog(false)}}
-        repayments={repayments}
-        interestAmountShare={interestAmountShare}
-        latestInterestClaimed={latestInterestClaimed}
-        refreshLatestInterestClaimed={()=>{
-          if (poolId && typeof poolId === 'string') {
-            getLatestInterestClaimed(address, poolId);
-          }
-        }}
-        stableBalance={stableBalance}
-        wagBalance={wagBalance}
-      />
+      {pool && (
+        <ConfirmationClaimInterestDialog
+          {...props}
+          isOpen={isOpenConfirmationDialog} 
+          close={()=>{setIsOpenConfirmationDialog(false)}}
+          repayments={repayments}
+          interestAmountShare={interestAmountShare?.toString() || "0"}
+          latestInterestClaimed={latestInterestClaimed?.toString() || "0"}
+          refreshLatestInterestClaimed={()=>{
+            if (poolId && typeof poolId === 'string' && address) {
+              getLatestInterestClaimed(address, poolId);
+            }
+          }}
+          stableBalance={stableBalance}
+          wagBalance={wagBalance}
+          fees={fees}
+          refresh={refresh}
+          pool={pool}
+        />
+      )}
       
     </div>
   );
