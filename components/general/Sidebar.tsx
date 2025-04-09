@@ -7,7 +7,7 @@ import { AiFillDatabase } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
-import { ConnectButton } from '@particle-network/connectkit';
+import ButtonConnect from './ButtonConnect';
 
 declare global {
     namespace NodeJS {
@@ -67,7 +67,7 @@ export default function Sidebar(props: SidebarProps) {
                         </div>
                         <div className="flex items-center">
                             <div className="flex items-center ml-3 gap-2">
-                                <ConnectButton/>
+                                <ButtonConnect />
                             </div>
                         </div>
                     </div>
