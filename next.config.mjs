@@ -15,6 +15,79 @@ const nextConfig = {
   },
   reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    esmExternals: 'loose'
+  },
+  // Add transpilePackages to handle ESM modules
+  transpilePackages: [
+    '@particle-network/connectkit',
+    '@particle-network/evm-connectors',
+    '@simplewebauthn/browser',
+    '@particle-network/auth-connectors',
+    '@particle-network/wallet-plugin',
+    '@particle-network/aa-plugin',
+    '@aws-sdk/client-cognito-identity',
+    '@aws-sdk/signature-v4',
+    '@aws-sdk/util-dynamodb',
+    '@aws-sdk/util-stream',
+    '@aws-sdk/util-waiter',
+    '@aws-sdk/util-hex-encoding',
+    '@aws-sdk/util-base64',
+    '@aws-sdk/util-buffer',
+    '@aws-sdk/util-utf8',
+    '@aws-sdk/util-middleware',
+    '@aws-sdk/util-retry',
+    '@aws-sdk/util-user-agent',
+    '@aws-sdk/util-uri-escape',
+    '@aws-sdk/util-dates',
+    '@aws-sdk/util-lru-cache',
+    '@aws-sdk/util-stream-browser',
+    '@aws-sdk/util-stream-node',
+    '@aws-sdk/util-waiter',
+    '@aws-sdk/util-waiter-node',
+    '@aws-sdk/util-waiter-browser'
+  ],
+  // Add webpack configuration to handle ESM modules
+  webpack: (config, { isServer }) => {
+    // Handle ESM modules
+    config.resolve.extensionAlias = {
+      '.js': ['.js', '.ts', '.tsx'],
+    };
+    
+    // Add fallback for node modules
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    };
+    
+    // Add a rule to handle ESM modules
+    config.module.rules.push({
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
+    // Handle ESM modules in node_modules
+    config.module.rules.push({
+      test: /\.m?js/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
+    });
+
+    // Handle JSON files
+    config.module.rules.push({
+      test: /\.json$/,
+      type: 'json',
+    });
+    
+    return config;
+  },
   env: {
     PORT: process.env.PORT,
     PRODUCTION: process.env.PRODUCTION,
@@ -80,6 +153,6 @@ const nextConfig = {
     // THEME SKIN
     THEME_SKIN: process.env.THEME_SKIN
   }
-}
+};
 
-module.exports = nextConfig
+export default nextConfig;

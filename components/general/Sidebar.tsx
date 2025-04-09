@@ -5,7 +5,6 @@ import { BiTransferAlt } from "react-icons/bi";
 import { FaCoins, FaBook, FaQuestionCircle } from 'react-icons/fa';
 import { AiFillDatabase } from 'react-icons/ai';
 import { useRouter } from 'next/router';
-import { RiTokenSwapFill } from "react-icons/ri";
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
 import { ConnectButton } from '@particle-network/connectkit';

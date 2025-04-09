@@ -3,11 +3,9 @@ import Head from "next/head"
 import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import Sidebar from '../components/general/Sidebar'
-import { ParticleProvider } from '../components/general/particleProvider'
+import { ParticleConnectkit } from '../components/general/particleProvider'
 import { useRouter } from 'next/router'
 import type { AppProps } from 'next/app'
-
-import '@particle-network/connectkit/dist/index.css';
 
 // Declare gtag as a global function
 declare global {
@@ -78,14 +76,14 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
 
       {ready ? (
-        <ParticleProvider>
+        <ParticleConnectkit>
           <div className='h-screen flex flex-col'>
             <Sidebar/>
             <div className="p-2 mt-20 md:ml-56 grow">
               <Component {...pageProps}/>
             </div>
           </div>
-        </ParticleProvider>
+        </ParticleConnectkit>
       ) : null}
     </>
   )
