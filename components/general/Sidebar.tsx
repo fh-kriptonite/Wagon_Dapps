@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsBank2 } from 'react-icons/bs';
 import { MdHowToVote, MdOutlineQueryStats, MdDashboard } from 'react-icons/md';
 import { BiTransferAlt } from "react-icons/bi";
@@ -7,8 +7,9 @@ import { AiFillDatabase } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
-import { ConnectButton } from '@particle-network/connectkit';
-
+import { ConnectButton, useAccount, useWallets, useParticleAuth, useDisconnect } from '@particle-network/connectkit';
+import { Button, Dropdown } from 'flowbite-react';
+import { shortenAddress } from '@/util/stringUtility';
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -26,6 +27,32 @@ export default function Sidebar(props: SidebarProps) {
     const { asPath } = router;
     const currentPath = router.pathname;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const { isConnected, address } = useAccount();
+    const { getUserInfo } = useParticleAuth();
+    const { disconnect } = useDisconnect();
+
+    // Retrieve the primary wallet from the Particle Wallets
+    const [primaryWallet] = useWallets();
+
+    // Store userInfo in a useState to use it in your app
+    const [userInfo, setUserInfo] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            // Use walletConnectorType as a condition to avoid account not initialized errors
+            if (isConnected) {
+                if (primaryWallet?.connector?.walletConnectorType === 'particleAuth') {
+                    const userInfo = await getUserInfo();
+                    setUserInfo(userInfo);
+                }
+            } else {
+                setUserInfo(null);
+            }
+        };
+
+        fetchUserInfo();
+    }, [isConnected, getUserInfo]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -65,10 +92,29 @@ export default function Sidebar(props: SidebarProps) {
                                 </>
                             </Link>
                         </div>
-                        <div className="flex items-center">
-                            <div className="flex items-center ml-3 gap-2">
-                                <ConnectButton/>
-                            </div>
+                        <div className='w-1/2 md:w-fit'>
+                            {
+                                isConnected ? (
+                                    userInfo
+                                    ? (
+                                        // connected to social account  
+                                        <ConnectButton label="Login"/>
+                                    ) : (
+                                        // connected to wallet
+                                        <Dropdown
+                                            label= {shortenAddress(address, 6)}
+                                            color="dark"
+                                        >
+                                            <Dropdown.Item onClick={() => disconnect()}>
+                                                Disconnect
+                                            </Dropdown.Item>
+                                        </Dropdown>
+                                    )
+                                ) : (
+                                    // not connected
+                                    <ConnectButton label="Login"/>
+                                )
+                            }
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,7 @@ import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
 import { authWalletConnectors } from '@particle-network/connectkit/auth';
 import type { Chain } from '@particle-network/connectkit/chains';
 // embedded wallet start
-import { EntryPosition, wallet } from '@particle-network/connectkit/wallet';
+import { wallet } from '@particle-network/connectkit/wallet';
 // embedded wallet end
 // aa start
 import { aa } from '@particle-network/connectkit/aa';
@@ -40,8 +40,7 @@ const config = createConfig({
     language: 'en-US', // Optional, also supported ja-JP, zh-CN, zh-TW, and ko-KR
     mode: 'light', // Optional, changes theme between light, dark, or auto (which will change it based on system settings)
     theme: {
-        '--pcm-accent-color': '#ff4d4f',
-        // ... other options
+      
     },
     logo: 'https://app.wagon.network/logo-title.png',
   },
@@ -67,8 +66,7 @@ const config = createConfig({
   plugins: [
     // embedded wallet start
     wallet({
-      visible: true,
-      entryPosition: EntryPosition.BR,
+      visible: false
     }),
     // embedded wallet end
     
