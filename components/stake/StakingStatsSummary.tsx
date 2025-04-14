@@ -1,7 +1,7 @@
 import { convertTime, numberWithCommas } from "../../util/stringUtility";
 import { useEffect } from "react";
 import useGetTotalEarnHook from "./utils/useGetTotalEarnHook";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 
 interface StakingStatsSummaryProps {
     fetch: boolean;
@@ -11,7 +11,7 @@ interface StakingStatsSummaryProps {
 }
 
 export default function StakingStatsSummary({ fetch, triggerFetch, claimableDuration, stakedBalance }: StakingStatsSummaryProps) {
-    const address = useAccount();
+    const {connectedAddress: address} = useConnectedAddress();
 
     const { data: totalEarn, fetchData: getTotalEarn } = useGetTotalEarnHook();
     useEffect(()=>{

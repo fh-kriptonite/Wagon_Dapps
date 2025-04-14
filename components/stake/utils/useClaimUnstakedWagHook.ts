@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import STAKING_ABI from "../../../public/ABI/staking.json";
 import { ethers, ContractTransactionResponse } from 'ethers';
-import { useParticleProvider } from '@particle-network/connectkit';
+import { useGetProvider } from '@/util/getProvider';
 
 interface ClaimUnstakedWagResult {
   data: ContractTransactionResponse | null;
@@ -15,7 +15,7 @@ interface UseClaimUnstakedWagHookResult {
 
 const useClaimUnstakedWagHook = (): UseClaimUnstakedWagHookResult => {
   const [isLoading, setIsLoading] = useState(false);
-  const particleProvider = useParticleProvider();
+  const getProvider = useGetProvider();
 
   const fetchData = async (): Promise<ClaimUnstakedWagResult> => {
     setIsLoading(true);
@@ -24,12 +24,7 @@ const useClaimUnstakedWagHook = (): UseClaimUnstakedWagHookResult => {
     let error: string | null = null;
 
     try {
-      if (!particleProvider) {
-        throw new Error('No provider available');
-      }
-
-      // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider as unknown as ethers.Eip1193Provider);
+      const provider = await getProvider();
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

@@ -2,10 +2,9 @@ import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { ImCross } from "react-icons/im"
 import { inputNumberFilter, numberWithCommas } from "../../../util/stringUtility";
-import { formatTime } from '../../../util/lendingUtility';
 import { Button, Checkbox, Label } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '../../../hooks/useConnectedAddress';
 import Link from 'next/link';
 import { Pool, PoolFee, PoolJson } from '../types';
 
@@ -22,7 +21,7 @@ interface LendToPoolDialogProps {
 }
 
 export default function LendToPoolDialog(props: LendToPoolDialogProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
   const chainId = props.chainId;
 
   const [stableNumber, setStableNumber] = useState<string>("")
@@ -121,7 +120,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-50" onClose={()=>{}}>
+        <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -153,7 +152,10 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                     >
                       Lend To Pool
                     </Dialog.Title>
-                    <button onClick={()=>closeModal()}>
+                    <button 
+                      onClick={closeModal}
+                      className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
                       <ImCross/>
                     </button>
                   </div>
@@ -185,6 +187,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                           setStableNumber(getStableBalanceWithDecimal())
                           setWagNumber((parseFloat(getStableBalanceWithDecimal()) * getRatio()).toString())
                         }}
+                        className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                       >
                         Max
                       </Button>

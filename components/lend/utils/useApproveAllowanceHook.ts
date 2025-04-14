@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
-import { Eip1193Provider, ethers } from 'ethers';
-import { useParticleProvider } from '@particle-network/connectkit';
+import { ethers } from 'ethers';
+import { useGetProvider } from '@/util/getProvider';
 
 interface UseApproveAllowanceHookResult {
   isLoading: boolean;
+  isWaitingApproval: boolean;
   fetchData: (amount: bigint, erc20Address: string) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
@@ -13,7 +14,9 @@ interface UseApproveAllowanceHookResult {
 
 const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const particleProvider = useParticleProvider();
+  const [isWaitingApproval, setIsWaitingApproval] = useState<boolean>(false);
+  
+  const getProvider = useGetProvider();
   
   const fetchData = async (amount: bigint, erc20Address: string): Promise<{
     data: ethers.ContractTransactionResponse | null;
@@ -25,17 +28,13 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
     let error: string | null = null;
 
     try {
-      if (!particleProvider) {
-        throw new Error('Particle provider is not available');
-      }
-
       const lendingAddress = process.env.LENDING_ADDRESS_BNB;
       if (!lendingAddress) {
         throw new Error('LENDING_ADDRESS_BNB is not defined');
       }
 
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider as Eip1193Provider);
+      const provider = await getProvider();
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -45,11 +44,13 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
       // Initialize contract
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
+      setIsWaitingApproval(true);
       // Call smart contract function
       const transaction = await contract.approve(
         lendingAddress, 
         amount
       );
+      setIsWaitingApproval(false);
       
       // Wait for transaction confirmation
       await transaction.wait();
@@ -59,12 +60,13 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
       error = "Fail to approve";
     } finally {
       setIsLoading(false);
+      setIsWaitingApproval(false);
     }
 
     return { data, error };
   };
 
-  return { isLoading, fetchData };
+  return { isLoading, isWaitingApproval, fetchData };
 };
 
 export default useApproveAllowanceHook; 

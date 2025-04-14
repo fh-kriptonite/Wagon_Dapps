@@ -2,7 +2,6 @@ import { BiTransferAlt } from "react-icons/bi"
 import BridgeNetworkCard from "./BridgeNetworkCard"
 import { useEffect, useState } from "react"
 import { Button } from "flowbite-react";
-import { useParticleProvider, useAccount } from '@particle-network/connectkit';
 import { Network } from './types';
 import { numberWithCommas } from "../../util/stringUtility";
 import SwitchNetworkDialog from "./dialog/SwitchNetworkDialog";
@@ -14,18 +13,16 @@ import useSwitchNetworkHook from "./utils/useSwitchNetworkHook";
 import useCheckAllowanceHook from "./utils/useCheckAllowanceHook";
 import useApproveAllowanceHook from "./utils/useApproveAllowanceHook";
 import useSendBridgeHook from "./utils/useSendBridgeHook";
-import useChainHook from "../../util/useChainHook";
-
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import { Alert } from 'flowbite-react';
+import { Dialog } from '@headlessui/react';
 
 interface BridgeCardProps {
     // Add any props if needed
 }
 
 export default function BridgeCard(props: BridgeCardProps) {
-    const particleProvider = useParticleProvider();
-    const address = useAccount();
-    
+    const { connectedAddress } = useConnectedAddress();
     const [number, setNumber] = useState<string>("");
     const [balance, setBalance] = useState<number>(0);
     const [network1, setNetwork1] = useState<Network | null>(null);
@@ -34,48 +31,40 @@ export default function BridgeCard(props: BridgeCardProps) {
 
     const { isLoading: isLoadingGas, data: destinationGasUSD, fetchData: getGasOnDestination } = useGetDestinationGasHook();
 
-    useEffect(() => {
-        if(network1 != null && network2 != null && address) {
-            getGasOnDestination(network2, network1, address, 0);
+    async function getGas() {
+        if(network1 != null && network2 != null && connectedAddress) {
+            getGasOnDestination(network2, network1, connectedAddress, 0);
         }
-    }, [network1, network2, address])
+    }
+
+    useEffect(() => {
+        getGas();
+    }, [network1, network2, connectedAddress])
 
     const { isLoading: isLoadingSwitchNetwork, fetchData: switchNetwork } = useSwitchNetworkHook();
     const { isLoading: isLoadingAllowance, fetchData: checkAllowance } = useCheckAllowanceHook();
-    const { isLoading: isLoadingApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
-    const { isLoading: isLoadingSendBridge, fetchData: sendBridge } = useSendBridgeHook();
-
-    const { fetchData: getChainId } = useChainHook();
-
+    const { isLoading: isLoadingApproveAllowance, isWaitingApproval: isWaitingApprovalApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
+    const { isLoading: isLoadingSendBridge, isWaitingApproval: isWaitingApprovalSendBridge, fetchData: sendBridge } = useSendBridgeHook();
+    
     async function handleNetwork(): Promise<number> {
         // checking network
-        const chainIdResult = await getChainId();
-        if (!chainIdResult.data) {
-            throw new Error("Failed to get chain ID");
+        if (!network1?.chainId) {
+            throw new Error("Network chain ID is undefined");
         }
-        let currentChainId = chainIdResult.data;
-
-        if(currentChainId != network1?.chainId) {
-            if (!network1?.chainId) {
-                throw new Error("Network chain ID is undefined");
-            }
-            const resultSwitchNetwork = await switchNetwork(network1.chainId);
-            if (resultSwitchNetwork.error) {
-                throw resultSwitchNetwork.error
-            }
-            currentChainId = resultSwitchNetwork.data || currentChainId;
+        const { data } = await switchNetwork(network1.chainId);
+        if (data === null) {
+            throw new Error("Failed to switch network");
         }
-
-        return currentChainId;
+        return data;
     }
 
     async function handleAllowance(currentChainId: number): Promise<void> {
         // checking allowance
         if(currentChainId == Number(process.env.BRIDGE_LOCAL_CHAIN_ID)) {
-            if (!network1 || !address) {
+            if (!network1 || !connectedAddress) {
                 throw new Error("Network or address is undefined");
             }
-            const resultAllowance = await checkAllowance(network1, address);
+            const resultAllowance = await checkAllowance(network1, connectedAddress);
             if (resultAllowance.error) {
                 throw resultAllowance.error
             }
@@ -118,6 +107,18 @@ export default function BridgeCard(props: BridgeCardProps) {
             setShowAlert(false);
         }, 3000);
     };
+
+    function showApproveDialog(): boolean {
+        if(isWaitingApprovalApproveAllowance) { return false }
+        if(isLoadingApproveAllowance) { return true }
+        return false;
+    }
+
+    function showSendBridgeDialog(): boolean {
+        if(isWaitingApprovalSendBridge) { return false }
+        if(isLoadingSendBridge) { return true }
+        return false;
+    }
 
     return (
         <div className="h-full flex flex-col justify-center">
@@ -183,7 +184,11 @@ export default function BridgeCard(props: BridgeCardProps) {
                         className="w-full disabled:bg-gray-300"
                         disabled={
                             isLoadingSwitchNetwork ||
+                            isLoadingAllowance ||
                             isLoadingApproveAllowance ||
+                            isWaitingApprovalApproveAllowance ||
+                            isLoadingSendBridge ||
+                            isWaitingApprovalSendBridge ||
                             number === "0" || 
                             number === "" || 
                             network1 == null || 
@@ -196,7 +201,11 @@ export default function BridgeCard(props: BridgeCardProps) {
                     >
                         {
                             isLoadingSwitchNetwork ||
-                            isLoadingApproveAllowance
+                            isLoadingAllowance||
+                            isLoadingApproveAllowance ||
+                            isWaitingApprovalApproveAllowance ||
+                            isLoadingSendBridge ||
+                            isWaitingApprovalSendBridge
                             ? "Loading..."
                             : "TRANSFER"
                         }
@@ -229,12 +238,12 @@ export default function BridgeCard(props: BridgeCardProps) {
 
             <ApproveDialog 
                 number={number} network1={network1} network2={network2} 
-                isOpen={isLoadingApproveAllowance}
+                isOpen={showApproveDialog()}
             />
 
             <BridgeDialog 
                 number={number} network1={network1} network2={network2} 
-                isOpen={isLoadingSendBridge}
+                isOpen={showSendBridgeDialog()}
             />
         </div>
     )

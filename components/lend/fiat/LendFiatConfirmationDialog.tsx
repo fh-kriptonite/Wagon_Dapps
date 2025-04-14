@@ -3,9 +3,9 @@ import { Fragment } from 'react';
 import { ImCross } from "react-icons/im";
 import { numberWithCommas } from "../../../util/stringUtility";
 import { List } from 'flowbite-react';
-import { useAccount } from '@particle-network/connectkit';
 import { MdOpenInNew } from 'react-icons/md';
 import { IoIosWarning } from "react-icons/io";
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 
 interface Profile {
   id: string;
@@ -33,7 +33,7 @@ interface LendFiatConfirmationDialogProps {
 }
 
 export default function LendFiatConfirmationDialog(props: LendFiatConfirmationDialogProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
   
   const { isOpen, closeModal, stableNumber, profile, onrampData } = props;
   

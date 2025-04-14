@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ethers } from "ethers";
 import { allowanceErc20Service } from "../../../services/service_erc20"
 import { Network } from "../types";
 

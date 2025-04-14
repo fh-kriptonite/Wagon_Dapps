@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BsBank2 } from 'react-icons/bs';
 import { MdHowToVote, MdOutlineQueryStats, MdDashboard } from 'react-icons/md';
 import { BiTransferAlt } from "react-icons/bi";
@@ -7,9 +7,11 @@ import { AiFillDatabase } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
-import { ConnectButton, useAccount, useWallets, useParticleAuth, useDisconnect } from '@particle-network/connectkit';
-import { Button, Dropdown } from 'flowbite-react';
+import { ConnectButton, useDisconnect } from '@particle-network/connectkit';
+import { Dropdown } from 'flowbite-react';
 import { shortenAddress } from '@/util/stringUtility';
+import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -27,32 +29,49 @@ export default function Sidebar(props: SidebarProps) {
     const { asPath } = router;
     const currentPath = router.pathname;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [connectionComponent, setConnectionComponent] = useState<React.ReactNode>(<ConnectButton label="Login"/>);
 
-    const { isConnected, address } = useAccount();
-    const { getUserInfo } = useParticleAuth();
     const { disconnect } = useDisconnect();
+    const { isConnected } = useAccount();
+    const { connectedAddress, userInfo } = useConnectedAddress();
 
-    // Retrieve the primary wallet from the Particle Wallets
-    const [primaryWallet] = useWallets();
+    async function disconnectWallet() {
+        try {
+            console.log("Disconnecting wallet");    
+            await disconnect();
+            console.log("Disconnected wallet");
+        } catch (error) {
+            console.error('Failed to disconnect:', error);
+        }
+    }
 
-    // Store userInfo in a useState to use it in your app
-    const [userInfo, setUserInfo] = useState<any>(null);
-
+    // Effect for updating connection status
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            // Use walletConnectorType as a condition to avoid account not initialized errors
-            if (isConnected) {
-                if (primaryWallet?.connector?.walletConnectorType === 'particleAuth') {
-                    const userInfo = await getUserInfo();
-                    setUserInfo(userInfo);
-                }
-            } else {
-                setUserInfo(null);
+        const updateConnectionStatus = async () => {
+            if (!isConnected) {
+                setConnectionComponent(<ConnectButton label="Login"/>);
+                return;
             }
-        };
 
-        fetchUserInfo();
-    }, [isConnected, getUserInfo]);
+            if (userInfo) {
+                setConnectionComponent(<ConnectButton label="Login"/>);
+                return;
+            }
+
+            setConnectionComponent(
+                <Dropdown
+                    label={shortenAddress(connectedAddress || '', 6)}
+                    color="dark"
+                    size="lg"
+                >
+                    <Dropdown.Item onClick={disconnectWallet}>
+                        Disconnect
+                    </Dropdown.Item>
+                </Dropdown>
+            );
+        };
+        updateConnectionStatus();
+    }, [isConnected, userInfo, connectedAddress]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -85,7 +104,7 @@ export default function Sidebar(props: SidebarProps) {
                                         </>
                                     ) : (
                                         <>
-                                            <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 hidden sm:block hover:cursor-pointer" alt="Logo" />
+                                            <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 socialLogin:cursor-pointer" alt="Logo" />
                                             <img src="/logo_pad.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
                                         </>
                                     )}
@@ -93,28 +112,9 @@ export default function Sidebar(props: SidebarProps) {
                             </Link>
                         </div>
                         <div className='w-1/2 md:w-fit'>
-                            {
-                                isConnected ? (
-                                    userInfo
-                                    ? (
-                                        // connected to social account  
-                                        <ConnectButton label="Login"/>
-                                    ) : (
-                                        // connected to wallet
-                                        <Dropdown
-                                            label= {shortenAddress(address, 6)}
-                                            color="dark"
-                                        >
-                                            <Dropdown.Item onClick={() => disconnect()}>
-                                                Disconnect
-                                            </Dropdown.Item>
-                                        </Dropdown>
-                                    )
-                                ) : (
-                                    // not connected
-                                    <ConnectButton label="Login"/>
-                                )
-                            }
+                            <div>
+                                {connectionComponent}
+                            </div>
                         </div>
                     </div>
                 </div>

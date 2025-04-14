@@ -85,6 +85,22 @@ const nextConfig = {
       test: /\.json$/,
       type: 'json',
     });
+
+    // Add rule to handle React Strict Mode warnings
+    config.module.rules.push({
+      test: /\.(js|jsx|ts|tsx)$/,
+      include: /node_modules\/@particle-network/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-react'],
+          plugins: [
+            ['@babel/plugin-transform-react-jsx', { runtime: 'automatic' }],
+            ['@babel/plugin-proposal-class-properties', { loose: true }]
+          ]
+        }
+      }
+    });
     
     return config;
   },

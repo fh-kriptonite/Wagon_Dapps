@@ -4,7 +4,7 @@ import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
 import { authWalletConnectors } from '@particle-network/connectkit/auth';
 import type { Chain } from '@particle-network/connectkit/chains';
 // embedded wallet start
-import { wallet } from '@particle-network/connectkit/wallet';
+import { EntryPosition, wallet } from '@particle-network/connectkit/wallet';
 // embedded wallet end
 // aa start
 import { aa } from '@particle-network/connectkit/aa';
@@ -26,7 +26,6 @@ const supportChains: Chain[] = [];
 supportChains.push(mainnet, sepolia, bsc, bscTestnet);
 // evm end
 
-
 const config = createConfig({
   projectId,
   clientKey,
@@ -37,11 +36,8 @@ const config = createConfig({
       { walletId: 'trustWallet', label: 'Popular' },
       { walletId: 'walletConnect', label: 'Other' },
     ],
-    language: 'en-US', // Optional, also supported ja-JP, zh-CN, zh-TW, and ko-KR
-    mode: 'light', // Optional, changes theme between light, dark, or auto (which will change it based on system settings)
-    theme: {
-      
-    },
+    language: 'en-US',
+    mode: 'light',
     logo: 'https://app.wagon.network/logo-title.png',
   },
   walletConnectors: [
@@ -66,22 +62,24 @@ const config = createConfig({
   plugins: [
     // embedded wallet start
     wallet({
-      visible: false
+      visible: false,
+      widgetIntegration: 'modal'
     }),
-    // embedded wallet end
-    
-    // aa config start
     aa({
       name: 'BICONOMY',
       version: '2.0.0',
     }),
-    // aa config end
-  
   ],
   chains: supportChains as unknown as readonly [Chain, ...Chain[]],
 });
 
 // Wrap your application with this component.
 export const ParticleConnectkit = ({ children }: { children: React.ReactNode }) => {
-  return <ConnectKitProvider config={config}>{children}</ConnectKitProvider>;
+  return (
+    <div style={{ position: 'relative', zIndex: 1 }}>
+      <ConnectKitProvider config={config}>
+        {children}
+      </ConnectKitProvider>
+    </div>
+  );
 };

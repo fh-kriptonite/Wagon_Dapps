@@ -7,8 +7,9 @@ import useGetWagAllowanceHook from '../utils/useGetWagAllowanceHook';
 import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
 import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 import useStakeWagHook from '../utils/useStakeWagHook';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import useChainHook from '../../../util/useChainHook';
+import { useModal } from '@particle-network/connectkit';
 
 interface StakeDialogProps {
   balance: string;
@@ -18,7 +19,7 @@ interface StakeDialogProps {
 
 export default function StakeDialog(props: StakeDialogProps) {
   const balance = props.balance;
-  const address = useAccount();
+  const {connectedAddress: address} = useConnectedAddress();
   const claimableDuration = props.claimableDuration;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -81,7 +82,7 @@ export default function StakeDialog(props: StakeDialogProps) {
     }
   }
 
-  const { isLoading: isLoadingApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
+  const { isLoading: isLoadingApproveAllowance, isWaitingApproval: isWaitingApprovalApproveAllowance, fetchData: approveAllowance } = useApproveAllowanceHook();
 
   async function handleApprove() {
     try {
@@ -95,7 +96,7 @@ export default function StakeDialog(props: StakeDialogProps) {
     }
   }
 
-  const { isLoading: isLoadingStakeWag, fetchData: stakeWag } = useStakeWagHook();
+  const { isLoading: isLoadingStakeWag, isWaitingApproval: isWaitingApprovalStakeWag, fetchData: stakeWag } = useStakeWagHook();
 
   async function handleStake() {
     try {
@@ -108,6 +109,11 @@ export default function StakeDialog(props: StakeDialogProps) {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  function handleShowButton(): boolean {
+    if(isWaitingApprovalStakeWag || isWaitingApprovalApproveAllowance) return false;
+    return true;
   }
 
   return (
@@ -123,7 +129,7 @@ export default function StakeDialog(props: StakeDialogProps) {
         </Button>
       </div>
 
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
 
           <Transition.Child

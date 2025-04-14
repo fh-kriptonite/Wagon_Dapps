@@ -29,14 +29,14 @@ import AboutBorrower from '../../components/lend/AboutBorrower';
 import useGetLendStableBalanceHook from '../../components/lend/utils/useGetLendStableBalanceHook';
 import useGetLendWagBalanceHook from '../../components/lend/utils/useGetLendWagBalanceHook';
 import useGetPoolFeeHook from '../../components/lend/utils/useGetPoolFeeHook';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import PoolCustody from '../../components/lend/PoolCustody';
 import { Asset, PoolFee, Shipment } from '@/components/lend/types';
 
 export default function Pool() {
   const router = useRouter();
   const { poolId } = router.query;
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
 
   // All state hooks must be at the top
   const [isLate, setIsLate] = useState<number>(0);

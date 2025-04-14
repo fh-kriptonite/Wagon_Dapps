@@ -5,7 +5,7 @@ import { useState } from "react";
 import { numberWithCommas } from '../../util/stringUtility';
 import LoadingUserLendingStatistic from './LoadingUserLendingStatistic';
 import LendToPoolButton from './LendToPoolButton';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import LendFiatToPoolButton from './fiat/LendFiatToPoolButton';
 import { Pool, PoolJson, PoolFee } from './types';
 
@@ -23,7 +23,7 @@ interface UserLendingStatisticProps {
 }
 
 export default function UserLendingStatistic(props: UserLendingStatisticProps) {
-    const address = useAccount();
+    const { connectedAddress: address } = useConnectedAddress();
     const router = useRouter();
     const { poolId } = router.query;
 

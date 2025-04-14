@@ -2,7 +2,7 @@ import { useState, ChangeEvent, DragEvent } from "react";
 import axios from 'axios';
 import { Button, Label, Select, TextInput } from "flowbite-react";
 import { IoClose } from "react-icons/io5";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 
 interface VerificationFormProps {
     refreshAccount: () => void;
@@ -10,7 +10,7 @@ interface VerificationFormProps {
 }
 
 export default function VerificationForm({ refreshAccount, closeForm }: VerificationFormProps) {
-    const account = useAccount();
+    const { connectedAddress: account } = useConnectedAddress();
 
     const [email, setEmail] = useState<string>('');
     const [fullName, setFullName] = useState<string>('');

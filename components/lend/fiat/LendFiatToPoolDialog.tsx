@@ -4,12 +4,11 @@ import { ImCross } from "react-icons/im";
 import { inputNumberFilter, numberWithCommas } from "../../../util/stringUtility";
 import { formatTime } from '../../../util/lendingUtility';
 import { Button, Checkbox } from 'flowbite-react';
-import { useAccount } from '@particle-network/connectkit';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { Pool, PoolJson, PoolFee } from '../types';
-
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 interface Profile {
   id: string;
   wallet_address: string;
@@ -33,7 +32,7 @@ interface LendFiatToPoolDialogProps {
 }
 
 export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
   const router = useRouter();
   
   const [stableNumber, setStableNumber] = useState<string>("");

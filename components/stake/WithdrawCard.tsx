@@ -5,7 +5,7 @@ import useGetUserRewardHook from "./utils/useGetUserRewardHook";
 import useGetUserClaimableHook from "./utils/useGetUserClaimableHook";
 import useClaimWagHook from "./utils/useClaimWagHook";
 import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import useChainHook from "../../util/useChainHook";
 import useSwitchNetworkHook from "./utils/useSwitchNetworkHook";
 
@@ -15,7 +15,7 @@ interface WithdrawCardProps {
 }
 
 export default function WithdrawCard({ fetch, triggerFetch }: WithdrawCardProps) {
-    const address = useAccount();
+    const {connectedAddress: address} = useConnectedAddress();
 
     const { data: reward, fetchData: getUserReward } = useGetUserRewardHook();
     const { data: claimable, fetchData: getUserClaimable } = useGetUserClaimableHook();

@@ -3,7 +3,7 @@ import StakeSection from "./StakeSection";
 import useGetClaimableDurationHook from "./utils/useGetClaimableDurationHook";
 import useGetStakedWagBalanceHook from "./utils/useGetStakedWagBalanceHook";
 import { useEffect } from "react";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 
 interface UserCardProps {
     fetch: boolean;
@@ -11,7 +11,7 @@ interface UserCardProps {
 }
 
 export default function UserCard({ fetch, triggerFetch }: UserCardProps) {
-    const address = useAccount();
+    const {connectedAddress: address} = useConnectedAddress();
 
     const { data: claimableDuration, fetchData: getClaimableDuration } = useGetClaimableDurationHook();
     const { data: stakedBalance, fetchData: getStakedWagBalance } = useGetStakedWagBalanceHook();

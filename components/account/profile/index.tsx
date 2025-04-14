@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import VerificationForm from "./verificationForm";
 import ProfileCard from "./profileCard";
 import UnverifiedProfileCard from "./unverifiedProfileCard";
-import { useAccount } from "@particle-network/connectkit";
-import axios, { AxiosResponse } from "axios";
-import { Spinner } from "flowbite-react";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
+import axios from "axios";
 import LoadingCard from "./loadingCard";
 
 interface Profile {
@@ -15,17 +14,17 @@ interface Profile {
   [key: string]: any;
 }
 
+interface ApiResponse {
+  data: Profile | null;
+  error: string | null;
+}
+
 interface ProfileComponentProps {
   [key: string]: any;
 }
 
-interface ApiResponse {
-  data: Profile;
-  error?: string;
-}
-
 export default function ProfileComponent(props: ProfileComponentProps) {
-    const account = useAccount();
+    const { connectedAddress: accountAddress } = useConnectedAddress();
 
     const [profile, setProfile] = useState<Profile | null>(null);
     const [showVerificationForm, setShowVerficationForm] = useState<boolean>(false);
@@ -42,14 +41,11 @@ export default function ProfileComponent(props: ProfileComponentProps) {
     async function getAccount(): Promise<void> {
         setIsLoading(true);
 
-        if (account == null) return;
-
         try {
             // Request Account
-            const response = await axios.get<ApiResponse>(`/api/account/getAccount?wallet_address=${account}`);
+            const response = await axios.get<ApiResponse>(`/api/account/getAccount?wallet_address=${accountAddress}`);
 
             // Handle success response
-            console.log(response)
             if(response.data.error) {
                 throw response.data.error
             }
@@ -64,8 +60,10 @@ export default function ProfileComponent(props: ProfileComponentProps) {
     }
 
     useEffect(()=>{
-        getAccount()
-    },[account])
+        if(accountAddress) {
+            getAccount()
+        }
+    },[accountAddress])
 
     return (
         <div className="container mx-auto">  

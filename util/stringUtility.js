@@ -63,6 +63,7 @@ export function formatDate(date) {
 }
 
 export function shortenAddress(address, length = 4) {
+  if (!address) return address;
   if (address.length <= 8) return address; // Address is already short
 
   const prefix = address.slice(0, length);

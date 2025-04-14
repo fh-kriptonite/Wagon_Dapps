@@ -1,14 +1,13 @@
 import Head from 'next/head';
-import { useAccount } from '@particle-network/connectkit';
 import Disconnected from '../../components/general/Disconnected';
 import ProfileComponent from '../../components/account/profile';
-
+import { useAccount } from '@particle-network/connectkit';
 interface ProfileProps {
   [key: string]: any;
 }
 
 export default function Profile(props: ProfileProps) {
-  const address = useAccount();
+  const { isConnected } = useAccount();
   const themeSkin = Number(process.env.THEME_SKIN || '0');
 
   return (
@@ -23,7 +22,7 @@ export default function Profile(props: ProfileProps) {
           }
         </Head>
         {
-            !address 
+            !isConnected 
             ? <div className='h-full'>
                 <Disconnected {...props}/>
               </div>

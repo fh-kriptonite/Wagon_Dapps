@@ -1,12 +1,10 @@
 import { Button } from 'flowbite-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import LendToPoolDialog from './dialog/LendToPoolDialog';
 import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
-import { useParticleProvider } from '@particle-network/connectkit';
-import { ethers } from 'ethers';
 import { Pool, PoolFee, PoolJson } from './types';
-
+import { useAccount } from '@particle-network/connectkit';
 interface LendToPoolButtonProps {
   pool: Pool;
   symbol: string;
@@ -20,19 +18,7 @@ interface LendToPoolButtonProps {
 }
 
 export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupply, decimal, poolJson, poolId, refreshUser, fees }: LendToPoolButtonProps) {
-  const [chainId, setChainId] = useState<number | null>(null);
-  const particleProvider = useParticleProvider();
-    
-  useEffect(() => {
-    async function getChainId() {
-      if (!particleProvider) return;
-      const provider = new ethers.BrowserProvider(particleProvider as unknown as ethers.Eip1193Provider);
-      const chain = await provider.getNetwork();
-      setChainId(Number(chain.chainId));
-    }
-      
-    getChainId();
-  }, [particleProvider]);
+  const { chainId } = useAccount()
 
   const { fetchData: switchNetwork } = useSwitchNetworkHook();
 
@@ -50,7 +36,6 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
         if (resultSwitchNetwork.error) {
           throw resultSwitchNetwork.error;
         }
-        setChainId(resultSwitchNetwork.data);
         setIsOpen(true);
       } catch (error) {
         console.log(error);

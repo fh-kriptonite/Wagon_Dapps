@@ -7,7 +7,7 @@ import useApproveAllowanceHook from '../utils/useApproveAllowanceHook';
 import useGetAllowanceHook from '../utils/useGetAllowanceHook';
 import { ethers, parseEther } from 'ethers';
 import useLendToPoolHook from '../utils/useLendToPoolHook';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import { Pool, PoolJson } from '../types';
 
 interface ConfirmationLendToPoolDialogProps {
@@ -25,7 +25,7 @@ interface ConfirmationLendToPoolDialogProps {
 }
 
 export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPoolDialogProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
 
   const {
     poolId,
@@ -51,7 +51,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     }
   }, [isOpen, address])
 
-  const {isLoading: isLoadingApproveStable, fetchData: approveStable} = useApproveAllowanceHook()
+  const {isLoading: isLoadingApproveStable, isWaitingApproval: isWaitingApprovalStable, fetchData: approveStable} = useApproveAllowanceHook()
 
   async function handleApproveStable() {
     try {
@@ -90,7 +90,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     return "Approve";
   }
 
-  const {isLoading: isLoadingApproveWag, fetchData: approveWag} = useApproveAllowanceHook()
+  const {isLoading: isLoadingApproveWag, isWaitingApproval: isWaitingApprovalWag, fetchData: approveWag} = useApproveAllowanceHook()
 
   async function handleApproveWag() {
     try {
@@ -129,7 +129,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     return "Approve";
   }
 
-  const {isLoading: isLoadingLendToPool, fetchData: lendToPool} = useLendToPoolHook();
+  const {isLoading: isLoadingLendToPool, isWaitingApproval: isWaitingApprovalLendToPool, fetchData: lendToPool} = useLendToPoolHook();
 
   async function handleLend() {
     try {
@@ -165,9 +165,14 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     return "Lend To Pool";
   }
 
+  function handleShowButton(): boolean {
+    if(isWaitingApprovalStable || isWaitingApprovalWag || isWaitingApprovalLendToPool) return false;
+    return true;
+  }
+
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
 
           <Transition.Child

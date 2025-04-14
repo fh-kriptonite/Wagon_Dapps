@@ -2,7 +2,7 @@ import { Button } from 'flowbite-react';
 import { useEffect, useState } from "react";
 import LendFiatToPoolDialog from './LendFiatToPoolDialog';
 import LendFiatConfirmationDialog from './LendFiatConfirmationDialog';
-import { useAccount } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import axios from 'axios';
 import { Pool, PoolJson, PoolFee } from '../types';
 
@@ -35,7 +35,7 @@ interface LendFiatToPoolButtonProps {
 }
 
 export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
   const pool = props.pool;
 
   const poolMaxSupply = props.poolMaxSupply;

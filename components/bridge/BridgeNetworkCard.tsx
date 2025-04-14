@@ -2,9 +2,9 @@ import { useEffect, useState } from "react"
 import { numberWithCommas } from "../../util/stringUtility"
 import SelectNetworkDialog from "./dialog/SelectNetworkDialog";
 import { getERC20NetworkBalanceService } from "../../services/service_erc20"
-import { useAccount } from "@particle-network/connectkit";
 import { Network } from "./types";
 
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 interface BridgeNetworkCardProps {
     number: string;
     setNumber: (number: string) => void;
@@ -20,17 +20,19 @@ export default function BridgeNetworkCard(props: BridgeNetworkCardProps) {
     const [balance, setBalanceState] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const address = useAccount();
+    const { connectedAddress } = useConnectedAddress();
 
     async function getBalance(): Promise<void> {
+        if(!primary)  return;
+
         try {
             setIsLoading(true);
-            if (!network?.wagAddress || !network?.rpc || !address) {
+            if (!network?.wagAddress || !network?.rpc || !connectedAddress) {
                 return;
             }
             const wagBalance = await getERC20NetworkBalanceService(
                 network.wagAddress, 
-                address, 
+                connectedAddress, 
                 network.rpc
             );
 
@@ -45,10 +47,10 @@ export default function BridgeNetworkCard(props: BridgeNetworkCardProps) {
 
     useEffect(() => {
         // get the balance
-        if(network != null) {
+        if(network && connectedAddress) {
             getBalance();
         }
-    }, [network, address]);
+    }, [network, connectedAddress]);
 
     return (
         <div className="mt-2 border rounded-xl overflow-hidden">

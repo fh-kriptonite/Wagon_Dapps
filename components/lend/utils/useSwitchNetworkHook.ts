@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useSwitchChains } from '@particle-network/connectkit';
-import { Chain, Ethereum, EthereumSepolia, BNBChain, BNBChainTestnet } from "@particle-network/chains";
+import { useSwitchChain } from '@particle-network/connectkit';
+import { Chain, mainnet, sepolia, bsc, bscTestnet } from "@particle-network/connectkit/chains";
 
 interface UseSwitchNetworkHookResult {
   isLoading: boolean;
@@ -11,16 +11,16 @@ interface UseSwitchNetworkHookResult {
 }
 
 function getChain(chainId: number): Chain {
-  if (chainId === 1) return Ethereum;
-  if (chainId === 11155111) return EthereumSepolia;
-  if (chainId === 56) return BNBChain;
-  if (chainId === 97) return BNBChainTestnet;
+  if (chainId === 1) return mainnet;
+  if (chainId === 11155111) return sepolia;
+  if (chainId === 56) return bsc;
+  if (chainId === 97) return bscTestnet;
   throw new Error(`Unsupported chain ID: ${chainId}`);
 }
 
 const useSwitchNetworkHook = (): UseSwitchNetworkHookResult => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { switchChain } = useSwitchChains();
+  const { switchChain } = useSwitchChain();
 
   const fetchData = async (targetChainId: number): Promise<{
     data: number | null;
@@ -32,8 +32,7 @@ const useSwitchNetworkHook = (): UseSwitchNetworkHookResult => {
     let error: string | null = null;
     
     try {     
-      const chain = getChain(targetChainId);   
-      await switchChain(chain);
+      await switchChain({ chainId: targetChainId });
       data = targetChainId;
     } catch (e) {
       error = "Failed to switch network";

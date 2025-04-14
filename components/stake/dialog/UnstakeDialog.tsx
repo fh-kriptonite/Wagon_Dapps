@@ -5,7 +5,6 @@ import { numberWithCommas } from "../../../util/stringUtility";
 import { Button } from 'flowbite-react';
 import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 import useUnstakeWagHook from '../utils/useUnstakeWagHook';
-import { useAccount } from '@particle-network/connectkit';
 import useChainHook from '../../../util/useChainHook';
 
 interface UnstakeDialogProps {
@@ -24,7 +23,6 @@ interface UnstakeResult {
 }
 
 export default function UnstakeDialog(props: UnstakeDialogProps) {
-  const address = useAccount();
   const { stakedBalance, triggerFetch } = props;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -32,7 +30,7 @@ export default function UnstakeDialog(props: UnstakeDialogProps) {
   const [showButton, setShowButton] = useState<number>(0);
 
   const { fetchData: switchNetwork } = useSwitchNetworkHook();
-  const { isLoading, fetchData: unstakeWag } = useUnstakeWagHook();
+  const { isLoading, isWaitingApproval, fetchData: unstakeWag } = useUnstakeWagHook();
   const { fetchData: getChain } = useChainHook();
 
   function closeModal(): void {
@@ -84,6 +82,11 @@ export default function UnstakeDialog(props: UnstakeDialogProps) {
     }
   }
 
+  function handleShowButton(): boolean {
+    if(isWaitingApproval) return false;
+    return true;
+  }
+
   return (
     <>
       <Button color={"light"} size={"sm"} style={{width:"100%"}}
@@ -92,7 +95,7 @@ export default function UnstakeDialog(props: UnstakeDialogProps) {
           Unstake
       </Button>
 
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}

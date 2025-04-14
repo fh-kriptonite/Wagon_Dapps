@@ -1,11 +1,8 @@
-import { useParticleProvider } from "@particle-network/connectkit";
-import { ethers } from "ethers";
+import { useAccount } from '@particle-network/connectkit';
 import { useState } from 'react';
-
 const useChainHook = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const particleProvider = useParticleProvider();
-
+  const { chainId } = useAccount()
   const fetchData = async () => {
     setIsLoading(true);
 
@@ -13,9 +10,7 @@ const useChainHook = () => {
     let error = null;
 
     try {
-        const provider = new ethers.BrowserProvider(particleProvider);
-        const chain = await provider.getNetwork();
-        data = parseFloat(chain.chainId);
+        data = parseFloat(chainId);
     } catch (e) {
         console.log(e)
         error = "Fail to approve";

@@ -7,10 +7,10 @@ import useGetInterestAmountSharedHook from './utils/useGetInterestAmountSharedHo
 import { useRouter } from 'next/router';
 import useGetLatestInterestClaimedHook from './utils/useGetLatestInterestClaimedHook';
 import ConfirmationClaimInterestDialog from './dialog/ConfirmationClaimInterestDialog'
-import { useAccount } from '@particle-network/connectkit';
 import useChainHook from '../../util/useChainHook';
 import useGetDeploymentGracePeriodHook from './utils/useGetDeploymentGracePeriodHook';
 import { PoolFee, Pool } from './types';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 
 interface Repayment {
   id: number;
@@ -29,7 +29,7 @@ interface TimelinePoolProps {
 }
 
 export default function TimelinePool(props: TimelinePoolProps) {
-  const address = useAccount();
+  const { connectedAddress: address } = useConnectedAddress();
   const { fetchData: getChainId } = useChainHook();
 
   const {fetchData: switchNetwork} = useSwitchNetworkHook();

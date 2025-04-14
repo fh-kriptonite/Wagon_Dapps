@@ -1,6 +1,5 @@
 import AccountComponent from '../components/account';
 import Head from 'next/head';
-import type { GetServerSideProps } from 'next';
 
 interface HomeProps {
   [key: string]: any;

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { Eip1193Provider, ethers } from 'ethers';
-import { useParticleProvider } from '@particle-network/connectkit';
+import { useGetProvider } from '@/util/getProvider';
 
 interface UseLendToPoolHookResult {
   isLoading: boolean;
+  isWaitingApproval: boolean;
   fetchData: (poolId: string, amount: bigint) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
@@ -13,7 +14,8 @@ interface UseLendToPoolHookResult {
 
 const useLendToPoolHook = (): UseLendToPoolHookResult => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const particleProvider = useParticleProvider();
+  const [isWaitingApproval, setIsWaitingApproval] = useState<boolean>(false);
+  const getProvider = useGetProvider();
   
   const fetchData = async (poolId: string, amount: bigint): Promise<{
     data: ethers.ContractTransactionResponse | null;
@@ -25,12 +27,7 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
     let error: string | null = null;
 
     try {
-      if (!particleProvider) {
-        throw new Error('Particle provider is not available');
-      }
-
-      // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider as Eip1193Provider);
+      const provider = await getProvider();
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
@@ -43,11 +40,13 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
       // Initialize contract
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
+      setIsWaitingApproval(true);
       // Call smart contract function
       const transaction = await contract.lendToPool(
         poolId,
         amount
       );
+      setIsWaitingApproval(false);
       
       // Wait for transaction confirmation
       await transaction.wait();
@@ -57,12 +56,13 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
       error = "Fail to approve";
     } finally {
       setIsLoading(false);
+      setIsWaitingApproval(false);
     }
 
     return { data, error };
   };
 
-  return { isLoading, fetchData };
+  return { isLoading, isWaitingApproval, fetchData };
 };
 
 export default useLendToPoolHook; 

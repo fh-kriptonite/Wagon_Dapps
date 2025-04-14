@@ -1,13 +1,13 @@
 import Head from 'next/head';
-import { useAccount } from '@particle-network/connectkit';
 import ComingSoon from '../components/general/ComingSoon';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 
 interface RampProps {
   [key: string]: any;
 }
 
 export default function Ramp(props: RampProps) {
-  const account = useAccount();
+  const { connectedAddress: account } = useConnectedAddress();
 
   return (
     <div className='container mx-auto px-4 md:px-10 h-full'>

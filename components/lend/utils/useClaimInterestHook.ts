@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { ethers } from 'ethers';
-import { useAccount, useParticleProvider } from '@particle-network/connectkit';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
+import { useGetProvider } from '@/util/getProvider';
 
 interface UseClaimInterestHookResult {
   isLoading: boolean;
@@ -13,8 +14,8 @@ interface UseClaimInterestHookResult {
 
 const useClaimInterestHook = (): UseClaimInterestHookResult => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const particleProvider = useParticleProvider();
-  const address = useAccount();
+  const getProvider = useGetProvider();
+  const { connectedAddress: address } = useConnectedAddress();
 
   const fetchData = async (poolId: string): Promise<{
     data: ethers.ContractTransactionResponse | null;
@@ -26,16 +27,12 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
     let error: string | null = null;
 
     try {
-      if (!particleProvider) {
-        throw new Error('Particle provider is not available');
-      }
-
       if (!address) {
         throw new Error('No wallet address available');
       }
 
       // Connect to Ethereum
-      const provider = new ethers.BrowserProvider(particleProvider as ethers.Eip1193Provider);
+      const provider = await getProvider();
       const signer = await provider.getSigner();
       
       // Contract ABI and Address

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
-import { ethers, parseEther, Contract } from 'ethers';
-import { useParticleProvider } from '@particle-network/connectkit';
+import { parseEther, Contract } from 'ethers';
+import { useGetProvider } from '@/util/getProvider';
+import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 
 interface Network {
     wagAddress: string;
@@ -11,54 +12,63 @@ interface Network {
 
 interface UseApproveAllowanceHookResult {
     isLoading: boolean;
+    isWaitingApproval: boolean;
     fetchData: (network1: Network, amount: string) => Promise<{ data: any | null; error: string | null }>;
 }
 
 const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const particleProvider = useParticleProvider();
-    
+    const [isWaitingApproval, setIsWaitingApproval] = useState<boolean>(false);
+
+    const getProvider = useGetProvider();
+    const { connectedAddress } = useConnectedAddress();
+
     const fetchData = async (network1: Network, amount: string): Promise<{ data: any | null; error: string | null }> => {
         setIsLoading(true);
+        // Contract ABI and Address
+        const contractAddress = network1.wagAddress;
+        const contractABI = ERC20_ABI;
 
         let data = null;
         let error = null;
 
         try {
-            // Connect to Ethereum
-            if (!particleProvider) {
-                throw new Error("Provider is not available");
+            if (!connectedAddress) {
+                throw new Error("No connected address available");
             }
-            // Use type assertion to tell TypeScript this provider is compatible
-            const provider = new ethers.BrowserProvider(particleProvider as any);
+            const provider = await getProvider();
             const signer = await provider.getSigner();
-            
-            // Contract ABI and Address
-            const contractAddress = network1.wagAddress;
-            const contractABI = ERC20_ABI; // Your contract's ABI
 
             // Initialize contract
-            const contract = new Contract(contractAddress, contractABI, signer);
+            const contract = new Contract(contractAddress, contractABI, signer)
 
+            setIsWaitingApproval(true);
             // Call smart contract function
             const transaction = await contract.approve(
                 network1.OFTAddress, 
                 parseEther(`${amount}`).toString()
             );
+            setIsWaitingApproval(false);
             
             // Wait for transaction confirmation
-            await transaction.wait();
-            data = transaction;
-        } catch (e) {
-            error = "Fail to approve";
+            const receipt = await transaction.wait();
+            if (receipt.status === 0) {
+                throw new Error("Transaction reverted");
+            }
+            data = receipt;
+            setIsLoading(false);
+        } catch (e: any) {
+            console.error("Approve error:", e);
+            error = e.message || "Failed to approve allowance";
         } finally {
             setIsLoading(false);
+            setIsWaitingApproval(false);
         }
 
         return { data, error };
     };
 
-    return { isLoading, fetchData };
+    return { isLoading, isWaitingApproval, fetchData };
 };
 
 export default useApproveAllowanceHook; 

@@ -16,7 +16,7 @@ export default function BridgeDialog(props: BridgeDialogProps) {
     return (
         <>
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={() => {}}>
+                <Dialog as="div" className="relative z-[1001]" onClose={() => {}}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

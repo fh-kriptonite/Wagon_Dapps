@@ -3,7 +3,7 @@ import { numberWithCommas } from "../../util/stringUtility";
 import StakeDialog from "./dialog/StakeDialog";
 import UnstakeDialog from "./dialog/UnstakeDialog";
 import useGetWagBalanceHook from "./utils/useGetWagBalanceHook";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 
 interface StakeSectionProps {
     fetch: boolean;
@@ -13,7 +13,7 @@ interface StakeSectionProps {
 }
 
 export default function StakeSection({ fetch, triggerFetch, stakedBalance, claimableDuration }: StakeSectionProps) {
-    const address = useAccount();
+    const {connectedAddress: address} = useConnectedAddress();
 
     const { isLoading, data: balance, fetchData: getBalance } = useGetWagBalanceHook();
 

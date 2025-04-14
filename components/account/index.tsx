@@ -9,7 +9,7 @@ import { getAPYService, getRewardBalance, getStakingBalance, getUserTotalRewardC
 import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
-import { useAccount } from "@particle-network/connectkit";
+import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -54,7 +54,8 @@ interface UserBalance {
 }
 
 export default function AccountComponent() {
-    const address = useAccount();
+   
+    const { connectedAddress: address } = useConnectedAddress();
 
     const [pools, setPools] = useState<Pool[]>([]);
     const [wagPrice, setWagPrice] = useState<number>(0);
@@ -64,6 +65,8 @@ export default function AccountComponent() {
     const [tvlIdrt, setTvlIdrt] = useState<number>(0);
     const [interestIdrt, setInterestIdrt] = useState<number>(0);
     const [interestIdrtInYear, setInterestIdrtInYear] = useState<number>(0);
+
+    const [apy, setApy] = useState<number>(0)
 
     async function getWagPrice(): Promise<void> {
         try {
@@ -77,6 +80,12 @@ export default function AccountComponent() {
         }
     }
 
+    async function getAPY(): Promise<void> {
+        if(!address) return;
+        const data = await getAPYService(address);
+        setApy(data)
+    }
+
     useEffect(()=>{
         if(process.env.THEME_SKIN === "1") {
             getAPY();
@@ -86,7 +95,6 @@ export default function AccountComponent() {
 
     const [stakingBalance, setStakingBalance] = useState<number>(0)
     const [rewardBalance, setRewardBalance] = useState<number>(0)
-    const [apy, setApy] = useState<number>(0)
     const [totalRewardClaimed, setTotalRewardClaimed] = useState<number>(0)
 
     async function getStaking(): Promise<void> {
@@ -99,12 +107,6 @@ export default function AccountComponent() {
         if(!address) return;
         const balance = await getRewardBalance(address);
         setRewardBalance(Number(balance) / 1e18);
-    }
-
-    async function getAPY(): Promise<void> {
-        if(!address) return;
-        const data = await getAPYService(address);
-        setApy(data)
     }
 
     async function getStakingUserTotalRewardClaimed(): Promise<void> {
@@ -130,8 +132,8 @@ export default function AccountComponent() {
     useEffect(()=>{
         getStaking();
         getRewards();
-        getUserPools();
         getStakingUserTotalRewardClaimed();
+        getUserPools();
     }, [address])
 
     const data: ChartData = {
