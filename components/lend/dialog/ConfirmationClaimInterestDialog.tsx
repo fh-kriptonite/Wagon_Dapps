@@ -48,11 +48,23 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
     close
   } = props;
 
-  const [protocolFeeAmount, setProtocolFeeAmount] = useState(0);
+  const [totalClaimable, setTotalClaimable] = useState(null);
+  const [protocolFeeAmount, setProtocolFeeAmount] = useState(null);
 
   useEffect(() => {
-    getProtocolFeeAmount();
-  }, [fees, pool, latestInterestClaimed]);
+    if(pool != null && latestInterestClaimed != null && interestAmountShare != null && decimal != null) {
+      const countClaimable = parseFloat(pool.latestRepayment) - parseFloat(latestInterestClaimed);
+      const claimable = countClaimable * parseFloat(interestAmountShare) / Math.pow(10, decimal);
+      setTotalClaimable(claimable as any); // Type assertion to fix type error
+    }
+  }, [pool, latestInterestClaimed, interestAmountShare, decimal]);
+
+  useEffect(() => {
+    if(fees != null && totalClaimable != null) {
+      const fee = totalClaimable * Number(fees.protocolFee) / 10000;
+      setProtocolFeeAmount(fee as any); // Type assertion to fix type error
+    }
+  }, [fees, totalClaimable]);
 
   function closeModal() {
     close();
@@ -64,36 +76,14 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
     return "Unclaimable";
   }
 
-  function countTotalClaimable(): number {
-    const countClaimable = parseFloat(pool.latestRepayment) - parseFloat(latestInterestClaimed);
-    const claimable = countClaimable * parseFloat(interestAmountShare) / Math.pow(10, decimal);
-    return claimable;
-  }
-
   function getClaimableInterestAmount(): string {
-    const claimable = countTotalClaimable();
-    return numberWithCommas(claimable, 2);
-  }
-
-  function countFee(): number {
-    if (fees == null) return 0;
-    const claimable = countTotalClaimable();
-    const fee = claimable * Number(fees.protocolFee) / 10000;
-    return fee;
-  }
-
-  function getProtocolFeeAmount(): void {
-    if (fees == null) return;
-
-    const fee = countFee();
-    setProtocolFeeAmount(fee);
+    if(totalClaimable == null) return "~";
+    return numberWithCommas(totalClaimable, 2);
   }
 
   function getReceivedInterestAmount(): string {
-    const claimable = countTotalClaimable();
-    const fee = countFee();
-
-    return numberWithCommas(claimable - fee, 2);
+    if(totalClaimable == null || protocolFeeAmount == null) return "~";
+    return numberWithCommas(totalClaimable - protocolFeeAmount, 2);
   }
 
   function getUnlockWagAmount(): string {
@@ -104,7 +94,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
     return numberWithCommas(0, 2);
   }
 
-  const { isLoading: isLoadingClaimInterest, fetchData: claimInterest } = useClaimInterestHook();
+  const { isLoading: isLoadingClaimInterest, isWaitingApproval, fetchData: claimInterest } = useClaimInterestHook();
 
   async function handleClaimInterest() {
     try {
@@ -127,7 +117,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   return (
     <>
-      <Transition appear show={isOpen} as={Fragment}>
+      <Transition appear show={isOpen && !isWaitingApproval} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <Transition.Child
             as={Fragment}

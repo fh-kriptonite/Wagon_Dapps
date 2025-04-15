@@ -6,6 +6,7 @@ import { useGetProvider } from '@/util/getProvider';
 
 interface UseClaimInterestHookResult {
   isLoading: boolean;
+  isWaitingApproval: boolean;
   fetchData: (poolId: string) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
@@ -14,6 +15,8 @@ interface UseClaimInterestHookResult {
 
 const useClaimInterestHook = (): UseClaimInterestHookResult => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isWaitingApproval, setIsWaitingApproval] = useState<boolean>(false);
+
   const getProvider = useGetProvider();
   const { connectedAddress: address } = useConnectedAddress();
 
@@ -45,11 +48,13 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       // Initialize contract
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
+      setIsWaitingApproval(true);
       // Call smart contract function
       const transaction = await contract.claimInterest(
         poolId,
         address
       );
+      setIsWaitingApproval(false);
       
       // Wait for transaction confirmation
       await transaction.wait();
@@ -59,12 +64,13 @@ const useClaimInterestHook = (): UseClaimInterestHookResult => {
       error = "Fail to claim";
     } finally {
       setIsLoading(false);
+      setIsWaitingApproval(false);
     }
 
     return { data, error };
   };
 
-  return { isLoading, fetchData };
+  return { isLoading, fetchData, isWaitingApproval };
 };
 
 export default useClaimInterestHook; 
