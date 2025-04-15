@@ -10,11 +10,11 @@ interface UnverifiedProfileCardProps {
 export default function UnverifiedProfileCard({ showForm }: UnverifiedProfileCardProps) {
     return (
         <div className="card w-full space-y-2">
-            <div className="flex gap-4 items-center my-8">
-                <div className="flex-initial w-1/3">
-                    <img src={"/profile.png"} className="lg:h-60 mx-auto" alt="Profile"/>
+            <div className="flex gap-8 items-center my-8">
+                <div className="flex-initial w-1/3 mx-auto hidden lg:block">
+                    <img src={"/profile.png"} className="mx-auto rounded-lg" alt="Profile"/>
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 max-w-2xl mx-auto">
                     <h4 className="mb-2">Verify your profile</h4>
                     <p className="mb-10 text-sm">Please submit the required documents below to complete your profile verification and unlock the following services:</p>
                     <div className="flex gap-4">

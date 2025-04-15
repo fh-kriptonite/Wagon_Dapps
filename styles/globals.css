@@ -99,3 +99,12 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* Hide the chain selector elements */
+.sc-djWYAM.escnUe {
+  display: none;
+}
+
+.sc-ldfREC.dboCoq {
+  display: none;
+}

@@ -99,12 +99,12 @@ export default function Sidebar(props: SidebarProps) {
                                 <>
                                     {Number(process.env.THEME_SKIN) === 2 ? (
                                         <>
-                                            <img src="/logo-title-waresix.png" className="ml-2 md:mr-24 h-6 hidden sm:block hover:cursor-pointer" alt="Logo" />
-                                            <img src="/logo-waresix-square.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
+                                            <img src="/logo-title-waresix.png" className="ml-2 md:mr-24 h-6 hidden md:block hover:cursor-pointer" alt="Logo" />
+                                            <img src="/logo-waresix-square.png" className="ml-2 md:mr-24 h-12 hidden md:block hover:cursor-pointer" alt="Logo" />
                                         </>
                                     ) : (
                                         <>
-                                            <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 socialLogin:cursor-pointer" alt="Logo" />
+                                            <img src="/logo-title.png" className="ml-2 md:mr-24 h-10 hidden md:block hover:cursor-pointer" alt="Logo" />
                                             <img src="/logo_pad.png" className="ml-2 md:mr-24 h-12 block sm:hidden hover:cursor-pointer" alt="Logo" />
                                         </>
                                     )}
