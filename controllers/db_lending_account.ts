@@ -62,7 +62,7 @@ export const getAccountController = (wallet_address: string): Promise<AccountQue
                 if (err) {
                     return reject(err);
                 }
-                let query = 'SELECT wallet_address, email, full_name, address, document_type, status, error_at FROM `accounts` WHERE wallet_address = ?';
+                let query = 'SELECT wallet_address, email, full_name, address, document_type, document_id, status, error_at FROM `accounts` WHERE wallet_address = ?';
                 
                 conn.query(
                     query,

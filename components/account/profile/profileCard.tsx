@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { Button, Label, Select, TextInput } from "flowbite-react";
-import { HiMiniBanknotes } from "react-icons/hi2";
-import { RiBankFill } from "react-icons/ri";
-import { MdVerified } from "react-icons/md";
+import { Tabs } from "flowbite-react";
+import { HiMiniBanknotes, HiUserCircle } from "react-icons/hi2";
+import { MdVerified, MdAccountBalance } from "react-icons/md";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
+import ProfileTab from "./tabs/ProfileTab";
+import OnrampTab from "./tabs/OnrampTab";
+import OfframpTab from "./tabs/OfframpTab";
 
 interface Profile {
     status: number;
     wallet_address: string;
     full_name: string;
     email: string;
+    address?: string;
+    document_type?: string;
+    document_id?: string;
+    onramp_enabled?: boolean;
+    offramp_enabled?: boolean;
 }
 
 interface ProfileCardProps {
@@ -48,7 +54,7 @@ export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
     }
 
     return (
-        <div className="card w-full divide-y">
+        <div className="card w-full">
             <div className="flex gap-4 pb-4 items-center">
                 <Jazzicon diameter={60} seed={jsNumberForAddress(profile?.wallet_address || "")}/>
                 <div className="w-full">
@@ -75,26 +81,27 @@ export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
                 </div>
             </div>
 
-            <div className="py-10 w-full">
-                <div className="w-fit">
-                    <p className="text-lg mb-4 font-bold">By Verifying your profile information, you have unlocked:</p>
-                    <div className="flex gap-4">
-                        <HiMiniBanknotes className="w-6 h-6 mb-1 text-gray-900"/>
-                        <div>
-                            <p className="text-sm font-bold">Effortless FIAT Lending</p>
-                            <p className="text-xs mb-4">Transfer funds from your bank to contribute to the lending pool.</p>    
-                        </div>
-                    </div>
+            <Tabs variant="underline">
+                <Tabs.Item active title="Profile" icon={HiUserCircle}>
+                    <ProfileTab 
+                        status={profile?.status || 0}
+                        wallet_address={profile?.wallet_address}
+                        email={profile?.email}
+                        full_name={profile?.full_name}
+                        address={profile?.address}
+                        document_type={profile?.document_type}
+                        document_id={profile?.document_id}
+                    />
+                </Tabs.Item>
 
-                    <div className="flex gap-4">
-                        <RiBankFill className="w-6 h-6 mb-1 text-gray-900"/>
-                        <div>
-                            <p className="text-sm font-bold">Easy offramp</p>
-                            <p className="text-xs">Offramp your stable coin easily.</p>    
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <Tabs.Item title="Onramp" icon={HiMiniBanknotes}>
+                    <OnrampTab onramp_enabled={profile?.onramp_enabled} />
+                </Tabs.Item>
+
+                <Tabs.Item title="Offramp" icon={MdAccountBalance}>
+                    <OfframpTab offramp_enabled={profile?.offramp_enabled} />
+                </Tabs.Item>
+            </Tabs>
         </div>
     );
 } 

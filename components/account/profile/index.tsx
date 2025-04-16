@@ -11,6 +11,9 @@ interface Profile {
   wallet_address: string;
   full_name: string;
   email: string;
+  address: string;
+  document_type: string;
+  document_id: string;
   [key: string]: any;
 }
 
