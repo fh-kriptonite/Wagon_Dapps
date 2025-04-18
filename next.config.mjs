@@ -25,29 +25,8 @@ const nextConfig = {
     '@simplewebauthn/browser',
     '@particle-network/auth-connectors',
     '@particle-network/wallet-plugin',
-    '@particle-network/aa-plugin',
-    '@aws-sdk/client-cognito-identity',
-    '@aws-sdk/signature-v4',
-    '@aws-sdk/util-dynamodb',
-    '@aws-sdk/util-stream',
-    '@aws-sdk/util-waiter',
-    '@aws-sdk/util-hex-encoding',
-    '@aws-sdk/util-base64',
-    '@aws-sdk/util-buffer',
-    '@aws-sdk/util-utf8',
-    '@aws-sdk/util-middleware',
-    '@aws-sdk/util-retry',
-    '@aws-sdk/util-user-agent',
-    '@aws-sdk/util-uri-escape',
-    '@aws-sdk/util-dates',
-    '@aws-sdk/util-lru-cache',
-    '@aws-sdk/util-stream-browser',
-    '@aws-sdk/util-stream-node',
-    '@aws-sdk/util-waiter',
-    '@aws-sdk/util-waiter-node',
-    '@aws-sdk/util-waiter-browser'
+    '@particle-network/aa-plugin'
   ],
-  // Add webpack configuration to handle ESM modules
   webpack: (config, { isServer }) => {
     // Handle ESM modules
     config.resolve.extensionAlias = {

@@ -54,12 +54,26 @@ export function numberWithLetter(num, digits) {
     return item ? (num / item.value).toFixed(digits).replace(rx, "$1") + item.symbol : "0";
   }
 
-export function formatDate(date) {
-  // Format the date object into the desired format "Jan 21, 2024"
-  const options = { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'  };
-  const formattedDate = date.toLocaleDateString('en-US', options);
+export function formatDate(dateString) {
+  // Handle both Date objects and string dates
+  const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+  
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    return 'Invalid Date';
+  }
 
-  return formattedDate;
+  // Format the date object into the desired format "Jan 21, 2024, 10:30 AM"
+  const options = { 
+    month: 'short', 
+    day: 'numeric', 
+    year: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  };
+  
+  return date.toLocaleString('en-US', options);
 }
 
 export function shortenAddress(address, length = 4) {

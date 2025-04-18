@@ -5,6 +5,7 @@ import UnverifiedProfileCard from "./unverifiedProfileCard";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import axios from "axios";
 import LoadingCard from "./loadingCard";
+import { HiShieldCheck, HiLockClosed, HiArrowRight } from "react-icons/hi2";
 
 interface Profile {
   status: number;
@@ -69,25 +70,48 @@ export default function ProfileComponent(props: ProfileComponentProps) {
     },[accountAddress])
 
     return (
-        <div className="container mx-auto">  
-            <div className="flex flex-col gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex flex-col gap-6">
+                {/* Header Section */}
                 <div className="flex-1">
-                    <div className="p-4 rounded-lg bg-blue-50 text-blue-900 sticky top-20">
-                        <h4 className="font-semibold">Account Profile</h4>
-                        <p className="mt-2 text-sm">Verify your account profile to unlock <span className="font-bold">lend with local FIAT service</span>.</p>
+                    <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-lg">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <div className="flex items-center gap-4">
+                                <div className="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+                                    <HiShieldCheck className="w-8 h-8" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl md:text-3xl font-bold">Account Verification</h2>
+                                    <p className="text-blue-100 mt-2 text-sm md:text-base">
+                                        Complete your profile verification to unlock all platform features
+                                    </p>
+                                </div>
+                            </div>
+                            {!isLoading && !showVerificationForm && profile?.status !== 1 && (
+                                <button
+                                    onClick={handleShowForm}
+                                    className="flex items-center justify-center gap-2 bg-white text-blue-600 px-4 py-2.5 rounded-xl font-medium hover:bg-blue-50 transition-colors"
+                                >
+                                    <HiLockClosed className="w-5 h-5" />
+                                    Start Verification
+                                    <HiArrowRight className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
 
+                {/* Main Content */}
                 <div className="flex-1">
-                    {
-                        isLoading
-                        ? <LoadingCard/>
-                        : showVerificationForm
-                            ? <VerificationForm closeForm={handleCloseForm} refreshAccount={()=>{getAccount()}}/>
-                            : profile == null
-                                ? <UnverifiedProfileCard showForm={handleShowForm}/>
-                                : <ProfileCard profile={profile}/>
-                    }
+                    {isLoading ? (
+                        <LoadingCard />
+                    ) : showVerificationForm ? (
+                        <VerificationForm closeForm={handleCloseForm} refreshAccount={getAccount} />
+                    ) : profile == null ? (
+                        <UnverifiedProfileCard showForm={handleShowForm} />
+                    ) : (
+                        <ProfileCard profile={profile} />
+                    )}
                 </div>
             </div>
         </div>
