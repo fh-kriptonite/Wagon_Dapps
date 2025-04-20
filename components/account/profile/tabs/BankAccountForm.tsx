@@ -3,6 +3,7 @@ import { HiCheckCircle, HiXCircle } from "react-icons/hi2";
 import axios from "axios";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import Select from 'react-select';
+import { Alert } from "flowbite-react";
 
 interface BankAccountFormProps {
     onSuccess: () => void;
@@ -23,6 +24,7 @@ interface BankOption {
 export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
     const [banks, setBanks] = useState<Bank[]>([]);
     const [selectedBank, setSelectedBank] = useState<BankOption | null>(null);
     const [bankOptions, setBankOptions] = useState<BankOption[]>([]);
@@ -67,6 +69,7 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
         e.preventDefault();
         setIsLoading(true);
         setError(null);
+        setSuccess(false);
 
         try {
             const formData = new FormData(e.target as HTMLFormElement);
@@ -86,7 +89,10 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
             const data = await response.json();
 
             if (data.status === 'success') {
-                onSuccess();
+                setSuccess(true);
+                setTimeout(() => {
+                    onSuccess();
+                }, 2000); // Show success message for 2 seconds before closing
             } else {
                 setError(data.message || 'Failed to register bank account');
             }
@@ -126,6 +132,17 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
                     <p className="text-sm">{error}</p>
                 </div>
             )}
+
+            {success && (
+                <Alert
+                    color="success"
+                    className="mb-4"
+                >
+                    <span className="font-medium">
+                        Bank account added successfully!
+                    </span>
+                </Alert>
+            )}
             
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -140,6 +157,7 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
                     styles={customStyles}
                     className="w-full"
                     required
+                    isDisabled={success}
                 />
                 {selectedBank && (
                     <p className="mt-1 text-sm text-gray-500">
@@ -159,16 +177,22 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
                     required
                     pattern="[0-9]*"
                     inputMode="numeric"
+                    disabled={success}
                 />
             </div>
 
             <button
                 type="submit"
-                disabled={isLoading || !selectedBank}
+                disabled={isLoading || !selectedBank || success}
                 className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 flex items-center justify-center gap-2"
             >
                 {isLoading ? (
                     <div className="w-5 h-5 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
+                ) : success ? (
+                    <>
+                        Success!
+                        <HiCheckCircle className="w-5 h-5" />
+                    </>
                 ) : (
                     <>
                         Register Bank Account
