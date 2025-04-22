@@ -1,15 +1,16 @@
 import { numberWithCommas } from "../../util/stringUtility";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
-import { Badge, Progress, Spinner } from "flowbite-react";
+import { Badge, Progress } from "flowbite-react";
 import CountdownTimer from "../general/CountdownTimer";
 import { calculateApy, formatTime, getTokenDecimals } from "../../util/lendingUtility";
 import useGetLendingPoolHook from "./utils/useGetLendingPoolHook";
-import useGetActivePoolHook, { ActivePool } from "./utils/useGetActivePoolHook";
+import useGetActivePoolHook from "./utils/useGetActivePoolHook";
 import useGetPoolJsonHook from "./utils/useGetPoolJsonHook";
 import useGetPoolMaxSupplyHook from "./utils/useGetPoolMaxSupplyHook";
 import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
-import { MdSecurity } from "react-icons/md";
+import { MdSecurity, MdOutlineAccessTime } from "react-icons/md";
+import { HiLockClosed, HiCurrencyDollar } from "react-icons/hi2";
 
 interface PoolCardProps {
     poolId: string;
@@ -125,145 +126,118 @@ export default function PoolCard({ poolId }: PoolCardProps) {
         <>
             {  
                 pool == null || isLoadingPool || poolJson == null || isLoadingPoolJson
-                ? <div className="card animate-pulse">
-                    <div className="flex items-start gap-4 justify-between">
-                        <div className="card !p-0 !bg-gray-300">
-                            <div className="h-24 w-24"/>
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="h-10 w-10 bg-gray-300 rounded-xl"/>
-                            <div className="h-10 w-10 bg-gray-300 rounded-xl"/>
-                            <div className="h-10 w-10 bg-gray-300 rounded-xl"/>
-                        </div>
+                ? <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm animate-pulse">
+                    <div className="space-y-3 md:space-y-4">
+                        <div className="h-5 md:h-6 w-3/4 bg-gray-200 rounded-full"/>
+                        <div className="h-4 w-1/2 bg-gray-200 rounded-full"/>
+                        <div className="h-24 md:h-32 bg-gray-200 rounded-xl"/>
                     </div>
-
-                    <div className="mt-4">
-                        <div className="h-6 w-full bg-gray-300 rounded-full"/>
-                        <div className="h-4 w-1/2 bg-gray-300 rounded-full mt-2"/>
-                    </div>
-
-                    <div className="border-t my-4"/>
-
-                    <div className="h-6 w-1/2 bg-gray-300 rounded-full"/>
-                    <div className="h-4 w-1/3 bg-gray-300 rounded-full mt-2"/>
-
-                    <div className="mt-2">
-                        <Progress progress={0} color="dark"/>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-2">
-                        <div className="h-4 w-1/3 bg-gray-300 rounded-full"/>
-                        <div className="h-4 w-1/3 bg-gray-300 rounded-full"/>
-                    </div>
-
-                    <div className="border-t my-4"/>
-
-                    <div className="text-center">
-                        <div className="h-full flex justify-between items-center">
-                            <div className="h-4 w-1/4 bg-gray-300 rounded-full"/>
-                            <div className="h-4 w-1/4 bg-gray-300 rounded-full"/>
-                        </div>
-                    </div>
-                    
-                    <div className="text-center mt-1">
-                        <div className="h-full flex justify-between items-center">
-                            <div className="h-4 w-1/4 bg-gray-300 rounded-full"/>
-                            <div className="h-4 w-1/4 bg-gray-300 rounded-full"/>
-                        </div>
-                    </div>
-                    
-                    <div className="border-t my-4"/>
-
-                    <div className="h-4 w-full bg-gray-300 rounded-full"/>
                 </div>
-                : <div className="card hover:cursor-pointer hover:ring-2 overflow-hidden" 
+                : <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
                     onClick={() => {
                         router.push(`/lend/${poolId}`);
                     }}
                 >
-                    <div className="flex items-start gap-4 justify-between">
-                        <div className="card !p-0">
-                            <img src={poolJson.image} className="h-24 w-24 p-2 object-contain" alt="Wagon Logo" />
+                    {/* Header Section */}
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-4 md:mb-6">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="flex-shrink-0 bg-gray-50 p-2 rounded-xl border border-gray-100">
+                                <img src={poolJson.image} className="h-8 w-8 md:h-10 md:w-10 object-contain" alt="Pool Logo" />
+                            </div>
+                            <div className="min-w-0">
+                                <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={poolJson.name}>
+                                    {poolJson.name}
+                                </h3>
+                                <p className="text-xs md:text-sm text-gray-500 truncate" title={poolJson.sub_name}>
+                                    {poolJson.sub_name}
+                                </p>
+                            </div>
                         </div>
+                        <div className="flex-shrink-0 md:ml-4">
+                            <Badge color={getBadgeColor()} size="sm" className="rounded-lg w-fit">
+                                <div className="flex items-center gap-2">
+                                    <span className={`${getBadgePulseColor()} w-1.5 h-1.5 md:w-2 md:h-2 rounded-full animate-pulse`}></span>
+                                    <span className="text-xs md:text-sm">{getBadgeString()}</span>
+                                </div>
+                            </Badge>
+                        </div>
+                    </div>
+
+                    {/* Pool Details */}
+                    <div className="space-y-4 md:space-y-6">
+                        {/* Pool Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            <div className="bg-blue-50 p-3 md:p-4 rounded-xl border border-blue-100">
+                                <div className="flex items-center gap-2 mb-1 md:mb-2">
+                                    <HiCurrencyDollar className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">Pool Size</span>
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xl md:text-2xl font-bold text-gray-900 truncate" title={`${numberWithCommas(maxSupplyDecimal)} ${getSymbol()}`}>
+                                        {numberWithCommas(maxSupplyDecimal)}
+                                    </p>
+                                    <p className="text-xs md:text-sm text-gray-500 truncate">
+                                        {getSymbol()}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="bg-purple-50 p-3 md:p-4 rounded-xl border border-purple-100">
+                                <div className="flex items-center gap-2 mb-1 md:mb-2">
+                                    <HiLockClosed className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">Fixed APY</span>
+                                </div>
+                                <p className="text-xl md:text-2xl font-bold text-gray-900">
+                                    {numberWithCommas(getApy(), 2)}%
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Progress Bar */}
                         <div className="space-y-2">
-                            {
-                                (isLoadingPool)
-                                ? <div className="w-fit ml-auto">
-                                    <Spinner/>
-                                </div>
-                                : <Badge color={getBadgeColor()} size={"sm"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
-                                    <div className="flex gap-2 items-center">
-                                        <span className="relative flex h-3 w-3">
-                                            <span className={`${getBadgePulseColor()} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
-                                            <span className={`${getBadgePulseColor()} relative inline-flex rounded-full h-3 w-3`}></span>
-                                        </span>
-                                        {getBadgeString()}
-                                    </div>
-                                </Badge>
-                            }
-                            <div className="flex gap-2 justify-end">
-                                <img src="/network/logo-bnb.png" className="h-8" alt="Stable coin Logo" />  
-                                <img src={poolJson.properties.currency_logo} className="h-8" alt="Stable coin Logo" />  
-                                <div className="bg-green-500 h-8 w-8 rounded-xl text-white flex items-center justify-center">
-                                    <p className="text-base font-bold">{poolJson.properties.rating}</p>
-                                </div>
+                            <div className="flex justify-between text-xs md:text-sm">
+                                <span className="text-gray-600">Progress</span>
+                                <span className="font-medium text-gray-900">{numberWithCommas(progress, 2)}%</span>
                             </div>
-
-                            <div className='flex-none flex items-center gap-1 bg-blue-100 border-gray-400 border w-fit px-4 py-1 rounded-xl'>
-                                <MdSecurity size={12} />
-                                <p className='text-xs'><span className='font-bold'>{poolJson.properties.type}</span></p>
+                            <Progress progress={progress} color="blue" size="lg" />
+                            <div className="flex justify-between text-xs md:text-sm text-gray-500">
+                                <span className="truncate" title={`${progressSupply} ${getSymbol()}`}>
+                                    {progressSupply} {getSymbol()}
+                                </span>
+                                <span className="truncate" title={`${numberWithCommas(maxSupplyDecimal)} ${getSymbol()}`}>
+                                    {numberWithCommas(maxSupplyDecimal)} {getSymbol()}
+                                </span>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="mt-2">
-                        <h5 className="font-semibold">{poolJson.name}</h5>
-                        <p className="text-base text-gray-500">{poolJson.sub_name}</p>
-                    </div>
-
-                    <div className="border-t my-2"/>
-
-                    <p className="text-2xl font-bold">{numberWithCommas(maxSupplyDecimal)} {getSymbol()}</p>
-
-                    <p className="text-sm mt-1 font-semibold text-gray-700">
-                        Progress ({ numberWithCommas(progress, 2) }%)</p>
-                    
-                    <div className="mt-2">
-                        <Progress progress={progress} color="dark"/>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-2">
-                        <p className="text-sm font-semibold text-gray-700">
-                            { progressSupply } {getSymbol()}
-                        </p>
-                        <p className="text-sm font-semibold text-gray-700">
-                            {numberWithCommas(maxSupplyDecimal)} {getSymbol()}
-                        </p>
-                    </div>
-
-                    <div className="border-t my-2"/>
-
-                    <div className="text-center">
-                        <div className="h-full flex justify-between items-center">
-                            <p className="text-sm">Fixed APY</p>
-                            <p className="text-sm font-semibold">{numberWithCommas(getApy(), 2)}%</p>
+                        {/* Additional Info */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <MdOutlineAccessTime className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">Loan Term</span>
+                                </div>
+                                <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">
+                                    {formatTime(parseFloat(pool?.loanTerm))}
+                                </p>
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                <div className="flex items-center gap-2">
+                                    <MdSecurity className="w-4 h-4 md:w-5 md:h-5 text-gray-600" />
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">Type</span>
+                                </div>
+                                <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">
+                                    {poolJson.properties.type}
+                                </p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="text-center mt-1">
-                        <div className="h-full flex justify-between items-center">
-                        <p className="text-sm">Loan Term</p>
-                        <p className="text-sm font-semibold">{formatTime(parseFloat(pool?.loanTerm))}</p>
-                        </div>
+                        {/* Countdown Timer */}
+                        {getPoolStatus() == 1 && (
+                            <div className="bg-yellow-50 p-3 md:p-4 rounded-xl border border-yellow-100">
+                                <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
+                            </div>
+                        )}
                     </div>
-
-                    {
-                        getPoolStatus() == 1 &&
-                        <>
-                            <div className="border-t my-2"/>    
-                            <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
-                        </>
-                    }
                 </div>
             }
         </>

@@ -79,74 +79,143 @@ export default function ShipmentList({ shipments = [] }: ShipmentListProps) {
   }
 
   return (
-    <div className="">
-      {/* Check if data exists and has at least one row */}
+    <div className="space-y-4">
       {safeShipments.length > 0 ? (
         <>
-          <div className="overflow-x-auto">
-            <Table>
-              <Table.Head>
-                <Table.HeadCell></Table.HeadCell>
-                <Table.HeadCell>Date</Table.HeadCell>
-                <Table.HeadCell>Asset</Table.HeadCell>
-                <Table.HeadCell>From</Table.HeadCell>
-                <Table.HeadCell>To</Table.HeadCell>
-                <Table.HeadCell>Weight</Table.HeadCell>
-                <Table.HeadCell>Distance</Table.HeadCell>
-              </Table.Head>
-              <Table.Body>
-                {currentRows.map((row) => (
-                  <Table.Row key={row.id}>
-                    <Table.Cell>{getDisplayId(row)}</Table.Cell>
-                    <Table.Cell>{new Date(row.date).toLocaleDateString()}</Table.Cell>
-                    <Table.Cell>{getDisplayAssetId(row)}</Table.Cell>
-                    <Table.Cell>{row.from}</Table.Cell>
-                    <Table.Cell>{row.to}</Table.Cell>
-                    <Table.Cell>{row.weight} Ton</Table.Cell>
-                    <Table.Cell>{row.distance} Km</Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
-            </Table>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table hoverable>
+                <Table.Head className="bg-gray-50">
+                  <Table.HeadCell className="text-sm font-medium text-gray-600">ID</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600">Date</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600">Asset</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600">From</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600">To</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Weight</Table.HeadCell>
+                  <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Distance</Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                  {currentRows.map((row) => (
+                    <Table.Row 
+                      key={row.id}
+                      className="bg-white hover:bg-gray-50"
+                    >
+                      <Table.Cell className="text-sm text-gray-900 py-4">
+                        <span className="font-mono">{getDisplayId(row)}</span>
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4">
+                        {new Date(row.date).toLocaleDateString()}
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          row.asset_type === 'TRL-T' 
+                            ? "bg-blue-100 text-blue-800" 
+                            : row.asset_type === 'LTANK'
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}>
+                          {getDisplayAssetId(row)}
+                        </span>
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4">
+                        {row.from}
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4">
+                        {row.to}
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4 text-right">
+                        {row.weight} Ton
+                      </Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4 text-right">
+                        {row.distance} Km
+                      </Table.Cell>
+                    </Table.Row>
+                  ))}
+                </Table.Body>
+              </Table>
+            </div>
           </div>
-          <div>
-            {/* Responsive Pagination */}
-            <div className="flex flex-col items-center justify-between mt-4 space-y-4 md:flex-row md:space-y-0">
-              <div className="text-sm text-gray-500">
-                Page {currentPage} of {totalPages}
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                >
-                  Prev
-                </button>
+
+          {/* Pagination */}
+          <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-500">Showing</span>
+              <span className="text-sm font-medium text-gray-900">
+                {indexOfFirstRow + 1}-{Math.min(indexOfLastRow, safeShipments.length)}
+              </span>
+              <span className="text-sm text-gray-500">of</span>
+              <span className="text-sm font-medium text-gray-900">{safeShipments.length}</span>
+              <span className="text-sm text-gray-500">shipments</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="First page"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+                First
+              </button>
+              <button
+                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Previous page"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Previous
+              </button>
+              <div className="flex items-center gap-1">
                 {getVisiblePages().map((page) => (
                   <button
                     key={page}
                     onClick={() => handlePageChange(page)}
-                    className={`px-3 py-1 border rounded ${
-                      page === currentPage ? 'bg-blue-500 text-white' : ''
+                    className={`inline-flex items-center justify-center w-8 h-8 text-sm font-medium rounded-lg transition-colors ${
+                      page === currentPage 
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                     }`}
+                    aria-label={`Page ${page}`}
+                    aria-current={page === currentPage ? 'page' : undefined}
                   >
                     {page}
                   </button>
                 ))}
-                <button
-                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 border rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
               </div>
+              <button
+                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Next page"
+              >
+                Next
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Last page"
+              >
+                Last
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              </button>
             </div>
           </div>
         </>
       ) : (
-        <p>No shipments available</p> // Display message if no data
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
+          <p className="text-sm text-gray-500">No shipments available</p>
+        </div>
       )}
     </div>
   );

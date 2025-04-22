@@ -198,125 +198,125 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className='flex justify-between'>
-                      <Dialog.Title
-                          as="h3"
-                          className="text-lg font-medium leading-6 text-gray-900"
-                      >
-                          Confirming Lend To Pool
-                      </Dialog.Title>
-                      <button onClick={()=>closeModal()}>
-                          <ImCross/>
-                      </button>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex justify-between items-center mb-6'>
+                    <Dialog.Title
+                      as="h3"
+                      className="text-xl font-semibold leading-6 text-gray-900"
+                    >
+                      Confirming Lend To Pool
+                    </Dialog.Title>
+                    <button 
+                      onClick={()=>closeModal()}
+                      className="text-gray-400 hover:text-gray-500 transition-colors"
+                    >
+                      <ImCross className="w-4 h-4"/>
+                    </button>
                   </div>
 
-                  <div className="mt-4 border rounded-xl p-4">
-                    <div className='flex justify-between'>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Amount
-                        </p>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div className='flex justify-between mb-2'>
+                      <p className="text-sm font-medium text-gray-600">
+                        Amount
+                      </p>
                     </div>
                     
-                    <div className='flex gap-2 items-center justify-between mt-2'>
-                        <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
-                            {numberWithCommas(stableNumber)}
-                        </p>
+                    <div className='flex gap-2 items-center justify-between'>
+                      <p className="text-2xl font-semibold text-gray-900">
+                        {numberWithCommas(stableNumber)}
+                      </p>
+                      <div className="flex items-center gap-2">
                         <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
-                            {symbol}
+                          {symbol}
                         </p>
+                      </div>
                     </div>
 
                     <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm text-gray-600">
                         Admin Fee
                       </p>
-                      <p className="text-xs font-semibold">
+                      <p className="text-sm font-semibold text-gray-900">
                         + {numberWithCommas(adminFee, 2)} {symbol}
                       </p>
                     </div>
-                    
                   </div>
 
-                  <div className="mt-4">
-                    <p className='text-base'>
-                      <span className='font-bold'>Step 1. </span> Approving contract to spend <span className='font-semibold'>{numberWithCommas(parseFloat(stableNumber) + adminFee, 2)} {symbol}</span>
+                  <div className="mt-6">
+                    <p className='text-sm text-gray-600 mb-2'>
+                      <span className='font-semibold text-gray-900'>Step 1. </span> Approving contract to spend <span className='font-semibold text-gray-900'>{numberWithCommas(parseFloat(stableNumber) + adminFee, 2)} {symbol}</span>
                     </p>
-                    <div className='mt-2'>
-                      <Button
-                        color={handleStableApproveButtonString() === "Approved" ? "success" : "dark"}
-                        size={"sm"}
-                        style={{width:"100%"}}
-                        disabled={handleStableApproveButtonDisabled()}
-                        onClick={()=>{
-                          handleApproveStable()
-                        }}
-                      >
-                        {handleStableApproveButtonString()}
-                      </Button>
-                    </div>
+                    <Button
+                      color={handleStableApproveButtonString() === "Approved" ? "success" : "dark"}
+                      size="sm"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      disabled={handleStableApproveButtonDisabled()}
+                      onClick={()=>{
+                        handleApproveStable()
+                      }}
+                    >
+                      {handleStableApproveButtonString()}
+                    </Button>
                   </div>
 
                   { 
                     wagNumber !== "" && wagNumber !== "0" &&
                     <div>
-                      <div className="mt-4 border rounded-xl p-4">
-                        <div className='flex justify-between'>
-                            <p className="text-xs font-semibold text-gray-500">
-                                Amount
-                            </p>
+                      <div className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                        <div className='flex justify-between mb-2'>
+                          <p className="text-sm font-medium text-gray-600">
+                            Amount
+                          </p>
                         </div>
                         
-                        <div className='flex gap-2 items-center justify-between mt-2'>
-                            <p className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" >
-                                {numberWithCommas(wagNumber)}
-                            </p>
+                        <div className='flex gap-2 items-center justify-between'>
+                          <p className="text-2xl font-semibold text-gray-900">
+                            {numberWithCommas(wagNumber)}
+                          </p>
+                          <div className="flex items-center gap-2">
                             <img src="/images/wag.png" className="h-7" alt="WAG Token Logo"/>
                             <p className="text-lg text-gray-500">
-                                WAG
+                              WAG
                             </p>
+                          </div>
                         </div>
                       </div>
 
-                      <div className="mt-4">
-                        <p className='text-base'>
-                          <span className='font-bold'>Step 2. </span> Approving contract to spend <span className='font-semibold'>{numberWithCommas(wagNumber)} WAG</span>
+                      <div className="mt-6">
+                        <p className='text-sm text-gray-600 mb-2'>
+                          <span className='font-semibold text-gray-900'>Step 2. </span> Approving contract to spend <span className='font-semibold text-gray-900'>{numberWithCommas(wagNumber)} WAG</span>
                         </p>
-                        <div className='mt-2'>
-                          <Button
-                            color={handleWagApproveButtonString() === "Approved" ? "success" : "dark"}
-                            size={"sm"}
-                            style={{width:"100%"}}
-                            disabled={handleWagApproveButtonDisabled()}
-                            onClick={()=>{
-                              handleApproveWag()
-                            }}
-                          >
-                            {handleWagApproveButtonString()}
-                          </Button>
-                        </div>
+                        <Button
+                          color={handleWagApproveButtonString() === "Approved" ? "success" : "dark"}
+                          size="sm"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                          disabled={handleWagApproveButtonDisabled()}
+                          onClick={()=>{
+                            handleApproveWag()
+                          }}
+                        >
+                          {handleWagApproveButtonString()}
+                        </Button>
                       </div>
                     </div>
                   }
 
-                  <div className="mt-4">
-                    <p className='text-base'>
-                      <span className='font-bold'>Step {wagNumber !== "" ? "3" : "2"}. </span> Lend to pool
+                  <div className="mt-6">
+                    <p className='text-sm text-gray-600 mb-2'>
+                      <span className='font-semibold text-gray-900'>Step {wagNumber !== "" ? "3" : "2"}. </span> Lend to pool
                     </p>
-                    <div className='mt-2'>
-                      <Button
-                        color="dark"
-                        size={"sm"}
-                        className="w-full disabled:bg-gray-300 hover:bg-gray-600"
-                        disabled={handleLendButtonDisabled()}
-                        onClick={()=>{
-                          handleLend()
-                        }}
-                      >
-                        {handleLendButtonString()}
-                      </Button>
-                    </div>
+                    <Button
+                      color="dark"
+                      size="sm"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      disabled={handleLendButtonDisabled()}
+                      onClick={()=>{
+                        handleLend()
+                      }}
+                    >
+                      {handleLendButtonString()}
+                    </Button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

@@ -49,6 +49,7 @@ export default function ProfileComponent(props: ProfileComponentProps) {
             // Request Account
             const response = await axios.get<ApiResponse>(`/api/account/getAccount?wallet_address=${accountAddress}`);
 
+            console.log(response.data)
             // Handle success response
             if(response.data.error) {
                 throw response.data.error
@@ -70,7 +71,7 @@ export default function ProfileComponent(props: ProfileComponentProps) {
     },[accountAddress])
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto space-y-4 pb-4">
             <div className="flex flex-col gap-6">
                 {/* Header Section */}
                 <div className="flex-1">

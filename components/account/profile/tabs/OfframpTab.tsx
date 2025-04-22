@@ -161,7 +161,7 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
                         </div>
                     </div>
                     <div className="flex flex-col md:items-end gap-2">
-                        <div className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium ${
+                        <div className={`w-fit px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium ${
                             offramp_enabled 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-yellow-100 text-yellow-800'

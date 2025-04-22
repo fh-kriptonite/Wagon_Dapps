@@ -145,6 +145,9 @@ const nextConfig = {
     // IDRX
     IDRX_ADDRESS: process.env.IDRX_ADDRESS,
 
+    // ONRAMP
+    ONRAMP_ADDRESS: process.env.ONRAMP_ADDRESS,
+
     // THEME SKIN
     THEME_SKIN: process.env.THEME_SKIN
   }

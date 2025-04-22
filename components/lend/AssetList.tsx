@@ -46,30 +46,41 @@ export default function AssetList({ assets }: AssetListProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {
         assets?.map((asset, index) => {
           return (
-            <div className="card !px-0 !pt-0 overflow-hidden" key={asset.id}>
+            <div 
+              className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow" 
+              key={asset.id}
+            >
               <div
-                className="h-52 bg-cover bg-center"
+                className="h-48 bg-cover bg-center relative"
                 style={{ backgroundImage: `url(${asset.image_url})` }}
-              />
-              <div className="flex gap-2 justify-between mt-4 px-4">
-                <div>
-                  <p className="text-base font-bold">
-                    {getDisplayId(asset)}
-                  </p>
-                </div>
-                <Badge color={getBadgeColor(asset.status)} size={"xs"} style={{width:"fit-content", marginLeft:"auto", borderRadius:"10px"}}>
-                  <div className="flex gap-2 items-center">
+              >
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              </div>
+              <div className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {getDisplayId(asset)}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className={`${getBadgePulseColor(asset.status)} animate-ping absolute inline-flex h-full w-full rounded-full opacity-75`}></span>
-                      <span className={`${getBadgePulseColor(asset.status)} relative inline-flex rounded-full h-2 w-2s`}></span>
+                      <span className={`${getBadgePulseColor(asset.status)} relative inline-flex rounded-full h-2 w-2`}></span>
                     </span>
-                    {getBadgeString(asset.status)}
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      asset.status === "ONROAD" 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-gray-100 text-gray-800"
+                    }`}>
+                      {getBadgeString(asset.status)}
+                    </span>
                   </div>
-                </Badge>
+                </div>
               </div>
             </div>
           );

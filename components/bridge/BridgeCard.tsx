@@ -15,7 +15,7 @@ import useApproveAllowanceHook from "./utils/useApproveAllowanceHook";
 import useSendBridgeHook from "./utils/useSendBridgeHook";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import { Alert } from 'flowbite-react';
-import { Dialog } from '@headlessui/react';
+import { HiArrowPath } from "react-icons/hi2";
 
 interface BridgeCardProps {
     // Add any props if needed
@@ -121,67 +121,87 @@ export default function BridgeCard(props: BridgeCardProps) {
     }
 
     return (
-        <div className="h-full flex flex-col justify-center">
-            <div className="card max-w-md mx-auto">
-                <p className="text-sm font-bold">Bridge</p>
+        <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-blue-50 p-2 rounded-lg">
+                            <BiTransferAlt className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-semibold text-gray-900">Bridge</h2>
+                            <p className="text-sm text-gray-500">Transfer WAG between networks</p>
+                        </div>
+                    </div>
+                </div>
 
-                <BridgeNetworkCard 
-                    number={number} 
-                    setNumber={(number: string) => {setNumber(number)}} 
-                    otherNetwork={network2} 
-                    network={network1} 
-                    setNetwork={(network: Network) => {setNetwork1(network)}} 
-                    primary={true}
-                    setBalance={(balance: number) => {setBalance(balance)}}
-                />
+                {/* Network Cards */}
+                <div className="space-y-4">
+                    <BridgeNetworkCard 
+                        number={number} 
+                        setNumber={setNumber} 
+                        otherNetwork={network2} 
+                        network={network1} 
+                        setNetwork={setNetwork1} 
+                        primary={true}
+                        setBalance={setBalance}
+                    />
 
-                <div className="my-6">
-                    <BiTransferAlt style = {{transform: 'rotate(90deg)' }} 
-                        className='w-6 h-6 text-gray-500 mx-auto hover:cursor-pointer'
-                        onClick={() => {
-                            const tempNetwork = network1;
-                            setNetwork1(network2)
-                            setNetwork2(tempNetwork)
-                        }}
+                    {/* Transfer Arrow */}
+                    <div className="flex justify-center -my-2">
+                        <button 
+                            onClick={() => {
+                                const tempNetwork = network1;
+                                setNetwork1(network2);
+                                setNetwork2(tempNetwork);
+                            }}
+                            className="bg-blue-50 p-2 rounded-full hover:bg-blue-100 transition-colors"
+                        >
+                            <HiArrowPath className="w-5 h-5 text-blue-600" />
+                        </button>
+                    </div>
+
+                    <BridgeNetworkCard 
+                        number={number} 
+                        setNumber={setNumber} 
+                        otherNetwork={network1} 
+                        network={network2} 
+                        setNetwork={setNetwork2} 
+                        primary={false}
+                        setBalance={() => {}}
                     />
                 </div>
 
-                <BridgeNetworkCard 
-                    number={number} 
-                    setNumber={(number: string) => {
-                        setNumber(number)
-                    }} 
-                    otherNetwork={network1} 
-                    network={network2} 
-                    setNetwork={(network: Network) => {
-                        setNetwork2(network)
-                    }} 
-                    primary={false}
-                    setBalance={() => {}}
-                />
-
-                <div className="space-y-2 px-4 my-6">
-                    <div className="flex justify-between">
-                        <p className="text-xs">Gas on destination</p>
-                        <p className="text-xs font-semibold">{destinationGasUSD == null || isLoadingGas ? "--" : numberWithCommas(destinationGasUSD, 2)} USD</p>
+                {/* Transaction Details */}
+                <div className="mt-6 bg-gray-50 rounded-xl p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Gas on destination</span>
+                        <span className="text-sm font-medium text-gray-900">
+                            {destinationGasUSD == null || isLoadingGas ? "--" : `$${numberWithCommas(destinationGasUSD, 2)}`}
+                        </span>
                     </div>
-                    <div className="flex justify-between">
-                        <p className="text-xs">You will receive</p>
-                        <p className="text-xs font-semibold">{number == "0" ? "--" : number} WAG</p>
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">You will receive</span>
+                        <span className="text-sm font-medium text-gray-900">
+                            {number == "0" ? "--" : `${number} WAG`}
+                        </span>
                     </div>
-                    <div className="flex justify-between">
-                        <p className="text-xs">Fee</p>
-                        <p className="text-xs font-semibold">Free</p>
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Fee</span>
+                        <span className="text-sm font-medium text-gray-900">Free</span>
                     </div>
-                    <div className="flex justify-between">
-                        <p className="text-xs">Slippage tolerance</p>
-                        <p className="text-xs font-semibold">0.05%</p>
+                    <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">Slippage tolerance</span>
+                        <span className="text-sm font-medium text-gray-900">0.05%</span>
                     </div>
                 </div>
 
-                <div className="mt-4 w-full">
-                    <Button color="dark" 
-                        className="w-full disabled:bg-gray-300"
+                {/* Transfer Button */}
+                <div className="mt-6">
+                    <Button 
+                        color="blue"
+                        className="w-full disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed"
                         disabled={
                             isLoadingSwitchNetwork ||
                             isLoadingAllowance ||
@@ -195,56 +215,63 @@ export default function BridgeCard(props: BridgeCardProps) {
                             network2 == null ||
                             parseFloat(number) > balance
                         }
-                        onClick={() => {
-                            transferBridge();
-                        }}
+                        onClick={transferBridge}
                     >
-                        {
-                            isLoadingSwitchNetwork ||
-                            isLoadingAllowance||
-                            isLoadingApproveAllowance ||
-                            isWaitingApprovalApproveAllowance ||
-                            isLoadingSendBridge ||
-                            isWaitingApprovalSendBridge
-                            ? "Loading..."
-                            : "TRANSFER"
-                        }
+                        {isLoadingSwitchNetwork ||
+                         isLoadingAllowance ||
+                         isLoadingApproveAllowance ||
+                         isWaitingApprovalApproveAllowance ||
+                         isLoadingSendBridge ||
+                         isWaitingApprovalSendBridge
+                            ? "Processing..."
+                            : "Transfer WAG"}
                     </Button>
                 </div>
             </div>
 
-            <div className="flex gap-1 justify-center items-center mt-2">
-                <p className="text-xs">Powered By</p>
-                <img src="/network/logo-layerzero.png" className="h-12" alt="LayerZero Logo"/>
+            {/* Powered By */}
+            <div className="flex items-center justify-center gap-2 mt-4">
+                <span className="text-xs text-gray-500">Powered By</span>
+                <img src="/network/logo-layerzero.png" className="h-8" alt="LayerZero Logo"/>
             </div>
 
+            {/* Success Alert */}
             {showAlert && (
-                <div className="absolute top-0 left-0 right-0">
+                <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl">
                     <Alert color="success" onDismiss={() => setShowAlert(false)}>
                         <span className="font-medium">Bridge Success!</span> Please wait for several minutes for WAG to be deposited at the target network.
                     </Alert>
                 </div>
             )}
 
+            {/* Dialogs */}
             <SwitchNetworkDialog 
-                number={number} network1={network1} network2={network2} 
+                number={number} 
+                network1={network1} 
+                network2={network2} 
                 isOpen={isLoadingSwitchNetwork}
             />
 
             <AllowanceDialog 
-                number={number} network1={network1} network2={network2} 
+                number={number} 
+                network1={network1} 
+                network2={network2} 
                 isOpen={isLoadingAllowance}
             />
 
             <ApproveDialog 
-                number={number} network1={network1} network2={network2} 
+                number={number} 
+                network1={network1} 
+                network2={network2} 
                 isOpen={showApproveDialog()}
             />
 
             <BridgeDialog 
-                number={number} network1={network1} network2={network2} 
+                number={number} 
+                network1={network1} 
+                network2={network2} 
                 isOpen={showSendBridgeDialog()}
             />
         </div>
-    )
+    );
 } 

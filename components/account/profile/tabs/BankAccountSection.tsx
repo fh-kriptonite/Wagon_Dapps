@@ -110,7 +110,7 @@ export default function BankAccountSection({ bankAccounts, setSelectedBankAccoun
             {/* Bank Account Form Dialog */}
             {showBankForm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6">
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-semibold text-gray-900">Register Bank Account</h3>

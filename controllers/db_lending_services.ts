@@ -1,5 +1,5 @@
 import connection from '../util/db';
-import { RowDataPacket } from 'mysql2';
+import { RowDataPacket, PoolConnection } from 'mysql2';
 
 interface LendingPool {
   id: number;
@@ -214,32 +214,41 @@ export const updatePoolService = (poolId: string, status: number, network: strin
 
 export const getPoolService = (status: number): Promise<LendingPool[]> => {
     return new Promise(async (resolve, reject) => {
+        let conn: PoolConnection | undefined;
         try {
-            connection.getConnection(function(err, conn) {
-                if (err) {
-                    return reject(err); // Reject the promise with the error
-                }
-                let query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ?';
-                if (status == 1) {
-                    query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 0';
-                } else
-                if (status == 2) {
-                    query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 7';
-                }
-                conn.query(
-                    query,
-                    [status],
-                    (err, results, fields) => {
-                        conn.release();
-                        if (err) {
-                            return reject(err);
-                        }
-                        resolve(results as LendingPool[]);
+            conn = await new Promise<PoolConnection>((resolve, reject) => {
+                connection.getConnection((err: Error | null, connection: PoolConnection) => {
+                    if (err) reject(err);
+                    else resolve(connection);
                 });
             });
+
+            if (!conn) {
+                throw new Error('Failed to get database connection');
+            }
+
+            let query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ?';
+            if (status == 1) {
+                query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 0';
+            } else if (status == 2) {
+                query = 'SELECT id, pool_id, currency, network, status FROM `lending_pools` WHERE status = ? OR status = 7';
+            }
+
+            const results = await new Promise<RowDataPacket[]>((resolve, reject) => {
+                conn?.query(query, [status], (err: Error | null, results: RowDataPacket[]) => {
+                    if (err) reject(err);
+                    else resolve(results);
+                });
+            });
+
+            resolve(results as LendingPool[]);
         } catch (error) {
-            console.log(error);
+            console.error('Error in getPoolService:', error);
             reject(error);
+        } finally {
+            if (conn) {
+                conn.release();
+            }
         }
     });
 };

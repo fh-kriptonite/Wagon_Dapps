@@ -31,144 +31,125 @@ interface AggregatedShipment {
 
 export default function AssetReports({ assets, shipments }: AssetReportsProps) {
   function aggregateShipments(data: Shipment[] | null): AggregatedShipment[] {
-    // Create a map to hold the aggregated data
     const aggregatedData: Record<string, number> = {};
 
-    // Loop through each shipment in the data
     data?.forEach(shipment => {
-      // Format the date to "YYYY-MM-DD"
       const date = new Date(shipment.date).toISOString().split('T')[0];
-
-      // Initialize the count for the date if it doesn't exist yet
       if (!aggregatedData[date]) {
         aggregatedData[date] = 0;
       }
-
-      // Increment the count for that date
       aggregatedData[date]++;
     });
 
-    // Convert the aggregated data into an array of objects
     const result = Object.keys(aggregatedData).map(date => ({
       date,
       totalShipments: aggregatedData[date]
     }));
 
-    // Sort the result by date (optional)
     result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
     return result;
   }
   
   function getTotalWeight(shipments: Shipment[] | null): string {
     if (shipments == null) return "0";
-
-    // Ensure that shipments is an array and contains valid data
-    if (!Array.isArray(shipments)) {
-      return "0"; // Return 0 if the input is not an array
-    }
+    if (!Array.isArray(shipments)) return "0";
   
-    // Use reduce to sum up the weights of all shipments
     const totalWeight = shipments.reduce((total, shipment) => {
       if (shipment.weight && !isNaN(shipment.weight)) {
         return total + shipment.weight;
       }
       return total;
-    }, 0); // Initial value is 0
+    }, 0);
   
     return numberWithCommas(totalWeight);
   }
 
   function getTotalDistance(shipments: Shipment[] | null): string {
     if (shipments == null) return "0";
-
-    // Ensure that shipments is an array and contains valid data
-    if (!Array.isArray(shipments)) {
-      return "0"; // Return 0 if the input is not an array
-    }
+    if (!Array.isArray(shipments)) return "0";
   
-    // Use reduce to sum up the distance of all shipments
     const totalDistance = shipments.reduce((total, shipment) => {
       if (shipment.distance && !isNaN(shipment.distance)) {
         return total + shipment.distance;
       }
       return total;
-    }, 0); // Initial value is 0
+    }, 0);
   
     return numberWithCommas(totalDistance);
   }
 
   function getTotalShipments(shipments: Shipment[] | null): string {
-    // Ensure that shipments is an array
-    if (!Array.isArray(shipments)) {
-      return "0"; // Return 0 if the input is not an array
-    }
-  
-    // Return the length of the shipments array
+    if (!Array.isArray(shipments)) return "0";
     return numberWithCommas(shipments.length);
   }
 
   return (
-    <>
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-2 justify-between items-center card">
-        <div className="flex-1 grid grid-cols md:grid-cols-2 gap-8">
-          <div className="flex-1">
-            <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 card !rounded-full bg-white flex items-center justify-center">
-                <PiPackage className="h-8 w-8"/>
-              </div>
-              
-              <div>
-                <p className="text-2xl">{getTotalShipments(shipments)}</p>
-                <p className="text-sm">Total Shipments</p>
-              </div>
+    <div className="card space-y-6">
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Shipments */}
+        <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <PiPackage className="h-6 w-6 text-blue-600"/>
             </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 card !rounded-full bg-white flex items-center justify-center">
-                <GiPathDistance className="h-8 w-8"/>
-              </div>
-              
-              <div>
-                <p className="text-2xl">{getTotalDistance(shipments)} Km</p>
-                <p className="text-sm">Total Distance</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 card !rounded-full bg-white flex items-center justify-center">
-                <GiWeight className="h-8 w-8"/>
-              </div>
-              
-              <div>
-                <p className="text-2xl">{getTotalWeight(shipments)} Ton</p>
-                <p className="text-sm">Total Weight</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="flex gap-4 items-center">
-              <div className="w-16 h-16 card !rounded-full bg-white flex items-center justify-center">
-                <FaTruckFront className="h-6 w-6"/>
-              </div>
-              
-              <div>
-                <p className="text-2xl">{assets == null ? 0 : assets.length}</p>
-                <p className="text-sm">Underlying Assets</p>
-              </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Shipments</p>
+              <p className="text-2xl font-bold text-gray-900">{getTotalShipments(shipments)}</p>
             </div>
           </div>
         </div>
 
-        <div className="flex-1 w-full">
+        {/* Total Distance */}
+        <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <GiPathDistance className="h-6 w-6 text-blue-600"/>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Distance</p>
+              <p className="text-2xl font-bold text-gray-900">{getTotalDistance(shipments)} Km</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Total Weight */}
+        <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <GiWeight className="h-6 w-6 text-blue-600"/>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Total Weight</p>
+              <p className="text-2xl font-bold text-gray-900">{getTotalWeight(shipments)} Ton</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Underlying Assets */}
+        <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="bg-blue-50 p-3 rounded-lg">
+              <FaTruckFront className="h-6 w-6 text-blue-600"/>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">Underlying Assets</p>
+              <p className="text-2xl font-bold text-gray-900">{assets == null ? 0 : assets.length}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Chart Section */}
+      <div className="bg-white p-4 rounded-xl border border-blue-100 shadow-sm">
+        <div className="mb-4">
+          <h3 className="text-lg font-semibold text-gray-900">Shipment Activity</h3>
+          <p className="text-sm text-gray-500">Overview of shipment activities over time</p>
+        </div>
+        <div className="h-64">
           <ShipmentChart aggregatedShipments={aggregateShipments(shipments)}/>
         </div>
       </div>
-    </>
+    </div>
   );
 } 

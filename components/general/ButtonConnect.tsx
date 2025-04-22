@@ -1,15 +1,18 @@
 import React from 'react';
+import { Button } from 'flowbite-react';
+import { useModal } from '@particle-network/connectkit'
 
-interface ButtonConnectProps {
-    onOpen?: () => void;
-    loading?: boolean;
-}
-
-export default function ButtonConnect({ onOpen, loading }: ButtonConnectProps) {
+export default function ButtonConnect() {
+    const { setOpen } = useModal();
     return (
-        // <button onClick={onOpen} disabled={loading} className="button-connect mx-auto !w-full">
-        //     {loading ? 'Loading...' : "Connect Wallet"}
-        // </button>
-        <></>
+        <>
+            <Button
+                size="sm"
+                onClick={() => {setOpen(true)}}
+                className="button-connect mx-auto"
+            >
+                Login
+            </Button>
+        </>
     );
 } 

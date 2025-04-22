@@ -9,6 +9,7 @@ import { Button } from "flowbite-react";
 
 interface OnrampTabProps {
     onramp_enabled?: boolean;
+    accountName?: string;
 }
 
 interface OnrampResponse {
@@ -23,7 +24,7 @@ interface OnrampResponse {
     wallet_address: string;
 }
 
-export default function OnrampTab({ onramp_enabled }: OnrampTabProps) {
+export default function OnrampTab({ onramp_enabled, accountName }: OnrampTabProps) {
     const [amount, setAmount] = useState<string>("");
     const [convertedAmount, setConvertedAmount] = useState<string>("");
     const [isConverting, setIsConverting] = useState<boolean>(false);
@@ -92,7 +93,7 @@ export default function OnrampTab({ onramp_enabled }: OnrampTabProps) {
                         </div>
                     </div>
                     <div className="flex flex-col md:items-end gap-2">
-                        <div className={`px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium ${
+                        <div className={`w-fit px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-sm font-medium ${
                             onramp_enabled 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-yellow-100 text-yellow-800'
@@ -225,6 +226,7 @@ export default function OnrampTab({ onramp_enabled }: OnrampTabProps) {
                 isOpen={showPaymentDialog}
                 onClose={() => setShowPaymentDialog(false)}
                 paymentDetails={paymentDetails}
+                accountName={accountName || ""}
             />
 
             <HistoryDialog

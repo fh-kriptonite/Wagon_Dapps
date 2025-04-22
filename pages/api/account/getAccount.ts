@@ -23,6 +23,7 @@ export default async function handler(
               throw new Error('Account not found');
             }
         } catch (error) {
+            console.log(error)
             // Handle file not found or other errors
             return res.status(404).json({ error: error instanceof Error ? error.message : 'Unknown error' });
         }

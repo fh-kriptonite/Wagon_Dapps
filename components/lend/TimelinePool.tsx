@@ -117,29 +117,30 @@ export default function TimelinePool(props: TimelinePoolProps) {
   }
 
   return (
-    <div>
-      {
-        !address
-        ? <ButtonConnect/>
-        : <Button 
-            color={"dark"} 
-            size={"sm"} 
-            className='ml-auto disabled:bg-gray-300'
-            disabled={isUnclaimable()}
-            onClick={handleClaimButton}
-          >
-            Claim All
-          </Button>
-      }
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        {
+          !address
+          ? <ButtonConnect/>
+          : <Button 
+              color="dark"
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={isUnclaimable()}
+              onClick={handleClaimButton}
+            >
+              Claim All
+            </Button>
+        }
+      </div>
 
-      <div className="mt-2 space-y-1">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <Table>
-            <Table.Head className="">
-              <Table.HeadCell></Table.HeadCell>
-              <Table.HeadCell>Repayment Deadline</Table.HeadCell>
-              <Table.HeadCell className='text-right'>Amount</Table.HeadCell>
-              <Table.HeadCell className='text-right'>Status</Table.HeadCell>
+          <Table hoverable>
+            <Table.Head className="bg-gray-50">
+              <Table.HeadCell className="text-sm font-medium text-gray-600">Term</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600">Repayment Deadline</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Amount</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Status</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
               {
@@ -147,18 +148,33 @@ export default function TimelinePool(props: TimelinePoolProps) {
                   const loanStart = (parseFloat(pool?.termStart || "0") + Number(deploymentGracePeriod || 0)) * 1000;
                   const durationBetweenPayment = parseFloat(pool?.loanTerm || "0") / parseFloat(pool?.paymentFrequency || "1") * 1000;
                   const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
+                  const status = isInterestClaimable(index);
+                  
                   return (     
-                    <Table.Row className="text-sm" key={`repayment-${index}`}>
-                      <Table.Cell className='!py-2'>{index+1}</Table.Cell>
-                      <Table.Cell className='!py-2'>{formatDate(new Date(paymentTime))}</Table.Cell>
-                      <Table.Cell className='!py-2 text-right'>
+                    <Table.Row 
+                      key={`repayment-${index}`}
+                      className="bg-white hover:bg-gray-50"
+                    >
+                      <Table.Cell className="text-sm text-gray-900 py-4">{index+1}</Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4">{formatDate(new Date(paymentTime))}</Table.Cell>
+                      <Table.Cell className="text-sm text-gray-900 py-4 text-right">
                         {
                           (index+1 == Number(pool?.paymentFrequency)) 
                             ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal)), 2) 
                             : numberWithCommas(Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal), 2)
                         } {symbol}
                       </Table.Cell>
-                      <Table.Cell className='!py-2 text-right'>{isInterestClaimable(index)}</Table.Cell>
+                      <Table.Cell className="text-sm py-4 text-right">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          status === "Claimed" 
+                            ? "bg-green-100 text-green-800" 
+                            : status === "Claimable" 
+                              ? "bg-blue-100 text-blue-800" 
+                              : "bg-gray-100 text-gray-800"
+                        }`}>
+                          {status}
+                        </span>
+                      </Table.Cell>
                     </Table.Row>
                   );
                 })
@@ -188,7 +204,6 @@ export default function TimelinePool(props: TimelinePoolProps) {
           pool={pool}
         />
       )}
-      
     </div>
   );
 } 

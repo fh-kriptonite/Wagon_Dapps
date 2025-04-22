@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import ButtonConnect from '../../components/general/ButtonConnect';
 import { useState } from "react";
+import { FaWallet } from "react-icons/fa";
 
 import { numberWithCommas } from '../../util/stringUtility';
 import LoadingUserLendingStatistic from './LoadingUserLendingStatistic';
@@ -67,7 +68,6 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
     function showWagPair() {
         if(!pool) return false;
         if(pool.stabletoPairRate == "0") return false;
-
         return true;
     }
 
@@ -77,51 +77,63 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                 pool == null
                 ? <LoadingUserLendingStatistic/>
                 : <div className='card space-y-4 flex-1'>
-                    <div className="flex justify-between">
-                        <h6 className="!font-semibold">Your Lending Statistics</h6>
+                    {/* Header */}
+                    <div className="flex justify-between items-center">
+                        <h6 className="text-lg font-semibold text-gray-900">Your Lending Statistics</h6>
                     </div>
                     
-                    <div className='flex gap-4 flex-col sm:flex-row'>
-                        <div className='flex-1 flex items-center gap-2'>
-                            <img 
-                                src={poolJson?.properties.currency_logo} 
-                                onLoad={handleImageLoaded}
-                                onError={handleImageError} 
-                                className="h-8" 
-                                alt="Stable coin Logo"
-                                style={{ display: loadingImage || errorImage ? 'none' : 'block' }}
+                    {/* Balance Cards */}
+                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+                        {/* Stable Coin Balance */}
+                        <div className='flex items-center gap-3'>
+                            <div className="bg-white p-2 rounded-lg shadow-sm">
+                                <img 
+                                    src={poolJson?.properties.currency_logo} 
+                                    onLoad={handleImageLoaded}
+                                    onError={handleImageError} 
+                                    className="h-8 w-8 object-contain" 
+                                    alt="Stable coin Logo"
+                                    style={{ display: loadingImage || errorImage ? 'none' : 'block' }}
                                 />
+                                {loadingImage && <div className="h-8 w-8 bg-gray-200 rounded-lg animate-pulse" />}
+                                {errorImage && <FaWallet className="h-8 w-8 text-gray-400" />}
+                            </div>
                             <div>
-                                <p className='text-sm font-light'>Your Lending Balance</p>
-                                <p className='text-base font-semibold'>
-                                    { getStableString() } {symbol}
+                                <p className='text-sm font-medium text-gray-600'>Your Lending Balance</p>
+                                <p className='text-xl font-bold text-gray-900'>
+                                    {getStableString()} {symbol}
                                 </p>
                             </div>
                         </div>
                         
-                        {
-                            showWagPair() &&
-                            <div className='flex-1 flex items-center gap-2'>
-                                <img src="/logo.png" className="h-8" alt="WAG Logo" />
+                        {/* WAG Balance */}
+                        {showWagPair() && (
+                            <div className='flex items-center gap-3'>
+                                <div className="bg-white p-2 rounded-lg shadow-sm">
+                                    <img 
+                                        src="/logo.png" 
+                                        className="h-8 w-8 object-contain" 
+                                        alt="WAG Logo" 
+                                    />
+                                </div>
                                 <div>
-                                    <p className='text-sm font-light'>Your Wagon Balance</p>
-                                    <p className='text-base font-semibold'>
-                                        { getWagString() } WAG
+                                    <p className='text-sm font-medium text-gray-600'>Your Wagon Balance</p>
+                                    <p className='text-xl font-bold text-gray-900'>
+                                        {getWagString()} WAG
                                     </p>
                                 </div>
                             </div>
-                        }
+                        )}
                     </div>
 
-                    {
-                        getPoolStatus() == 1 &&
-                        <>
-                            {
-                            !address
-                                ? <ButtonConnect/>
-                                : 
-                                <div className="flex gap-2 flex-col md:flex-row">
-                                    <div className="flex-1">
+                    {/* Action Buttons */}
+                    {getPoolStatus() == 1 && (
+                        <div className="space-y-4">
+                            {!address ? (
+                                <ButtonConnect />
+                            ) : (
+                                <div className="flex flex-wrap gap-4">
+                                    <div className='flex-1'>
                                         <LendToPoolButton 
                                             {...props}
                                             pool={pool!}
@@ -135,9 +147,8 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                                             }}
                                         />
                                     </div>
-                                    {
-                                        pool?.lendingCurrency == process.env.IDRX_ADDRESS &&
-                                        <div className="flex-1">
+                                    {pool?.lendingCurrency == process.env.IDRX_ADDRESS && (
+                                        <div className='flex-1'>
                                             <LendFiatToPoolButton 
                                                 {...props}
                                                 pool={pool!}
@@ -151,11 +162,11 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                                                 }}
                                             />
                                         </div>
-                                    }
+                                    )}
                                 </div>
-                            }
-                        </>
-                    }
+                            )}
+                        </div>
+                    )}
                 </div>
             }
         </>

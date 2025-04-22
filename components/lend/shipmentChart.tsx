@@ -22,10 +22,11 @@ interface ShipmentChartProps {
 }
 
 export default function ShipmentChart({ aggregatedShipments = [] }: ShipmentChartProps) {
-
-  const dates = aggregatedShipments.map(item => item.date);
+  const dates = aggregatedShipments.map(item => {
+    const date = new Date(item.date);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  });
   const totalShipments = aggregatedShipments.map(item => item.totalShipments);
-
 
   // Prepare data for the chart
   const chartData = {
@@ -34,46 +35,98 @@ export default function ShipmentChart({ aggregatedShipments = [] }: ShipmentChar
       {
         label: 'Total Shipments',
         data: totalShipments,
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
-        borderColor: 'rgba(0, 0, 0, 0.9)',
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
         borderWidth: 1,
-        borderRadius: 10
+        borderRadius: 8,
+        hoverBackgroundColor: 'rgba(59, 130, 246, 1)',
+        hoverBorderColor: 'rgb(59, 130, 246)',
       }
     ],
   };
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     interaction: {
       mode: 'index' as const,
       intersect: false,
     },
     scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#6B7280',
+          font: {
+            size: 12,
+          },
+        },
+      },
       y: {
-        type: 'linear' as const,
-        display: true,
-        position: 'left' as const,
+        grid: {
+          color: 'rgba(229, 231, 235, 0.5)',
+          drawBorder: false,
+        },
+        ticks: {
+          color: '#6B7280',
+          font: {
+            size: 12,
+          },
+          callback: (value: number) => {
+            return value.toLocaleString();
+          },
+        },
         title: {
           display: true,
-          text: 'Shipments count',
+          text: 'Shipments Count',
+          color: '#6B7280',
+          font: {
+            size: 12,
+            weight: '500',
+          },
         },
       },
     },
     plugins: {
-      title: {
-        display: true,
-        text: 'Shipment Statistics',
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        padding: 12,
+        displayColors: false,
+        callbacks: {
+          title: (tooltipItems: any) => {
+            return tooltipItems[0].label;
+          },
+          label: (tooltipItem: any) => {
+            return `${tooltipItem.raw.toLocaleString()} shipments`;
+          },
+        },
       },
     },
   };
 
   return (
-    <div className="w-full h-[400px] p-4">
+    <div className="relative w-full h-full">
       {aggregatedShipments.length > 0 ? (
-        <Bar options={options} data={chartData} />
+        <Bar 
+          options={options as any} 
+          data={chartData}
+          className="w-full h-full"
+        />
       ) : (
-        <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500">No shipment data available</p>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-400 text-sm">No shipment data available</p>
+            <p className="text-gray-300 text-xs mt-1">Start tracking shipments to see activity</p>
+          </div>
         </div>
       )}
     </div>

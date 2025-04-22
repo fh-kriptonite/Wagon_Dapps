@@ -10,6 +10,14 @@ import { numberWithCommas } from "../../util/stringUtility";
 import { getCoinPriceService } from "../../services/service_erc20"
 import Link from "next/link";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
+import { HiArrowTrendingUp } from "react-icons/hi2";
+import { HiArrowRight } from "react-icons/hi2";
+import { HiLockClosed } from "react-icons/hi2";
+import { HiShieldCheck } from "react-icons/hi2";
+import { HiBanknotes } from "react-icons/hi2";
+import { HiCurrencyDollar } from "react-icons/hi2";
+import { HiArrowUpTray } from "react-icons/hi2";
+import { HiArrowDownTray } from "react-icons/hi2";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -209,253 +217,350 @@ export default function AccountComponent() {
 
     return (
         <div className="max-w-7xl mx-auto space-y-4 pb-4">
-            {
-                process.env.THEME_SKIN === "1" &&
-                <>
-                    <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="flex-1">
-                            <div className="card w-full h-full !bg-blue-50">
-                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                                    <div className="grow w-full">
-                                        <p className="text-lg font-semibold">Wagon Staking <span className="text-xs">on ETH Network</span></p>
-                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Earn</span> your stable interest now</p>
-                                        <p className="text-sm mt-0.5 text-gray-500">Stake your <span className="font-bold">WAG</span> and get your <span className="font-bold">WAG</span> rewards</p>
-                                    </div>
-                                    <div className="flex flex-col gap-2 w-full xl:w-1/3">
-                                        <Link href="/stake">
-                                            <Button color={"dark"} size={"xs"} style={{width:"100%"}}>Stake Now</Button>    
-                                        </Link>
-                                    </div>
-                                </div>
+            {/* Header Section */}
+            <div className="flex-1">
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-lg">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-white/10 p-3 rounded-xl backdrop-blur-sm">
+                                <HiShieldCheck className="w-8 h-8" />
                             </div>
-                        </div>
-                        <div className="flex-1">
-                            <div className="card w-full h-full !bg-blue-50">
-                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                                    <div className="grow w-full">
-                                        <p className="text-base font-semibold">Wagon Lending <span className="text-xs"> on BSC Network</span></p>
-                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Lend</span> your stable coin and <span className="font-bold">earn</span> stable interest</p>
-                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Stabilize</span> your portfolio with <span className="font-bold">Real World Asset and Businesses</span></p>
-                                    </div>
-                                    <div className="w-full xl:w-1/3">
-                                        <Link href="/lend">
-                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>Lend Now</Button>
-                                        </Link>
-                                    </div>
-                                </div>
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-bold">Account Overview</h2>
+                                <p className="text-blue-100 mt-2 text-sm md:text-base">
+                                    View your staking and lending portfolio
+                                </p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="flex-1">
-                            <div className="card w-full h-full !bg-blue-50">
-                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                                    <div className="grow w-full">
-                                        <p className="text-lg font-semibold">Buy Wagon Token now</p>
-                                        <p className="text-sm mt-0.5 text-gray-500">On ETH network Uniswap <span className="font-bold">WAG/ETH</span></p>
-                                        <p className="text-sm mt-0.5 text-gray-500">On BSC network Pancakeswap <span className="font-bold">WAG/USDT</span></p>
-                                    </div>
-                                    <div className="flex flex-col gap-2 w-full xl:w-1/3">
-                                        <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"uniswap"}>
-                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>
-                                                <img src={"./network/logo-eth.png"} className="h-5 w-5 mr-2" alt="ETH Logo"/>
-                                                Uniswap
-                                            </Button>
-                                        </a>
-                                        <a href="https://pancakeswap.finance/swap?outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target={"pancakeswap"}>
-                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>
-                                                <img src={"./network/logo-bnb.png"} className="h-5 w-5 mr-2" alt="BNB Logo"/>
-                                                PancakeSwap
-                                            </Button>
-                                        </a>
-                                    </div>
+                </div>
+            </div>
+            {
+                process.env.THEME_SKIN === "1" &&
+                <>
+                    {/* Feature Cards Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Staking Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-all duration-300 border border-gray-100">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="bg-blue-50 p-2 rounded-lg">
+                                    <HiArrowTrendingUp className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Staking</h3>
+                                    <p className="text-xs text-gray-600">Earn rewards by staking WAG</p>
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex-1">
-                            <div className="card w-full h-full !bg-blue-50">
-                                <div className="flex flex-col xl:flex-row justify-between items-center h-full gap-4">
-                                    <div className="grow w-full">
-                                        <p className="text-base font-semibold">Account Verification</p>
-                                        <p className="text-sm mt-0.5 text-gray-500"><span className="font-bold">Verify</span> your account <span className="font-bold">information</span></p>
-                                        <p className="text-sm mt-0.5 text-gray-500">Lend your <span className="font-bold">FIAT</span> through our pools.</p>
-                                    </div>
-                                    <div className="w-full xl:w-1/3">
-                                        <Link href="/account/verification">
-                                            <Button size={"xs"} color="dark" style={{width:"100%"}}>Verification</Button>
-                                        </Link>
-                                    </div>
+                            <div className="space-y-2 mb-3">
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Stake WAG tokens</span>
                                 </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Earn daily rewards</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Flexible staking options</span>
+                                </div>
+                            </div>
+                            <Link href="/stake">
+                                <button className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
+                                    Start Staking
+                                    <HiArrowRight className="w-4 h-4" />
+                                </button>
+                            </Link>
+                        </div>
+
+                        {/* Lending Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-all duration-300 border border-gray-100">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="bg-blue-50 p-2 rounded-lg">
+                                    <HiBanknotes className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Lending</h3>
+                                    <p className="text-xs text-gray-600">Lend assets and earn interest</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2 mb-3">
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Lend stablecoins</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Earn stable interest</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Backed by real assets</span>
+                                </div>
+                            </div>
+                            <Link href="/lend">
+                                <button className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
+                                    Start Lending
+                                    <HiArrowRight className="w-4 h-4" />
+                                </button>
+                            </Link>
+                        </div>
+
+                        {/* Buy WAG Card */}
+                        <div className="bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-all duration-300 border border-gray-100">
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="bg-blue-50 p-2 rounded-lg">
+                                    <HiCurrencyDollar className="w-5 h-5 text-blue-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">Buy WAG</h3>
+                                    <p className="text-xs text-gray-600">Purchase WAG tokens</p>
+                                </div>
+                            </div>
+                            <div className="space-y-2 mb-3">
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Available on multiple DEXs</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Cross-chain support</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                    <span>Best liquidity options</span>
+                                </div>
+                            </div>
+                            <div className="flex gap-2">
+                                <a href="https://app.uniswap.org/swap?&inputCurrency=ETH&outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target="_blank" className="flex-1">
+                                    <button className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
+                                        <img src={"./network/logo-eth.png"} className="h-4 w-4" alt="ETH Logo"/>
+                                        Uniswap
+                                    </button>
+                                </a>
+                                <a href="https://pancakeswap.finance/swap?outputCurrency=0xd50c8a17d5c4b8e2d984933C7E37e5B92d687B8D" target="_blank" className="flex-1">
+                                    <button className="w-full bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
+                                        <img src={"./network/logo-bnb.png"} className="h-4 w-4" alt="BNB Logo"/>
+                                        PancakeSwap
+                                    </button>
+                                </a>
                             </div>
                         </div>
                     </div>
                 </>
             }
-            <div className="card w-full flex flex-col xl:flex-row gap-4">
+            <div className="bg-white rounded-xl shadow-sm p-6 w-full flex flex-col xl:flex-row gap-4">
                 <div className={`w-full ${ process.env.THEME_SKIN == "1" ? "xl:w-1/4" : "xl:w-2/5"}`}>
                     <div className="flex flex-col justify-between h-full gap-4">
-                        <p className="text-base font-semibold">Balance</p>
-                        <p className="text-4xl font-semibold mt-1">USD {numberWithCommas((stakingBalance * wagPrice) + (tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
-                        <div className="flex justify-between">
-                            <div className="flex-1">
-                                <div className="flex gap-1 items-center">
-                                    <div className="bg-gray-200 rounded-full p-1">
-                                        <FaLongArrowAltDown color="green" size={12}/>
+                        <div className="bg-white rounded-xl p-4">
+                            <p className="text-base font-semibold">Balance</p>
+                            <p className="text-4xl font-semibold mt-1">USD {numberWithCommas((stakingBalance * wagPrice) + (tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
+                            <div className="flex justify-between mt-4">
+                                <div className="flex-1">
+                                    <div className="flex gap-1 items-center">
+                                        <div className="bg-gray-200 rounded-full p-1">
+                                            <FaLongArrowAltDown color="green" size={12}/>
+                                        </div>
+                                        <p className="text-xs text-gray-500">Income</p>
                                     </div>
-                                    <p className="text-xs text-gray-500">Income</p>
+                                    <p className="text-lg font-semibold">USD {numberWithCommas((totalRewardClaimed * wagPrice) + (rewardBalance * wagPrice) + (interestIdrt * idrtPrice), 2)}</p>
                                 </div>
-                                <p className="text-lg font-semibold">USD {numberWithCommas((totalRewardClaimed * wagPrice) + (rewardBalance * wagPrice) + (interestIdrt * idrtPrice), 2)}</p>
                             </div>
-                            {/* <div className="flex-1">
-                                <div className="flex gap-1 items-center">
-                                    <div className="bg-gray-200 rounded-full p-1">
-                                        <FaLongArrowAltUp color="red" size={12}/>
-                                    </div>
-                                    <p className="text-xs text-gray-500">Locked</p>
-                                </div>
-                                <p className="text-lg font-semibold">USD {numberWithCommas((stakingBalance * wagPrice) + (tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
-                            </div> */}
+                        </div>
+                        
+                        {/* Onramp/Offramp Buttons */}
+                        <div className="grid grid-cols-2 gap-3">
+                            <Link href="/account/profile?tab=onramp" className="w-full">
+                                <button className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                    <HiArrowDownTray className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Buy Crypto</span>
+                                </button>
+                            </Link>
+                            <Link href="/account/profile?tab=offramp" className="w-full">
+                                <button className="w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-colors">
+                                    <HiArrowUpTray className="w-4 h-4" />
+                                    <span className="text-sm font-medium">Cash Out</span>
+                                </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
                 {
                     process.env.THEME_SKIN == "1" &&
                     <>
-                        <div className="border"/>
                         <div className="flex-1">
-                            <div className="flex justify-between">
-                                <p className="text-base font-semibold">Staking</p>
-                            </div>
-                            <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
-                                <div className="w-40 relative mx-auto">
-                                    <div
-                                        className="absolute top-8 left-8"
-                                    >
-                                        <div className="bg-blue-100 h-24 w-24 flex items-center jutify-center rounded-full border-2 border-dashed border-blue-800">
-                                            <div className="w-full">
-                                            <p className="text-center text-sm">APY</p>
-                                            <p className="text-center text-xl font-semibold">{numberWithCommas(apy, 2)}%</p>
+                            <div className="bg-white rounded-xl p-5">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="bg-blue-50 p-2 rounded-lg">
+                                            <HiLockClosed className="w-5 h-5 text-blue-600" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-gray-900">Staking</h3>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 bg-blue-50 px-2 py-1 rounded-lg">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                                        <span className="text-xs font-medium text-blue-700">APY {numberWithCommas(apy, 2)}%</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col sm:flex-row gap-6">
+                                    {/* Chart Section */}
+                                    <div className="w-40 relative mx-auto">
+                                        {
+                                            (stakingBalance > 0 || rewardBalance > 0)
+                                            ? <div className="z-40 relative">
+                                                <Doughnut data={data} options={options} key={"doughnut-1"}/>  
+                                            </div>
+                                            : <div className="w-40 h-40 bg-gray-100 rounded-full flex items-center justify-center">
+                                                <p className="text-sm text-gray-400">No staking data</p>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    {/* Details Section */}
+                                    <div className="flex-1 space-y-4">
+                                        {/* Staked Amount */}
+                                        <div className="bg-blue-50 rounded-lg p-3">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <p className="text-xs font-medium text-gray-500">Staked Amount</p>
+                                                <p className="text-xs text-gray-500">USD {numberWithCommas(stakingBalance * wagPrice, 2)}</p>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar img="/logo.png" rounded bordered size="xs" />
+                                                    <span className="text-sm font-medium text-gray-900">WAG</span>
+                                                </div>
+                                                <p className="text-lg font-semibold text-gray-900">{numberWithCommas(stakingBalance, 2)}</p>
                                             </div>
                                         </div>
-                                    </div>
-                                    {
-                                        (stakingBalance > 0 || rewardBalance > 0)
-                                        ? <div className="z-40 relative">
-                                            <Doughnut data={data} options={options} key={"doughnut-1"}/>  
+
+                                        {/* Rewards */}
+                                        <div className="bg-blue-50 rounded-lg p-3">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <p className="text-xs font-medium text-gray-500">Rewards</p>
+                                                <p className="text-xs text-gray-500">USD {numberWithCommas(rewardBalance * wagPrice, 2)}</p>
+                                            </div>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar img="/logo.png" rounded bordered size="xs" />
+                                                    <span className="text-sm font-medium">WAG</span>
+                                                </div>
+                                                <p className="text-lg font-semibold">{numberWithCommas(rewardBalance, 2)}</p>
+                                            </div>
                                         </div>
-                                        : <div className="w-40 h-40 bg-gray-200 rounded-full"></div>
-                                    }
-                                </div>
-                                <div className="grow">
-                                    <div className="flex justify-between items-end">
-                                        <p className="text-xs text-gray-500">Staked</p>
-                                        <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(stakingBalance * wagPrice, 2)}</p>
-                                    </div>
-                                    <div className="flex flex-wrap justify-between mt-1">
-                                        <div className="flex flex-wrap gap-2">
-                                            <Avatar img="/logo.png" rounded bordered size="xs" />
-                                            <p className="text-sm">WAG</p>
-                                        </div>
-                                        <p className="text-sm font-semibold">{numberWithCommas(stakingBalance, 2)}</p>
-                                    </div>
-                                    
-                                    <div className="flex justify-between items-end mt-2">
-                                        <p className="text-xs text-gray-500 mt-2">Rewards</p>
-                                        <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(rewardBalance * wagPrice, 2)}</p>
-                                    </div>
-                                    <div className="flex flex-wrap justify-between mt-1">
-                                        <div className="flex flex-wrap gap-2">
-                                            <Avatar img="/logo.png" rounded bordered size="xs" />
-                                            <p className="text-sm">WAG</p>
-                                        </div>
-                                        <p className="text-sm font-semibold">{numberWithCommas(rewardBalance, 2)}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </>
                 }
-                <div className="border"/>
                 <div className="flex-1">
-                    <div className="flex justify-between">
-                        <p className="text-base font-semibold">Lending</p>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-10 mt-3">
-                        <div className="w-40 relative mx-auto">
-                            <div
-                                className="absolute top-8 left-8"
-                            >
-                                <div className="bg-blue-100 h-24 w-24 flex items-center jutify-center rounded-full border-2 border-dashed border-blue-800 overflow-hidden text-ellipsis">
-                                    <div className="w-full">
-                                    <p className="text-center text-sm">APY</p>
-                                    <p className="text-center text-xl font-semibold">{numberWithCommas(tvlIdrt == 0 ? 0 : interestIdrtInYear / tvlIdrt, 2)}%</p>
-                                    </div>
+                    <div className="bg-white rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-green-100 p-2 rounded-lg">
+                                    <HiBanknotes className="w-5 h-5 text-green-600" />
                                 </div>
+                                <h3 className="text-lg font-semibold text-gray-700">Lending</h3>
                             </div>
-                            {
-                                (tvlWag > 0 || tvlIdrt || interestIdrt > 0)
-                                ? <div className="z-40 relative">
-                                    <Doughnut data={dataLending} options={options}  key={"doughnut-2"}/>
-                                </div>
-                                : <div className="w-40 h-40 bg-gray-200 rounded-full"></div>
-                            }
+                            <div className="flex items-center gap-1.5 bg-green-100 px-2 py-1 rounded-lg">
+                                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                <span className="text-xs font-medium text-green-700">APY {numberWithCommas(tvlIdrt == 0 ? 0 : interestIdrtInYear / tvlIdrt, 2)}%</span>
+                            </div>
                         </div>
-                        <div className="grow">
-                            <div className="flex justify-between items-end">
-                                <p className="text-xs text-gray-500">TVL</p>
-                                <p className="text-end text-gray-500 text-xs">USD {numberWithCommas((tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
-                            </div>
-                            {
-                                process.env.THEME_SKIN == "1" &&
-                                <div className="flex flex-wrap justify-between mt-1">
-                                    <div className="flex flex-wrap gap-2">
-                                        <Avatar img="/logo.png" rounded bordered size="xs" />
-                                        <p className="text-sm">WAG</p>
+
+                        <div className="flex flex-col sm:flex-row gap-6">
+                            {/* Chart Section */}
+                            <div className="w-40 relative mx-auto">
+                                {
+                                    (tvlWag > 0 || tvlIdrt || interestIdrt > 0)
+                                    ? <div className="z-40 relative">
+                                        <Doughnut data={dataLending} options={options} key={"doughnut-2"}/>
                                     </div>
-                                    <p className="text-sm font-semibold">{numberWithCommas(tvlWag, 2)}</p>
-                                </div>
-                            }
-                            <div className="flex flex-wrap gap-2 justify-between mt-2">
-                                <div className="flex flex-wrap gap-2">
-                                    <Avatar.Group>
-                                        <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
-                                        <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
-                                    </Avatar.Group>
-                                    <p className="text-sm">IDR</p>
-                                </div>
-                                <p className="text-sm font-semibold">{numberWithCommas(tvlIdrt, 2)}</p>
+                                    : <div className="w-40 h-40 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <p className="text-sm text-gray-400">No lending data</p>
+                                    </div>
+                                }
                             </div>
-                            <div className="flex justify-between items-end mt-2">
-                                <p className="text-xs text-gray-500 mt-2">Interest</p>
-                                <p className="text-end text-gray-500 text-xs">USD {numberWithCommas(interestIdrt * idrtPrice, 2)}</p>
-                            </div>
-                            <div className="flex flex-wrap gap-2 justify-between mt-1">
-                                <div className="flex flex-wrap gap-2">
-                                    <Avatar.Group>
-                                        <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
-                                        <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
-                                    </Avatar.Group>
-                                    <p className="text-sm">IDR</p>
+
+                            {/* Details Section */}
+                            <div className="flex-1 space-y-4">
+                                {/* TVL Section */}
+                                <div className="bg-green-50 rounded-lg p-3">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="text-xs font-medium text-gray-500">Total Value Locked</p>
+                                        <p className="text-xs text-gray-500">USD {numberWithCommas((tvlWag * wagPrice) + (tvlIdrt * idrtPrice), 2)}</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {
+                                            process.env.THEME_SKIN == "1" &&
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar img="/logo.png" rounded bordered size="xs" />
+                                                    <span className="text-sm font-medium">WAG</span>
+                                                </div>
+                                                <p className="text-lg font-semibold">{numberWithCommas(tvlWag, 2)}</p>
+                                            </div>
+                                        }
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <Avatar.Group>
+                                                    <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
+                                                    <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
+                                                </Avatar.Group>
+                                                <span className="text-sm font-medium">IDR</span>
+                                            </div>
+                                            <p className="text-lg font-semibold">{numberWithCommas(tvlIdrt, 2)}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p className="text-sm font-semibold">{numberWithCommas(interestIdrt, 2)}</p>
+
+                                {/* Interest Section */}
+                                <div className="bg-green-50 rounded-lg p-3">
+                                    <div className="flex justify-between items-center mb-1">
+                                        <p className="text-xs font-medium text-gray-500">Interest Earned</p>
+                                        <p className="text-xs text-gray-500">USD {numberWithCommas(interestIdrt * idrtPrice, 2)}</p>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar.Group>
+                                                <Avatar img="/logo-idrt.png" rounded stacked size="xs" />
+                                                <Avatar img="/logo-idrx.png" rounded stacked size="xs" />
+                                            </Avatar.Group>
+                                            <span className="text-sm font-medium">IDR</span>
+                                        </div>
+                                        <p className="text-lg font-semibold">{numberWithCommas(interestIdrt, 2)}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="card w-full">
-                <div className="flex flex-col gap-4">
-                    <p className="text-base font-semibold">Your Pools</p>
+            <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex flex-col gap-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-blue-50 p-2 rounded-lg">
+                                <HiBanknotes className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-900">Your Pools</h3>
+                        </div>
+                    </div>
                     {
                         isLoadingPools
-                        ? <div className="flex justify-center">
-                            <Spinner/>
+                        ? <div className="flex justify-center py-8">
+                            <Spinner size="lg" color="blue" />
                         </div>
                         : pools.length == 0
-                        ? <div className="flex flex-col items-center justify-center gap-2">
-                            <FaLongArrowAltDown className="text-4xl text-gray-400"/>
-                            <p className="text-sm text-gray-500">No pools found</p>
+                        ? <div className="flex flex-col items-center justify-center gap-4 py-8">
+                            <div className="bg-blue-50 p-4 rounded-full">
+                                <FaLongArrowAltDown className="text-2xl text-blue-600" />
+                            </div>
+                            <div className="text-center">
+                                <p className="text-sm font-medium text-gray-900">No pools found</p>
+                                <p className="text-xs text-gray-500 mt-1">Start by lending to your first pool</p>
+                            </div>
                         </div>
                         : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {
@@ -469,4 +574,4 @@ export default function AccountComponent() {
             </div>
         </div>
     );
-} 
+}

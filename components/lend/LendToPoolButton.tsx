@@ -68,7 +68,7 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
         style={{width:"100%"}}
         disabled={handleDisableLendButton()}
         onClick={openModal}
-        className={`${handleDisableLendButton() ? 'bg-gray-300 hover:bg-gray-300 cursor-not-allowed' : 'bg-gray-800 hover:bg-gray-900'}`}
+        className={`${handleDisableLendButton() ? 'bg-gray-300 hover:bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
       >
         Lend Your Cryptocurrency
       </Button>

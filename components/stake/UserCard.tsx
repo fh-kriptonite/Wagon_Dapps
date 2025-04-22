@@ -33,21 +33,31 @@ export default function UserCard({ fetch, triggerFetch }: UserCardProps) {
     }, [fetch])
 
     return (
-        <>
-            <div className="card">
-                <div className="flex flex-col-reverse lg:flex-row gap-2">
-                    <div className="flex-initial lg:w-1/3 lg:pr-4">
-                        <StakeSection fetch={fetch} triggerFetch={triggerFetch} stakedBalance={stakedBalance} claimableDuration={claimableDuration?.toString() || null}/>
+        <div className="bg-white rounded-2xl shadow-sm">
+            
+            <div className="p-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
+                    {/* Stake Section */}
+                    <div className="col-span-1 h-full">
+                        <StakeSection 
+                            fetch={fetch} 
+                            triggerFetch={triggerFetch} 
+                            stakedBalance={stakedBalance} 
+                            claimableDuration={claimableDuration?.toString() || null}
+                        />
                     </div>
 
-                    <div className="grow">
-                        <div className="h-full">
-                            <StakingStatsSummary fetch={fetch} triggerFetch={triggerFetch} stakedBalance={stakedBalance} claimableDuration={claimableDuration?.toString() || null}/>
-                        </div>
+                    {/* Stats Summary */}
+                    <div className="col-span-2 h-full">
+                        <StakingStatsSummary 
+                            fetch={fetch} 
+                            triggerFetch={triggerFetch} 
+                            stakedBalance={stakedBalance} 
+                            claimableDuration={claimableDuration?.toString() || null}
+                        />
                     </div>
-
                 </div>
             </div>
-        </>
+        </div>
     )
 } 

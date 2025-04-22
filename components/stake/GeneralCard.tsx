@@ -1,9 +1,9 @@
 import { numberWithCommas, numberWithLetter } from "../../util/stringUtility";
 import { useEffect } from "react";
-
 import useGetTotalStakedHook from "./utils/useGetTotalStakedHook";
 import useGetRewardRateHook from "./utils/useGetRewardRateHook";
 import useGetTotalCirculationHook from "./utils/useGetTotalCirculationHook";
+import { HiCurrencyDollar, HiChartBar, HiServer } from "react-icons/hi2";
 
 interface GeneralCardProps {
     fetch: boolean;
@@ -36,58 +36,60 @@ export default function GeneralCard({ fetch }: GeneralCardProps) {
     }
 
     return (
-        <>
-            <div className="card mb-4 grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-2">
-                <div className="">
-                    <h6 className="text-sm font-medium text-gray-500">Total Value Stacked</h6>
-                    <h2 className="mt-1">
-                        {
-                            isLoadingGetTotalStaked
-                            ? "~"
-                            : numberWithLetter(totalStakedInUsd, 2)
-                        }
-                        <span className="text-2xl font-medium"> USD</span>
+        <div className="bg-white rounded-2xl shadow-sm p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Total Value Stacked */}
+                <div className="bg-blue-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-white p-2 rounded-lg">
+                            <HiCurrencyDollar className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <h6 className="text-sm font-medium text-gray-600">Total Value Stacked</h6>
+                    </div>
+                    <h2 className="text-4xl font-semibold text-gray-900">
+                        {isLoadingGetTotalStaked ? "~" : numberWithLetter(totalStakedInUsd, 2)}
+                        <span className="text-gray-500 ml-1 text-xl">USD</span>
                     </h2>
                 </div>
-                <div className="">
-                    <h6 className="text-sm font-medium text-gray-500">Staking APY</h6>
-                    <h2 className="mt-1">
-                        {
-                            isLoadingRewardRate || isLoadingGetTotalStaked
-                            ? "~"
-                            : numberWithCommas(getAPY())
-                        }
-                        <span className="text-2xl font-medium"> %</span>
+
+                {/* Staking APY */}
+                <div className="bg-green-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-white p-2 rounded-lg">
+                            <HiChartBar className="w-5 h-5 text-green-600" />
+                        </div>
+                        <h6 className="text-sm font-medium text-gray-600">Staking APY</h6>
+                    </div>
+                    <h2 className="text-4xl font-semibold text-gray-900">
+                        {isLoadingRewardRate || isLoadingGetTotalStaked ? "~" : numberWithCommas(getAPY())}
+                        <span className="text-gray-500 ml-1 text-xl">%</span>
                     </h2>
                 </div>
-                <div className="flex-1 flex flex-col gap-1">
-                    <h6 className="text-sm font-light text-gray-500">Circulating Supply: <span className="font-medium">
-                        {
-                            isLoadingCirculation
-                            ? "~"
-                            : numberWithCommas(totalCirculation)
-                        }
-                    </span></h6>
-                    <h6 className="text-sm font-light text-gray-500">Total WAG Staked: <span className="font-medium">
-                        {
-                            isLoadingGetTotalStaked
-                            ? "~"
-                            : numberWithCommas(totalStaked)
-                        }
-                    </span></h6>
-                    <h6 className="text-sm font-light text-gray-500">% of WAG Staked: <span className="font-medium">
-                        {
-                            isLoadingCirculation || isLoadingGetTotalStaked
-                            ? "~"
-                            : totalCirculation == null || totalStaked == null
-                                ? "0"
-                                : totalCirculation === 0 
-                                    ? "0"
-                                    : numberWithCommas(totalStaked / totalCirculation * 100, 1)
-                        }%
-                    </span></h6>
+
+                {/* Statistics */}
+                <div className="bg-gray-50 rounded-xl p-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-white p-2 rounded-lg">
+                            <HiServer className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <h6 className="text-sm font-medium text-gray-600">Statistics</h6>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Circulating Supply</span>
+                            <span className="text-sm font-medium text-gray-900">
+                                {isLoadingCirculation ? "~" : numberWithCommas(totalCirculation)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Total WAG Staked</span>
+                            <span className="text-sm font-medium text-gray-900">
+                                {isLoadingGetTotalStaked ? "~" : numberWithCommas(totalStaked)}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 } 

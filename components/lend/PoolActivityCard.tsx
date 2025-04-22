@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { services } from "../../services/service_lending";
 import { MdOpenInNew } from "react-icons/md";
 import { numberWithCommas, shortenAddress } from "../../util/stringUtility";
-import { Table } from "flowbite-react";
+import { Table, Spinner } from "flowbite-react";
 
 interface Activity {
   block: string;
@@ -24,7 +24,8 @@ export default function PoolActivityCard({ poolId, decimal }: PoolActivityCardPr
 
   async function getPoolActivities() {
     try {
-      const data = await services.getPoolActivities(poolId, "BNB");
+      setIsLoading(true);
+      const data = await services.getPoolActivities(poolId, "BNB_TESTNET");
       setActivities(data as Activity[]);
       setIsLoading(false);
     } catch (error) {
@@ -38,38 +39,66 @@ export default function PoolActivityCard({ poolId, decimal }: PoolActivityCardPr
   }, [poolId]);
   
   return (
-    <div className='space-y-6'>
-      <div className='space-y-1'>
+    <div className="space-y-4">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
-          <Table>
-            <Table.Head className="">
-              <Table.HeadCell>Block</Table.HeadCell>
-              <Table.HeadCell className='text-start'>Address</Table.HeadCell>
-              <Table.HeadCell className='text-right'>Event</Table.HeadCell>
-              <Table.HeadCell className='text-right'>Amount</Table.HeadCell>
-              <Table.HeadCell className='text-start'>Tx</Table.HeadCell>
+          <Table hoverable>
+            <Table.Head className="bg-gray-50">
+              <Table.HeadCell className="text-sm font-medium text-gray-600">Block</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600">Address</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Event</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600 text-right">Amount</Table.HeadCell>
+              <Table.HeadCell className="text-sm font-medium text-gray-600">Transaction</Table.HeadCell>
             </Table.Head>
             <Table.Body className="divide-y">
-              {activities.length === 0 ? (
+              {isLoading ? (
                 <Table.Row>
-                  <Table.Cell colSpan={5} className="text-center text-xs">
-                    No activities found
+                  <Table.Cell colSpan={5} className="text-center py-8">
+                    <Spinner />
+                  </Table.Cell>
+                </Table.Row>
+              ) :
+                activities.length === 0 ? (
+                <Table.Row>
+                  <Table.Cell colSpan={5} className="text-center py-8">
+                    <p className="text-sm text-gray-500">No activities found</p>
                   </Table.Cell>
                 </Table.Row>
               ) : (
                 activities.map((activity, index) => (
-                  <Table.Row className="text-sm" key={`activity_-${index}`}>
-                    <Table.Cell className='!py-2'>{activity.block}</Table.Cell>
-                    <Table.Cell className='!py-2'>{shortenAddress(activity.address)}</Table.Cell>
-                    <Table.Cell className='!py-2 text-right'>{activity.event}</Table.Cell>
-                    <Table.Cell className='!py-2 text-right'>{numberWithCommas(Number(activity.amount) / Math.pow(10, decimal), 2)}</Table.Cell>
-                    <Table.Cell className='!py-2 text-right'>
+                  <Table.Row 
+                    key={`activity_-${index}`}
+                    className="bg-white hover:bg-gray-50"
+                  >
+                    <Table.Cell className="text-sm text-gray-900 py-4">
+                      {activity.block}
+                    </Table.Cell>
+                    <Table.Cell className="text-sm text-gray-900 py-4">
+                      {shortenAddress(activity.address)}
+                    </Table.Cell>
+                    <Table.Cell className="text-sm text-gray-900 py-4 text-right">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        activity.event === "Lend" 
+                          ? "bg-blue-100 text-blue-800" 
+                          : activity.event === "Claim" 
+                            ? "bg-green-100 text-green-800" 
+                            : "bg-gray-100 text-gray-800"
+                      }`}>
+                        {activity.event}
+                      </span>
+                    </Table.Cell>
+                    <Table.Cell className="text-sm text-gray-900 py-4 text-right">
+                      {numberWithCommas(Number(activity.amount) / Math.pow(10, decimal), 2)}
+                    </Table.Cell>
+                    <Table.Cell className="text-sm py-4">
                       <a 
                         href={`https://bscscan.com/tx/${activity.transaction_hash}`} 
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 transition-colors"
                       >
-                        <MdOpenInNew size={16} className="text-blue-500 hover:text-blue-800"/>
+                        <span className="text-sm">View</span>
+                        <MdOpenInNew className="w-4 h-4" />
                       </a>
                     </Table.Cell>
                   </Table.Row>

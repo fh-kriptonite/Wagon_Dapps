@@ -8,6 +8,7 @@ import useClaimUnstakedWagHook from "./utils/useClaimUnstakedWagHook";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import useChainHook from "../../util/useChainHook";
 import useSwitchNetworkHook from "./utils/useSwitchNetworkHook";
+import { HiGift, HiArrowDownTray } from "react-icons/hi2";
 
 interface WithdrawCardProps {
     fetch: boolean;
@@ -121,69 +122,71 @@ export default function WithdrawCard({ fetch, triggerFetch }: WithdrawCardProps)
     }
 
     return (
-        <div className="card flex-1">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                    <div className="grow">
-                        <h6 className="text-sm font-medium text-gray-500">My Reward</h6>
-                        <h2 className="mt-1">
-                            {
-                                (reward != null )
-                                ? numberWithCommas(parseFloat(reward)/1e18, 2)
-                                : "~"
-                            }
-                            <span className="text-2xl font-medium"> WAG</span>
-                        </h2>
+        <div className="bg-white rounded-2xl shadow-sm p-4 md:p-6">
+            <h3 className="text-base md:text-lg font-semibold text-gray-900 mb-4">Withdraw & Claim</h3>
+            
+            {/* Reward Section */}
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-4 md:p-5 mb-4 md:mb-6">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-white p-2 rounded-lg">
+                            <HiGift className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                            <h6 className="text-xs md:text-sm font-medium text-gray-600">My Reward</h6>
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+                                {(reward != null) ? numberWithCommas(parseFloat(reward)/1e18, 2) : "~"}
+                                <span className="text-gray-500 ml-1 text-sm md:text-base">WAG</span>
+                            </h2>
+                        </div>
                     </div>
-                    <div className="flex-none w-full sm:w-36">
-                        <Button color={"dark"}
-                            className="w-full disabled:bg-gray-300"
-                            size={"sm"}
-                            disabled={isClaimDisabled()}
-                            onClick={handleClaim}
-                        >
-                            {
-                                isLoadingClaimWag
-                                ? "Claiming..."
-                                : "Claim"
-                            }
-                        </Button>
-                    </div>
-            </div>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 border-t-2 mt-3 pt-3">
-                <div className="grow">
-                    <h6 className="text-sm font-medium text-gray-500">My Pending Unstake</h6>
-                    <h2 className="mt-1">
-                        {
-                            claimable != null
-                            ? numberWithCommas(Number(claimable[2])/1e18, 2)
-                            : "~"
-                        }
-                        <span className="text-2xl font-medium"> WAG</span>
-                    </h2>
-                </div>
-                <div className="flex-none w-full sm:w-36">
-                    <Button color={"dark"} 
-                        className="w-full disabled:bg-gray-300"
-                        size={"sm"}
-                        disabled={isWithdrawDisabled()}
-                        onClick={handleWithdraw}
+                    <Button 
+                        color="success"
+                        size="sm"
+                        disabled={isClaimDisabled()}
+                        onClick={handleClaim}
+                        className="w-full md:w-auto min-w-[100px]"
                     >
-                        {
-                            isLoadingClaimUnstakedWag
-                            ? "Withdrawing..."
-                            : "Withdraw"
-                        }
+                        {isLoadingClaimWag ? "Claiming..." : "Claim"}
                     </Button>
                 </div>
             </div>
-            <div className="border-t-2 mt-2 pt-3">
-                <p className="text-xs text-gray-500 font-light">Withdrawable after <span className="font-medium">
-                    {
-                        claimable != null
-                        ? getClaimableTime()
-                        : "~"
-                    }
-                </span></p>
+
+            {/* Unstake Section */}
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-4 md:p-5">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-0 mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-white p-2 rounded-lg">
+                            <HiArrowDownTray className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                            <h6 className="text-xs md:text-sm font-medium text-gray-600">My Pending Unstake</h6>
+                            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+                                {claimable != null ? numberWithCommas(Number(claimable[2])/1e18, 2) : "~"}
+                                <span className="text-gray-500 ml-1 text-sm md:text-base">WAG</span>
+                            </h2>
+                        </div>
+                    </div>
+                    <Button 
+                        color="blue"
+                        size="sm"
+                        disabled={isWithdrawDisabled()}
+                        onClick={handleWithdraw}
+                        className="w-full md:w-auto min-w-[100px]"
+                    >
+                        {isLoadingClaimUnstakedWag ? "Withdrawing..." : "Withdraw"}
+                    </Button>
+                </div>
+
+                {/* Withdrawable Time */}
+                <div className="mt-4 pt-4 border-t border-blue-200">
+                    <p className="text-xs md:text-sm text-gray-600">
+                        Withdrawable after{" "}
+                        <span className="font-medium text-gray-900">
+                            {claimable != null ? getClaimableTime() : "~"}
+                        </span>
+                    </p>
+                </div>
             </div>
         </div>
     )

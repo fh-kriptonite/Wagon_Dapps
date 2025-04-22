@@ -7,8 +7,10 @@ const connection = createPool({
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
   waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  connectionLimit: 50,
+  queueLimit: 100,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 });
 
 export default connection;

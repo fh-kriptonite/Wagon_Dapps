@@ -1,8 +1,8 @@
-import { MdSecurity, MdPerson, MdEmail, MdLocationOn, MdDescription, MdBadge, MdEdit, MdAccountBalance, MdDelete, MdSettings } from "react-icons/md";
+import { MdSecurity, MdPerson, MdEmail, MdLocationOn, MdDescription, MdBadge, MdEdit, MdAccountBalance, MdDelete, MdSettings, MdExpandMore } from "react-icons/md";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
-import { Button, Alert } from "flowbite-react";
+import { Button, Alert, Dropdown } from "flowbite-react";
 import BankAccountForm from "./BankAccountForm";
 
 interface BankAccount {
@@ -47,7 +47,7 @@ const ConfirmationDialog = ({
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
-            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6">
                 <div className="space-y-6">
                     <div className="flex items-center justify-between">
                         <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
@@ -130,6 +130,7 @@ export default function ProfileTab({
         message: '',
         type: 'success'
     });
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const getBankAccount = async () => {
         try {
@@ -188,7 +189,9 @@ export default function ProfileTab({
     };
 
     useEffect(() => {
-        getBankAccount();
+        if (connectedAddress) {
+            getBankAccount();
+        }
     }, [connectedAddress]);
 
     useEffect(() => {
@@ -208,7 +211,7 @@ export default function ProfileTab({
                     <Alert
                         color={alert.type === 'success' ? 'success' : 'failure'}
                         onDismiss={() => setAlert({ ...alert, show: false })}
-                        className="max-w-md"
+                        className="max-w-2xl"
                     >
                         <span className="font-medium">
                             {alert.message}
@@ -340,24 +343,30 @@ export default function ProfileTab({
                             <h5 className="font-semibold text-base md:text-lg">Bank Accounts</h5>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Button
-                                color="blue"
-                                onClick={() => setShowBankForm(true)}
-                                className="flex items-center gap-2"
+                            <Dropdown
+                                label="Manage"
+                                dismissOnClick={true}
+                                renderTrigger={() => (
+                                    <Button color="blue" className="">
+                                        <MdSettings className="w-4 h-4" />
+                                    </Button>
+                                )}
                             >
-                                <MdEdit className="w-4 h-4" />
-                                Add Account
-                            </Button>
-                            {bankAccounts.length > 0 && (
-                                <Button
-                                    color={isManagingAccounts ? "blue" : "gray"}
-                                    onClick={() => setIsManagingAccounts(!isManagingAccounts)}
-                                    className="flex items-center gap-2"
+                                <Dropdown.Item
+                                    onClick={() => setShowBankForm(true)}
+                                    icon={MdEdit}
                                 >
-                                    <MdSettings className="w-4 h-4" />
-                                    {isManagingAccounts ? "Done" : "Manage"}
-                                </Button>
-                            )}
+                                    Add Account
+                                </Dropdown.Item>
+                                {bankAccounts.length > 0 && (
+                                    <Dropdown.Item
+                                        onClick={() => setIsManagingAccounts(!isManagingAccounts)}
+                                        icon={MdDelete}
+                                    >
+                                        {isManagingAccounts ? 'Done' : 'Delete Account'}
+                                    </Dropdown.Item>
+                                )}
+                            </Dropdown>
                         </div>
                     </div>
                     <div className="space-y-4">
@@ -430,7 +439,7 @@ export default function ProfileTab({
                 {/* Bank Account Form Dialog */}
                 {showBankForm && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+                        <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6">
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xl font-semibold text-gray-900">Add Bank Account</h3>

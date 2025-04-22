@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { numberWithCommas } from "../../util/stringUtility";
 import { services } from "../../services/service_lending";
 import { getCoinPriceService } from "../../services/service_erc20";
+import { HiLockClosed, HiCurrencyDollar, HiDocumentText } from "react-icons/hi2";
 
 interface OverviewCardProps {
     // Add any props here if needed
@@ -38,20 +39,44 @@ export default function OverviewCard(props: OverviewCardProps) {
     }, []);
 
     return (
-        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between p-4 mb-4 rounded-lg bg-blue-50 text-blue-900">
-            <div className="text-start w-full">
-                <p className="text-sm">Total Value locked</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(totalValueLocked, 0)} USD</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Total Value Locked Card */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-50 p-2 rounded-lg">
+                        <HiLockClosed className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-600">Total Value Locked</h3>
+                </div>
+                <p className="text-2xl font-semibold text-gray-900">
+                    ${numberWithCommas(totalValueLocked, 0)}
+                </p>
             </div>
 
-            <div className="text-start w-full">
-                <p className="text-sm">Total Loan Originations</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(totalLoanOrigination, 0)} USD</p>
+            {/* Total Loan Originations Card */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-green-50 p-2 rounded-lg">
+                        <HiCurrencyDollar className="w-6 h-6 text-green-600" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-600">Total Loan Originations</h3>
+                </div>
+                <p className="text-2xl font-semibold text-gray-900">
+                    ${numberWithCommas(totalLoanOrigination, 0)}
+                </p>
             </div>
 
-            <div className="text-start w-full">
-                <p className="text-sm">Current Loans Outstanding</p>
-                <p className="text-2xl font-semibold">{numberWithCommas(currentLoanOutstanding, 0)} USD</p>
+            {/* Current Loans Outstanding Card */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-purple-50 p-2 rounded-lg">
+                        <HiDocumentText className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-600">Current Loans Outstanding</h3>
+                </div>
+                <p className="text-2xl font-semibold text-gray-900">
+                    ${numberWithCommas(currentLoanOutstanding, 0)}
+                </p>
             </div>
         </div>
     );

@@ -9,7 +9,7 @@ import useSwitchNetworkHook from '../utils/useSwitchNetworkHook';
 import useStakeWagHook from '../utils/useStakeWagHook';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import useChainHook from '../../../util/useChainHook';
-import { useModal } from '@particle-network/connectkit';
+import { HiLockClosed } from "react-icons/hi2";
 
 interface StakeDialogProps {
   balance: string;
@@ -43,7 +43,6 @@ export default function StakeDialog(props: StakeDialogProps) {
     if(number === "") return true;
     if(parseFloat(number) === 0) return true;
     if(isLoading) return true;
-
     return false;
   }
 
@@ -131,7 +130,6 @@ export default function StakeDialog(props: StakeDialogProps) {
 
       <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
-
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -141,7 +139,7 @@ export default function StakeDialog(props: StakeDialogProps) {
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
+            <div className="fixed inset-0 bg-black bg-opacity-25 backdrop-blur-sm" />
           </Transition.Child>
 
           <div className="fixed inset-0 overflow-y-auto">
@@ -155,44 +153,54 @@ export default function StakeDialog(props: StakeDialogProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                    <div className='flex justify-between'>
-                        <Dialog.Title
-                            as="h3"
-                            className="text-lg font-medium leading-6 text-gray-900"
-                        >
-                            Stake
-                        </Dialog.Title>
-                        <button onClick={()=>closeModal()}>
-                            <ImCross/>
-                        </button>
-                    </div>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex justify-between items-center mb-6'>
+                    <Dialog.Title
+                      as="h3"
+                      className="text-xl font-semibold leading-6 text-gray-900"
+                    >
+                      Stake WAG
+                    </Dialog.Title>
+                    <button 
+                      onClick={()=>closeModal()}
+                      className="text-gray-400 hover:text-gray-500 transition-colors"
+                    >
+                      <ImCross className="w-4 h-4"/>
+                    </button>
+                  </div>
                   
-                  <div className="mt-4 border rounded-xl p-4">
-                    <div className='flex justify-between'>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Amount
-                        </p>
-                        <p className="text-xs font-semibold text-gray-500">
-                            Available: { numberWithCommas(parseFloat(balance) / 1e18) } WAG
-                        </p>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div className='flex justify-between mb-2'>
+                      <p className="text-sm font-medium text-gray-600">
+                        Amount to Stake
+                      </p>
+                      <p className="text-sm font-medium text-gray-600">
+                        Available: { numberWithCommas(parseFloat(balance) / 1e18) } WAG
+                      </p>
                     </div>
                     
-                    <div className='flex gap-2 items-center justify-between mt-2'>
-                        <input type="number" id="amount" 
-                            min="0"
-                            className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
-                            value={number}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
-                              setNumber(e.target.value);
-                            }}
-                            disabled={(showButton === 0 ? false : true)}
-                            placeholder="0" required/>
+                    <div className='flex gap-2 items-center justify-between'>
+                      <input 
+                        type="number" 
+                        id="amount" 
+                        min="0"
+                        className="text-gray-900 bg-transparent border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none flex-1" 
+                        value={number}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
+                          setNumber(e.target.value);
+                        }}
+                        disabled={(showButton === 0 ? false : true)}
+                        placeholder="0" 
+                        required
+                      />
+                      <div className="flex items-center gap-2">
                         <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
                         <p className="text-lg text-gray-500">
-                            WAG
+                          WAG
                         </p>
-                        <Button size={"xs"} color={"light"}
+                        <Button 
+                          size={"xs"} 
+                          color={"light"}
                           onClick={() => {
                             setNumber((parseFloat(balance) / 1e18).toString());
                           }}
@@ -200,22 +208,27 @@ export default function StakeDialog(props: StakeDialogProps) {
                         >
                           Max
                         </Button>
+                      </div>
                     </div>
-
                   </div>
 
-                  <div className='flex justify-between  mt-4'>
-                    <p className="text-xs font-semibold">
-                      Unstake Period
-                    </p>
-                    <p className="text-xs font-semibold">
+                  <div className='flex justify-between items-center mt-6 p-4 bg-blue-50 rounded-xl'>
+                    <div className="flex items-center gap-2">
+                      <HiLockClosed className="w-5 h-5 text-blue-600" />
+                      <p className="text-sm font-medium text-gray-600">
+                        Unstake Period
+                      </p>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
                       { claimableDuration === null ? "~" : convertTime(parseFloat(claimableDuration)) }
                     </p>
                   </div>
                   
-                  <div className='mt-4'>
+                  <div className='mt-6'>
                     <div className={`${showButton === 0 ? "block" : "hidden"}`}>
-                      <Button color={"dark"} size={"sm"} 
+                      <Button 
+                        color={"dark"} 
+                        size={"sm"} 
                         className="w-full disabled:bg-gray-300"
                         disabled={isNextButtonDisabled()}
                         onClick={()=>{checkAllowance()}}
@@ -224,7 +237,9 @@ export default function StakeDialog(props: StakeDialogProps) {
                       </Button>
                     </div>
                     <div className={`${showButton === 1 ? "block" : "hidden"}`}>
-                      <Button color={"dark"} size={"sm"} 
+                      <Button 
+                        color={"dark"} 
+                        size={"sm"} 
                         className="w-full disabled:bg-gray-300"
                         disabled={isLoadingApproveAllowance}
                         onClick={()=>{handleApprove()}}
@@ -237,7 +252,9 @@ export default function StakeDialog(props: StakeDialogProps) {
                       </Button>
                     </div>
                     <div className={`${showButton === 2 ? "block" : "hidden"}`}>
-                      <Button color={"dark"} size={"sm"} 
+                      <Button 
+                        color={"dark"} 
+                        size={"sm"} 
                         className="w-full disabled:bg-gray-300"
                         disabled={isLoadingStakeWag}
                         onClick={()=>{handleStake()}}
@@ -250,7 +267,6 @@ export default function StakeDialog(props: StakeDialogProps) {
                       </Button>
                     </div>
                   </div>
-
                 </Dialog.Panel>
               </Transition.Child>
             </div>

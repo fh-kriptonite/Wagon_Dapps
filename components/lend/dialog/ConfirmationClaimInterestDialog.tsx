@@ -142,98 +142,100 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className='flex justify-between'>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex justify-between items-center mb-6'>
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
+                      className="text-xl font-semibold leading-6 text-gray-900"
                     >
                       Claiming Interest
                     </Dialog.Title>
-                    <button onClick={closeModal}>
-                      <ImCross />
+                    <button 
+                      onClick={closeModal}
+                      className="text-gray-400 hover:text-gray-500 transition-colors"
+                    >
+                      <ImCross className="w-4 h-4"/>
                     </button>
                   </div>
 
-                  <div className='mt-6 overflow-auto'>
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                     <div className='flex justify-between px-4 py-2 gap-4'>
-                      <p className='text-xs font-semibold w-10'>Term</p>
-                      <p className='text-xs font-semibold flex-1 text-end'>Amount</p>
-                      <p className='text-xs font-semibold flex-1 text-end'>Status</p>
+                      <p className='text-sm font-medium text-gray-600 w-10'>Term</p>
+                      <p className='text-sm font-medium text-gray-600 flex-1 text-end'>Amount</p>
+                      <p className='text-sm font-medium text-gray-600 flex-1 text-end'>Status</p>
                     </div>
+                    <hr className="my-3 h-px bg-gray-200 border-0" />
                     {
                       repayments.map((repayment, index) => {
                         const claimable = isInterestClaimable(index);
                         if (claimable !== "Claimable") return null;
                         return (
-                          <div className='flex justify-between px-4 py-1 gap-4' key={`confirmrepayment-${index}`}>
-                            <p className='text-xs font-light w-10'>{index + 1}</p>
-                            <p className='text-xs font-light flex-1 text-end'>
+                          <div className='flex justify-between px-4 py-2 gap-4' key={`confirmrepayment-${index}`}>
+                            <p className='text-sm text-gray-900 w-10'>{index + 1}</p>
+                            <p className='text-sm text-gray-900 flex-1 text-end'>
                               {
                                 (index + 1 === parseFloat(pool.paymentFrequency))
                                   ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10, decimal)) + (parseFloat(interestAmountShare) / Math.pow(10, decimal)), 2)
                                   : numberWithCommas(parseFloat(interestAmountShare) / Math.pow(10, decimal), 2)
                               } {symbol}
                             </p>
-                            <p className='text-xs font-light flex-1 text-end'>{claimable}</p>
+                            <p className='text-sm text-gray-900 flex-1 text-end'>{claimable}</p>
                           </div>
                         );
                       })
                     }
+                  </div>
 
-                    <div className="mt-6 border rounded-xl p-2">
-                      <p className="text-xs font-semibold">
-                        Breakdown
-                      </p>
+                  <div className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <p className="text-sm font-medium text-gray-600 mb-4">
+                      Breakdown
+                    </p>
 
-                      <div className='w-full border-t my-2'></div>
-
-                      <div className='space-y-1'>
-                        <div className='flex justify-between'>
-                          <p className="text-xs text-gray-500">
-                            Claimable Interest ({symbol})
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {getClaimableInterestAmount()}
-                          </p>
-                        </div>
-                        <div className='flex justify-between'>
-                          <p className="text-xs text-gray-500">
-                            Protocol Fee ({symbol})
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            -{numberWithCommas(protocolFeeAmount, 2)}
-                          </p>
-                        </div>
+                    <div className='space-y-3'>
+                      <div className='flex justify-between'>
+                        <p className="text-sm text-gray-600">
+                          Claimable Interest ({symbol})
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {getClaimableInterestAmount()}
+                        </p>
                       </div>
+                      <div className='flex justify-between'>
+                        <p className="text-sm text-gray-600">
+                          Protocol Fee ({symbol})
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          -{numberWithCommas(protocolFeeAmount, 2)}
+                        </p>
+                      </div>
+                    </div>
 
-                      <div className='w-full border-t my-2'></div>
+                    <hr className="my-4 h-px bg-gray-200 border-0" />
 
-                      <div className='space-y-1'>
-                        <div className='flex justify-between'>
-                          <p className="text-xs">
-                            Received Interest ({symbol})
-                          </p>
-                          <p className="text-xs">
-                            {getReceivedInterestAmount()}
-                          </p>
-                        </div>
-                        <div className='flex justify-between'>
-                          <p className="text-xs">
-                            Unlock (WAG)
-                          </p>
-                          <p className="text-xs">
-                            {getUnlockWagAmount()}
-                          </p>
-                        </div>
+                    <div className='space-y-3'>
+                      <div className='flex justify-between'>
+                        <p className="text-sm font-medium text-gray-600">
+                          Received Interest ({symbol})
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {getReceivedInterestAmount()}
+                        </p>
+                      </div>
+                      <div className='flex justify-between'>
+                        <p className="text-sm font-medium text-gray-600">
+                          Unlock (WAG)
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {getUnlockWagAmount()}
+                        </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className='mt-6'>
-                    <Button color={"dark"}
-                      className='w-full disabled:bg-gray-300'
-                      size={"sm"}
+                  <div className="mt-6">
+                    <Button
+                      color="dark"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                       disabled={isLoadingClaimInterest}
                       onClick={handleClaimInterest}
                     >

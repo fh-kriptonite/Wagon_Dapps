@@ -57,7 +57,7 @@ p {
 }
 
 .card {
-  @apply bg-white rounded-md drop-shadow-md p-4 overflow-hidden;
+  @apply bg-white rounded-xl shadow-sm p-4 overflow-hidden;
 }
 
 .mining {

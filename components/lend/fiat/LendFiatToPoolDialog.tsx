@@ -39,10 +39,11 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
   const [checkedTnc, setCheckedTnc] = useState<boolean>(false);
   const [isLoadingRequestOnRamp, setIsLoadingRequestOnRamp] = useState<boolean>(false);
 
-  const { isOpen, closeModal, pool, poolJson, symbol, fees, profile, poolId, handleLend } = props;
+  const { isOpen, closeModal, pool, poolJson, symbol, profile, fees, poolId, handleLend } = props;
 
   function resetModal(): void {
     setStableNumber("");
+    setCheckedTnc(false);
   }
 
   function getExpectedInterest(): number {
@@ -80,6 +81,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
   }
 
   function getLendToPoolButtonText(): string {
+    if (profile == null) return "Verify Profile Now";
     if (isLoadingRequestOnRamp) return "Lending...";
     return "Lend To Pool";
   }
@@ -96,7 +98,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
 
       // Request Account
       const response = await axios.post(
-        `${process.env.RAMP_API_URL}/idrx/onramp_wagon`, 
+        `${process.env.RAMP_API_URL}/api/ramp/onramp_pool`, 
         payload,
         {
           headers: {
@@ -121,7 +123,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
   function handleLendClick(): void {
     if (profile == null) {
       router.push('/account/profile');
-    } else if (profile.status !== 1) {
+    } else if (profile?.status !== 1) {
       router.push('/account/profile');
     } else {
       // call onramp service
@@ -162,108 +164,118 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className='flex justify-between'>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex justify-between items-center mb-6'>
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
+                      className="text-xl font-semibold leading-6 text-gray-900"
                     >
                       Lend To Pool
                     </Dialog.Title>
-                    <button onClick={closeModal}>
-                      <ImCross/>
+                    <button 
+                      onClick={closeModal}
+                      className="text-gray-400 hover:text-gray-500 transition-colors"
+                    >
+                      <ImCross className="w-4 h-4"/>
                     </button>
                   </div>
                   
-                  <div className="mt-4 border rounded-xl p-4">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                     <div className='flex gap-2 items-center justify-between'>
                       <input 
                         type="text"
-                        className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
+                        className="text-2xl font-semibold text-gray-900 bg-transparent border-none focus:ring-0 outline-none w-full focus:outline-none flex-1" 
                         value={numberWithCommas(stableNumber)}
                         onChange={handleChange}
                         placeholder="0" 
                         required
                       />
-                      <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
-                      <p className="text-lg text-gray-500">
-                        IDR
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
+                        <p className="text-lg text-gray-500">
+                          IDR
+                        </p>
+                      </div>
                     </div>
+                    
+                    <p className="text-xs text-gray-600 border-t pt-3 mt-2">
+                      Minimum Lend: {numberWithCommas(20000)} IDR
+                    </p>
 
                     {showAdminFee() && (
                       <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm text-gray-600">
                           Admin Fee
                         </p>
-                        <p className="text-xs font-semibold">
+                        <p className="text-sm font-semibold text-gray-900">
                           + {numberWithCommas(getAdminFee(), 2)} {symbol}
                         </p>
                       </div>
                     )}
                   </div>
 
-                  <div className="mt-4 border rounded-xl p-4">
-                    <p className="text-xs font-semibold text-gray-500 border-b pb-2">
+                  <div className="mt-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <p className="text-sm font-medium text-gray-600 border-b pb-2 mb-4">
                       Expectation and pool maturity
                     </p>
                     
-                    <div className='flex gap-2 items-center justify-between mt-2 text-center'>
-                      <p className="text-xs text-gray-500">
+                    <div className='flex gap-2 items-center justify-between mb-3'>
+                      <p className="text-sm text-gray-600">
                         Loan Term
                       </p>
-                      <p className="text-xs font-semibold">
+                      <p className="text-sm font-semibold text-gray-900">
                         {formatTime(parseFloat(pool?.loanTerm))}
                       </p>
                     </div>
 
-                    <div className='flex gap-2 items-center justify-between mt-1 text-center'>
-                      <p className="text-xs text-gray-500">
+                    <div className='flex gap-2 items-center justify-between mb-3'>
+                      <p className="text-sm text-gray-600">
                         Payment Frequency
                       </p>
-                      <p className="text-xs font-semibold">
+                      <p className="text-sm font-semibold text-gray-900">
                         {numberWithCommas(getPaymentFrequency())} times
                       </p>
                     </div>
 
-                    <div className='flex gap-2 items-center justify-between mt-1 text-center'>
-                      <p className="text-xs text-gray-500">
+                    <div className='flex gap-2 items-center justify-between'>
+                      <p className="text-sm text-gray-600">
                         Expected Interest
                       </p>
-                      <p className="text-xs font-semibold">
+                      <p className="text-sm font-semibold text-gray-900">
                         {numberWithCommas(getExpectedInterest(), 2)} IDR
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 mt-6">
                     <Checkbox 
                       id="tnc" 
                       checked={checkedTnc} 
                       onChange={() => { setCheckedTnc(!checkedTnc); }}
                     />
-                    <p className="text-xs text-gray-500">
+                    <p className="text-sm text-gray-600">
                       I confirm acceptance of these 
-                      <span>
-                        <Link href="/lendTnc" passHref>
-                          <a target="_blank" className="font-bold text-black hover:cursor-pointer ml-1">
-                            terms and conditions
-                          </a>
-                        </Link>
-                      </span>.
+                      <Link 
+                        href="/lendTnc" 
+                        passHref 
+                        className="text-blue-600 hover:text-blue-700 ml-1" 
+                        target="_blank"
+                      >
+                        terms and conditions
+                      </Link>.
                     </p>
                   </div>
 
                   {(profile == null || profile?.status !== 1) && (
-                    <p className='text-xs mt-4 text-red-500 text-center'>
+                    <p className='text-sm mt-4 text-red-500 text-center'>
                       Please verify your account by KYC to unlock this service.
                     </p>
                   )}
 
-                  <div className="mt-4 text-center">
+                  <div className="mt-6">
                     <Button
                       color="dark"
-                      className="w-full disabled:bg-gray-300 hover:bg-gray-600"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                       disabled={getLendToPoolButtonDisabled()}
                       onClick={handleLendClick}
                     >

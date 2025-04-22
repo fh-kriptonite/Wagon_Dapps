@@ -3,6 +3,7 @@ import { numberWithCommas } from '../../util/stringUtility';
 import { calculateApy, formatTime } from '../../util/lendingUtility';
 import CountdownTimer from '../../components/general/CountdownTimer';
 import { Progress } from 'flowbite-react';
+import { FaChartLine, FaClock, FaMoneyBillWave, FaPercentage } from "react-icons/fa";
 
 interface PoolJson {
     properties: {
@@ -113,91 +114,124 @@ export default function PoolOverviewCard({
             {
                 pool == null
                 ? <div className='card space-y-6'>
-                    <h6 className="!font-semibold">Overview</h6>
-                    <div>
-                        <div className='flex'>
-                            <div className='flex-1 p-4 border rounded-tl-lg'>
-                                <p className='text-sm font-light'>Principal</p>
-                                <div className="h-6 w-full bg-gray-300 rounded-full mt-2"/>
-                            </div>
-                            <div className='flex-1 p-4 border border-l-0 rounded-tr-lg'>
-                                <p className='text-sm font-light'>Interest</p>
-                                <div className="h-6 w-full bg-gray-300 rounded-full mt-2"/>
-                            </div>
+                    <h6 className="text-lg font-semibold text-gray-900">Overview</h6>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className='bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                            <div className="h-4 w-20 bg-gray-200 rounded-full mb-2"/>
+                            <div className="h-6 w-full bg-gray-200 rounded-full"/>
                         </div>
-                        <div className='flex'>
-                            <div className='flex-1 p-4 border border-t-0 rounded-bl-lg'>
-                                <p className='text-sm font-light'>Total</p>
-                                <div className="h-6 w-full bg-gray-300 rounded-full mt-2"/>
-                            </div>
-                            <div className='flex-1 p-4 border border-t-0 border-l-0 rounded-br-lg'>
-                                <p className='text-sm font-light'>Pool status</p>
-                                <div className="h-6 w-full bg-gray-300 rounded-full mt-2"/>
-                            </div>
+                        <div className='bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                            <div className="h-4 w-20 bg-gray-200 rounded-full mb-2"/>
+                            <div className="h-6 w-full bg-gray-200 rounded-full"/>
+                        </div>
+                        <div className='bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                            <div className="h-4 w-20 bg-gray-200 rounded-full mb-2"/>
+                            <div className="h-6 w-full bg-gray-200 rounded-full"/>
+                        </div>
+                        <div className='bg-gray-50 p-4 rounded-xl border border-gray-100'>
+                            <div className="h-4 w-20 bg-gray-200 rounded-full mb-2"/>
+                            <div className="h-6 w-full bg-gray-200 rounded-full"/>
                         </div>
                     </div>
                 </div>
-                : <div className='card space-y-2'>
-                    <h6 className="!font-semibold">Overview</h6>
-                    <div>
-                        <p className="text-sm font-semibold text-gray-700">
-                            Progress ({ numberWithCommas(getPoolProgress(), 2) }%)
-                        </p>
-                    
-                        <div className="mt-1">
-                            <Progress progress={ getPoolProgress() } color="dark"/>
+                : <div className='card space-y-4'>
+                    <h6 className="text-lg font-semibold text-gray-900">Overview</h6>
+
+                    {/* Progress Section */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium text-gray-600">Pool Progress</p>
+                            <p className="text-sm font-semibold text-gray-900">
+                                {numberWithCommas(getPoolProgress(), 2)}%
+                            </p>
                         </div>
                         
-                        <div className="flex items-center justify-between mt-1">
-                            <p className="text-sm font-semibold text-gray-700">
+                        <Progress 
+                            progress={getPoolProgress()} 
+                            color="blue"
+                            size="lg"
+                        />
+
+                        <div className="flex justify-between text-xs md:text-sm text-gray-500">
+                            <span className="truncate">
                                 {getPoolProgressSupply()} {symbol}
-                            </p>
-                            <p className="text-sm font-semibold text-gray-700">
+                            </span>
+                            <span className="truncate">
                                 {numberWithCommas(getPoolMaxSupplyDecimal())} {symbol}
-                            </p>
+                            </span>
                         </div>
                         
-                        {
-                            showWagPair() &&
-                            <div className="flex items-center justify-between mt-1">
-                                <p className="text-sm font-semibold text-gray-700">
-                                    {getCollectedWag()} WAG
-                                </p>
-                                <p className="text-sm font-semibold text-gray-700">
-                                    {numberWithCommas(getPoolMaxWag())} WAG
+                        {showWagPair() && (
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                                    <p className="text-xs text-gray-600">Current WAG</p>
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {getCollectedWag()} WAG
+                                    </p>
+                                </div>
+                                <div className="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                                    <p className="text-xs text-gray-600">Target WAG</p>
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {numberWithCommas(getPoolMaxWag())} WAG
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="border-t border-gray-200"/>
+
+                    {/* Pool Details */}
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <FaPercentage className="text-blue-600" size={14}/>
+                                    <p className="text-xs text-gray-600 font-medium">Fixed APY</p>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {numberWithCommas(apy, 2)}%
                                 </p>
                             </div>
-                        }
+                            <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <FaClock className="text-blue-600" size={14}/>
+                                    <p className="text-xs text-gray-600 font-medium">Loan Term</p>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {formatTime(parseFloat(pool?.loanTerm))}
+                                </p>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <FaChartLine className="text-blue-600" size={14}/>
+                                    <p className="text-xs text-gray-600 font-medium">Repayment Structure</p>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {poolJson?.properties.repayment_structure}
+                                </p>
+                            </div>
+                            <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <FaMoneyBillWave className="text-blue-600" size={14}/>
+                                    <p className="text-xs text-gray-600 font-medium">Payment Frequency</p>
+                                </div>
+                                <p className="text-lg font-semibold text-gray-900">
+                                    {poolJson?.properties.payment_freuency}
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="border-t"/>
-
-                    <div className="space-y-1">
-                        <div className='flex justify-between'>
-                            <p className='text-sm'>Fixed APY</p>
-                            <p className='text-sm font-bold'>{numberWithCommas(apy, 2)}%</p>
-                        </div>
-                        <div className='flex justify-between'>
-                            <p className='text-sm'>Loan term</p>
-                            <p className='text-sm font-bold'>{formatTime(parseFloat(pool?.loanTerm))}</p>
-                        </div>
-                        <div className='flex justify-between'>
-                            <p className='text-sm'>Repayment structure</p>
-                            <p className='text-sm font-bold'>{poolJson?.properties.repayment_structure}</p>
-                        </div>
-                        <div className='flex justify-between'>
-                            <p className='text-sm'>Payment Frequency</p>
-                            <p className='text-sm font-bold'>{poolJson?.properties.payment_freuency}</p>
-                        </div>
-                    </div>
-
-                    {
-                        pool?.status == "1" &&
+                    {/* Countdown Timer */}
+                    {pool?.status == "1" && (
                         <>
-                            <div className="border-t"/>
-                            <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
+                            <div className="border-t border-gray-200"/>
+                            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
+                                <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
+                            </div>
                         </>
-                    }
+                    )}
                 </div>
             }
         </>

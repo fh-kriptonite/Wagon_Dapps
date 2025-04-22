@@ -82,7 +82,7 @@ export const HistoryMintItem = ({ item }: HistoryMintItemProps) => {
                                 <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(item.paymentStatus)}`}>
                                     {item.paymentStatus.replace(/_/g, ' ')}
                                 </div>
-                                {item.paymentStatus !== 'WAITING_FOR_PAYMENT' && (
+                                {item.paymentStatus == 'PAID' && (
                                     <div className={`px-2.5 py-1 rounded-full text-xs font-medium ${getMintStatusColor(item.userMintStatus)}`}>
                                         {getMintStatusLabel(item.userMintStatus)}
                                     </div>
@@ -122,7 +122,14 @@ export const HistoryMintItem = ({ item }: HistoryMintItemProps) => {
                     </div>
                     <div className="space-y-2">
                         <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Wallet Address</p>
-                        <p className="text-sm text-gray-900 font-mono">{shortenAddress(item.destinationWalletAddress, 6)}</p>
+                        <div>
+                            <p className="text-sm text-gray-900 font-mono">{shortenAddress(item.destinationWalletAddress, 6)}</p>
+                            {
+                                item.destinationWalletAddress == process.env.ONRAMP_ADDRESS && (
+                                    <p className="text-xs font-medium text-gray-500 mt-1">Wagon Onramp Address</p>
+                                )
+                            }
+                        </div>
                     </div>
                 </div>
 

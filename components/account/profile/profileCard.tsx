@@ -1,10 +1,12 @@
-import { Tabs } from "flowbite-react";
+import { Tabs, TabsRef } from "flowbite-react";
 import { HiMiniBanknotes, HiUserCircle, HiShieldCheck, HiEnvelope, HiIdentification } from "react-icons/hi2";
 import { MdVerified, MdAccountBalance } from "react-icons/md";
 import Jazzicon, { jsNumberForAddress } from "react-jazzicon";
 import ProfileTab from "./tabs/ProfileTab";
 import OnrampTab from "./tabs/OnrampTab";
 import OfframpTab from "./tabs/OfframpTab";
+import { useRouter } from "next/router";
+import { useEffect, useRef } from "react";
 
 interface Profile {
     status: number;
@@ -25,7 +27,24 @@ function isVerified(status: number): boolean {
     return status === 1;
 }
 
-export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
+export default function ProfileCard({ profile }: ProfileCardProps) {
+    const router = useRouter();
+    const { tab } = router.query;
+    const tabsRef = useRef<TabsRef>(null);
+
+    useEffect(() => {
+        switch (tab) {
+            case 'onramp':
+                tabsRef.current?.setActiveTab(1);
+                break;
+            case 'offramp':
+                tabsRef.current?.setActiveTab(2);
+                break;
+            default:
+                tabsRef.current?.setActiveTab(0);
+        }
+    }, [tab]);
+
     function getStatus(): string {
         if(profile == null) return "";
 
@@ -75,7 +94,7 @@ export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
                         <div>
                             <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                                 <h3 className="text-lg md:text-2xl font-semibold text-gray-900">{profile?.full_name}</h3>
-                                <div className={`flex items-center gap-1.5 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor()}`}>
+                                <div className={`w-fit flex items-center gap-1.5 px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor()}`}>
                                     <HiShieldCheck className="w-3 h-3 md:w-4 md:h-4" />
                                     <span>{getStatus()}</span>
                                 </div>
@@ -97,9 +116,13 @@ export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
 
             {/* Tabs Section */}
             <div className="p-3 md:p-6">
-                <Tabs variant="underline" className="border-b border-gray-200">
+                <Tabs 
+                    variant="underline" 
+                    className="border-b border-gray-200"
+                    ref={tabsRef}
+                >
                     <Tabs.Item 
-                        active 
+                        active
                         title={
                             <div className="flex items-center gap-1.5 md:gap-2">
                                 <HiUserCircle className="w-4 h-4 md:w-5 md:h-5" />
@@ -129,7 +152,7 @@ export default function UnverifiedProfileCard({ profile }: ProfileCardProps) {
                         }
                     >
                         <div className="mt-4 md:mt-6">
-                            <OnrampTab onramp_enabled={isVerified(profile?.status || 0)} />
+                            <OnrampTab onramp_enabled={isVerified(profile?.status || 0)} accountName={profile?.full_name} />
                         </div>
                     </Tabs.Item>
 

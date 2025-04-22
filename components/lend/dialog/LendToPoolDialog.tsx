@@ -144,61 +144,62 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                 leaveFrom="opacity-100 scale-100"
                 leaveTo="opacity-0 scale-95"
               >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className='flex justify-between'>
+                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <div className='flex justify-between items-center mb-6'>
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-medium leading-6 text-gray-900"
+                      className="text-xl font-semibold leading-6 text-gray-900"
                     >
                       Lend To Pool
                     </Dialog.Title>
                     <button 
                       onClick={closeModal}
-                      className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      className="text-gray-400 hover:text-gray-500 transition-colors"
                     >
-                      <ImCross/>
+                      <ImCross className="w-4 h-4"/>
                     </button>
                   </div>
                   
-                  <div className="mt-4 border rounded-xl p-4">
-                    <div className='flex justify-between'>
-                      <p className="text-xs font-semibold text-gray-500">
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                    <div className='flex justify-between mb-2'>
+                      <p className="text-sm font-medium text-gray-600">
                         Amount
                       </p>
-                      <p className="text-xs font-semibold text-gray-500">
+                      <p className="text-sm font-medium text-gray-600">
                         Available: {numberWithCommas(getStableBalanceWithDecimal(), 2)} {symbol}
                       </p>
                     </div>
                     
-                    <div className='flex gap-2 items-center justify-between mt-2'>
+                    <div className='flex gap-2 items-center justify-between'>
                       <input type="text"
-                        className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
+                        className="text-gray-900 bg-transparent border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none flex-1" 
                         value={numberWithCommas(stableNumber)}
                         onChange={handleChange}
                         placeholder="0" required/>
-                      <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
-                      <p className="text-lg text-gray-500">
-                        {symbol}
-                      </p>
-                      <Button
-                        color={"light"}
-                        size={"sm"}
-                        onClick={() => {
-                          setStableNumber(getStableBalanceWithDecimal())
-                          setWagNumber((parseFloat(getStableBalanceWithDecimal()) * getRatio()).toString())
-                        }}
-                        className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                      >
-                        Max
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
+                        <p className="text-lg text-gray-500">
+                          {symbol}
+                        </p>
+                        <Button
+                          color="light"
+                          size="xs"
+                          onClick={() => {
+                            setStableNumber(getStableBalanceWithDecimal())
+                            setWagNumber((parseFloat(getStableBalanceWithDecimal()) * getRatio()).toString())
+                          }}
+                        >
+                          Max
+                        </Button>
+                      </div>
                     </div>
 
                     {showAdminFee() && (
                       <div className='flex gap-2 items-center justify-between text-center border-t pt-3 mt-2'>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-sm text-gray-600">
                           Admin Fee
                         </p>
-                        <p className="text-xs font-semibold">
+                        <p className="text-sm font-semibold text-gray-900">
                           + {numberWithCommas(getAdminFee(), 2)} {symbol}
                         </p>
                       </div>
@@ -207,55 +208,57 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
 
                   <p 
                     onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool?.lendingCurrency}`, `buy${symbol}`);}}
-                    className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit ml-auto mt-2"
+                    className="text-sm text-blue-600 hover:text-blue-700 hover:cursor-pointer w-fit ml-auto mt-2"
                   >
                     Buy more {symbol}
                   </p>
                   
                   {showWagPair() && (
                     <div>
-                      <p className='mt-2 text-center'>+</p>
+                      <p className='mt-2 text-center text-gray-500'>+</p>
 
-                      <div className="mt-4 border rounded-xl p-4">
-                        <div className='flex justify-between'>
-                          <p className="text-xs font-semibold text-gray-500">
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 mt-4">
+                        <div className='flex justify-between mb-2'>
+                          <p className="text-sm font-medium text-gray-600">
                             Amount
                           </p>
-                          <p className="text-xs font-semibold text-gray-500">
+                          <p className="text-sm font-medium text-gray-600">
                             Available: {numberWithCommas(getWagBalanceWithDecimal(), 2)} WAG
                           </p>
                         </div>
                         
-                        <div className='flex gap-2 items-center justify-between mt-2'>
+                        <div className='flex gap-2 items-center justify-between'>
                           <input type="number" id="amount" 
                             min="0"
-                            className="text-gray-900 border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none" 
+                            className="text-gray-900 bg-transparent border-none focus:ring-0 outline-none text-2xl w-full focus:outline-none flex-1" 
                             value={wagNumber}
                             onChange={(e)=>{
                               setWagNumber(e.target.value)
                               setStableNumber((parseFloat(e.target.value) / getRatio()).toString())
                             }}
                             placeholder="0" required/>
-                          <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
-                          <p className="text-lg text-gray-500">
-                            WAG
-                          </p>
-                          <Button
-                            color={"light"}
-                            size={"sm"}
-                            onClick={() => {
-                              setWagNumber(getWagBalanceWithDecimal())
-                              setStableNumber((parseFloat(getWagBalanceWithDecimal()) / getRatio()).toString())
-                            }}
-                          >
-                            Max
-                          </Button>
+                          <div className="flex items-center gap-2">
+                            <img src="/logo.png" className="h-7" alt="Wagon Logo"/>
+                            <p className="text-lg text-gray-500">
+                              WAG
+                            </p>
+                            <Button
+                              color="light"
+                              size="xs"
+                              onClick={() => {
+                                setWagNumber(getWagBalanceWithDecimal())
+                                setStableNumber((parseFloat(getWagBalanceWithDecimal()) / getRatio()).toString())
+                              }}
+                            >
+                              Max
+                            </Button>
+                          </div>
                         </div>
                       </div>
 
                       <p 
                         onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool?.lendingCurrency}&outputCurrency=${pool?.pairingCurrency}`, "buyWAG");}}
-                        className="text-xs text-blue-500 hover:text-blue-800 hover:cursor-pointer w-fit ml-auto mt-2"
+                        className="text-sm text-blue-600 hover:text-blue-700 hover:cursor-pointer w-fit ml-auto mt-2"
                       >
                         Buy more WAG
                       </p>
@@ -269,16 +272,16 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                         checked={checkedTnc}
                         onChange={(e) => setCheckedTnc(e.target.checked)}
                       />
-                      <Label htmlFor="accept" className="ml-2">
-                        I accept the <Link href="/terms" className="text-blue-500 hover:text-blue-800">Terms and Conditions</Link>
+                      <Label htmlFor="accept" className="ml-2 text-sm text-gray-600">
+                        I accept the <Link href="/terms" className="text-blue-600 hover:text-blue-700">Terms and Conditions</Link>
                       </Label>
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-6">
                     <Button
                       color="dark"
-                      className="w-full disabled:bg-gray-300 hover:bg-gray-600"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                       disabled={getLendToPoolButtonDisabled()}
                       onClick={handleLend}
                     >

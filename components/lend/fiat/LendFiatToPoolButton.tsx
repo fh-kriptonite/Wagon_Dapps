@@ -5,7 +5,8 @@ import LendFiatConfirmationDialog from './LendFiatConfirmationDialog';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import axios from 'axios';
 import { Pool, PoolJson, PoolFee } from '../types';
-
+import { HiClock } from 'react-icons/hi2';
+import { HistoryDialog } from '@/components/account/profile/tabs/HistoryDialog';
 interface Profile {
   id: string;
   wallet_address: string;
@@ -46,7 +47,7 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [onrampData, setOnrampData] = useState<OnrampData | null>(null);
-
+  const [isOpenHistory, setIsOpenHistory] = useState<boolean>(false);
   async function openModal(): Promise<void> {
     setIsOpen(true);
   }
@@ -91,17 +92,30 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
     setIsOpen(false);
   }
 
+  async function handleShowHistory(): Promise<void> {
+    setIsOpenHistory(true);
+  }
+
   return (
     <div>
-      <Button 
-        color="dark" 
-        size="sm" 
-        className="w-full disabled:bg-gray-300 hover:bg-gray-600"
-        disabled={handleDisableLendButton()}
-        onClick={openModal}
-      >
-        Lend Your FIAT
-      </Button>
+      <div className='flex items-center gap-2'>
+        <Button 
+          color="dark" 
+          size="sm" 
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300"
+          disabled={handleDisableLendButton()}
+          onClick={openModal}
+        >
+          Lend Your FIAT
+        </Button>
+        <Button
+            color='light'
+            onClick={handleShowHistory}
+            className="w-full md:w-auto flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+        >
+            <HiClock className="w-4 h-4 md:w-5 md:h-5" />
+        </Button>
+      </div>
 
       <LendFiatToPoolDialog
         isOpen={isOpen}
@@ -121,6 +135,12 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
         onrampData={onrampData}
         profile={profile}
         stableNumber={onrampData?.amount.toString() ?? ""}
+      />
+
+      <HistoryDialog
+        isOpen={isOpenHistory}
+        onClose={() => setIsOpenHistory(false)}
+        txType="MINT"
       />
     </div>
   );
