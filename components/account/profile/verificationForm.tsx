@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, DragEvent } from "react";
+import { useState, DragEvent } from "react";
 import axios from 'axios';
 import { Button, Label, Select, TextInput, Alert } from "flowbite-react";
 import { IoClose } from "react-icons/io5";
@@ -149,7 +149,7 @@ export default function VerificationForm({ refreshAccount, closeForm }: Verifica
         }
 
         try {
-            const response = await axios.post(`/api/account/createAccount?wallet_address=${account}`, formData, {
+            const response = await axios.post(`${process.env.RAMP_API_URL}/api/accounts`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -363,7 +363,7 @@ export default function VerificationForm({ refreshAccount, closeForm }: Verifica
 
                     <Button 
                         color="dark" 
-                        className="w-full" 
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white" 
                         onClick={handleSaveProfile}
                         disabled={isSubmitting}
                     >
