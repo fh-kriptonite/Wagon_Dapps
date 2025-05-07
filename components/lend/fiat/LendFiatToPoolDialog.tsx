@@ -91,7 +91,8 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
         amount: parseInt(stableNumber),
         fee: fee,
         poolId: parseInt(poolId),
-        wallet_address: address
+        wallet_address: address,
+        network_id: pool.contract.network_id
       };
 
       // Request Account
