@@ -2,11 +2,13 @@ import { useState } from 'react';
 import idrxAbi from "../../../public/ABI/idrx.json";
 import { ethers, sha256 } from 'ethers';
 import { useGetProvider } from '@/util/getProvider';
+import { base } from '@particle-network/connectkit/chains';
+import { bsc } from '@particle-network/connectkit/chains';
 
 interface UseRedeemIDRXHookResult {
   isLoading: boolean;
   isWaitingApproval: boolean;
-  fetchData: (amount: string, bankName: string, accountNumber: string) => Promise<{
+  fetchData: (amount: string, bankName: string, accountNumber: string, chainId: number) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }>;
@@ -18,7 +20,7 @@ const useRedeemIDRXHook = (): UseRedeemIDRXHookResult => {
   
   const getProvider = useGetProvider();
   
-  const fetchData = async (amount: string, bankName: string, accountNumber: string): Promise<{
+  const fetchData = async (amount: string, bankName: string, accountNumber: string, chainId: number): Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }> => {
@@ -33,13 +35,25 @@ const useRedeemIDRXHook = (): UseRedeemIDRXHookResult => {
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
-      const contractAddress = process.env.IDRX_ADDRESS;
+      let contractAddress: string | null = null;
+      let decimals: number = 0;
+
+      if(chainId === bsc.id) {
+        contractAddress = process.env.ONRAMP_IDRX_ADDRESS_BSC || null;
+        decimals = 0;
+      } else if(chainId === base.id) {
+        contractAddress = process.env.ONRAMP_IDRX_ADDRESS_BASE || null;
+        decimals = 2;
+      }
       const contractABI = idrxAbi;
+
       // Initialize contract
       if (!contractAddress) {
         throw new Error("Contract address is undefined");
       }
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
+      
+      amount = ethers.parseUnits(amount, decimals).toString();
 
       const bankAccountNumber = bankName + "_" + accountNumber; // example bank account. format: {bankName}_{bankAccountNumber}
       const hashBankAccountNumber = sha256(ethers.toUtf8Bytes(bankAccountNumber)).toString();

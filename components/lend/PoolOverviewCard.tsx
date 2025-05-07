@@ -4,44 +4,21 @@ import { calculateApy, formatTime } from '../../util/lendingUtility';
 import CountdownTimer from '../../components/general/CountdownTimer';
 import { Progress } from 'flowbite-react';
 import { FaChartLine, FaClock, FaMoneyBillWave, FaPercentage } from "react-icons/fa";
-
-interface PoolJson {
-    properties: {
-        repayment_structure: string;
-        payment_freuency: string;
-    };
-}
-
-interface Pool {
-    status: string;
-    stabletoPairRate: string;
-    loanTerm: string;
-    collectionTermEnd: string;
-}
+import { Pool } from "./types";
 
 interface ActivePool {
     [0]: string;
 }
 
 interface PoolOverviewCardProps {
-    poolId: string;
-    poolJson: PoolJson | null;
     pool: Pool | null;
-    symbol: string;
-    decimal: number;
     activePool: ActivePool | null;
-    poolMaxSupply: string | null;
     poolSupply: string | null;
 }
 
 export default function PoolOverviewCard({ 
-    poolId, 
-    poolJson, 
     pool, 
-    symbol, 
-    decimal, 
     activePool, 
-    poolMaxSupply, 
     poolSupply 
 }: PoolOverviewCardProps) {
     const [apy, setApy] = useState(0);
@@ -52,26 +29,34 @@ export default function PoolOverviewCard({
         }
     }, [pool])
 
+    function getDecimal(): number {
+        if(pool == null) return 0;
+        return pool.lending_contract.decimals;
+    }
+
     function getCollectedPrincipalDecimal(): number {
         if(activePool == null) return 0;
-        return parseFloat(activePool[0]) / Math.pow(10, decimal);
+        return parseFloat(activePool[0]) / Math.pow(10, getDecimal());
     }
 
     function getPoolMaxSupplyDecimal(): number {
-        if(poolMaxSupply == null) return 0;
-        return parseFloat(poolMaxSupply) / Math.pow(10, decimal);
+        if(pool == null) return 0;
+        return parseFloat(pool.target_loan) / Math.pow(10, getDecimal());
     }
 
     function getPoolSupplyDecimal(): number {
         if(poolSupply == null) return 0;
-        return parseFloat(poolSupply) / Math.pow(10, decimal);
+        return parseFloat(poolSupply) / Math.pow(10, getDecimal());
     }
 
     function getPoolProgress(): number {
         if(pool == null) return 0;
+
+        if(pool?.contract.network_id == 0) {return 100}
+
         if(getPoolMaxSupplyDecimal() == 0) return 0;
 
-        if(parseFloat(pool.status) >= 2) {
+        if(pool.status >= 2) {
             return getCollectedPrincipalDecimal() / getPoolMaxSupplyDecimal() * 100
         } else {
             return getPoolSupplyDecimal() / getPoolMaxSupplyDecimal() * 100
@@ -80,7 +65,10 @@ export default function PoolOverviewCard({
 
     function getPoolProgressSupply(): string {
         if(pool == null) return "0";
-        if(parseFloat(pool.status) >= 2) {
+
+        if(pool?.contract.network_id == 0) {return numberWithCommas(pool.target_loan)}
+
+        if(pool.status >= 2) {
             return numberWithCommas(getCollectedPrincipalDecimal())
         } else {
             if(poolSupply == null) return "0";
@@ -90,22 +78,22 @@ export default function PoolOverviewCard({
 
     function getCollectedWag(): string {
         if(pool == null) return "0";
-        if(parseFloat(pool.status) >= 2) {
-            return numberWithCommas(getCollectedPrincipalDecimal() * parseFloat(pool.stabletoPairRate) / Math.pow(10,18))
+        if(pool.status >= 2) {
+            return numberWithCommas(getCollectedPrincipalDecimal() * pool.stable_to_pair_rate / Math.pow(10,18))
         } else {
             if(poolSupply == null) return "0";
-            return numberWithCommas(getPoolSupplyDecimal() * parseFloat(pool.stabletoPairRate) / Math.pow(10,18))
+            return numberWithCommas(getPoolSupplyDecimal() * pool.stable_to_pair_rate / Math.pow(10,18))
         }
     }
 
     function getPoolMaxWag(): number {
-        if(poolMaxSupply == null || pool == null) return 0;
-        return parseFloat(poolMaxSupply) * parseFloat(pool.stabletoPairRate) / Math.pow(10,18) / Math.pow(10,decimal);
+        if(pool == null) return 0;
+        return parseFloat(pool.target_loan) * pool.stable_to_pair_rate / Math.pow(10,18) / Math.pow(10,getDecimal());
     }
 
     function showWagPair(): boolean {
         if(!pool) return false;
-        if(pool.stabletoPairRate == "0") return false;
+        if(pool.stable_to_pair_rate == 0) return false;
         return true;
     }
 
@@ -154,10 +142,10 @@ export default function PoolOverviewCard({
 
                         <div className="flex justify-between text-xs md:text-sm text-gray-500">
                             <span className="truncate">
-                                {getPoolProgressSupply()} {symbol}
+                                {getPoolProgressSupply()} {pool?.detail.currency}
                             </span>
                             <span className="truncate">
-                                {numberWithCommas(getPoolMaxSupplyDecimal())} {symbol}
+                                {numberWithCommas(getPoolMaxSupplyDecimal())} {pool?.detail.currency}
                             </span>
                         </div>
                         
@@ -199,7 +187,7 @@ export default function PoolOverviewCard({
                                     <p className="text-xs text-gray-600 font-medium">Loan Term</p>
                                 </div>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {formatTime(parseFloat(pool?.loanTerm))}
+                                    {formatTime(pool?.loan_term)}
                                 </p>
                             </div>
                             <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
@@ -208,7 +196,7 @@ export default function PoolOverviewCard({
                                     <p className="text-xs text-gray-600 font-medium">Repayment Structure</p>
                                 </div>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {poolJson?.properties.repayment_structure}
+                                    {pool?.detail.repayment_structure}
                                 </p>
                             </div>
                             <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
@@ -217,18 +205,18 @@ export default function PoolOverviewCard({
                                     <p className="text-xs text-gray-600 font-medium">Payment Frequency</p>
                                 </div>
                                 <p className="text-lg font-semibold text-gray-900">
-                                    {poolJson?.properties.payment_freuency}
+                                    {pool?.detail.payment_frequency}
                                 </p>
                             </div>
-                        </div>
+                        </div>  
                     </div>
 
                     {/* Countdown Timer */}
-                    {pool?.status == "1" && (
+                    {pool?.status == 1 && (
                         <>
                             <div className="border-t border-gray-200"/>
                             <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-100">
-                                <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
+                                <CountdownTimer targetEpoch={pool?.collection_term_end}/>
                             </div>
                         </>
                     )}

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import LENDING_ABI from "../../../public/ABI/lending.json";
 import { Eip1193Provider, ethers } from 'ethers';
 import { useGetProvider } from '@/util/getProvider';
+import { bsc } from '@particle-network/connectkit/chains';
+import { base } from '@particle-network/connectkit/chains';
 
 interface UseLendToPoolHookResult {
   isLoading: boolean;
   isWaitingApproval: boolean;
-  fetchData: (poolId: string, amount: bigint) => Promise<{
+  fetchData: (poolId: string, amount: bigint, network_id: number) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }>;
@@ -17,7 +19,7 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
   const [isWaitingApproval, setIsWaitingApproval] = useState<boolean>(false);
   const getProvider = useGetProvider();
   
-  const fetchData = async (poolId: string, amount: bigint): Promise<{
+  const fetchData = async (poolId: string, amount: bigint, network_id: number): Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }> => {
@@ -31,7 +33,13 @@ const useLendToPoolHook = (): UseLendToPoolHookResult => {
       const signer = await provider.getSigner();
       
       // Contract ABI and Address
-      const contractAddress = process.env.LENDING_ADDRESS_BNB;
+      let contractAddress: string | null = null;
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        contractAddress = process.env.LENDING_ADDRESS_BNB || null;
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        contractAddress = process.env.LENDING_ADDRESS_BASE || null;
+      }
+      
       if (!contractAddress) {
         throw new Error('LENDING_ADDRESS_BNB is not defined');
       }

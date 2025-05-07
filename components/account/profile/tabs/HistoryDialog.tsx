@@ -23,7 +23,7 @@ export const HistoryDialog = ({ isOpen, onClose, txType }: HistoryDialogProps) =
             
             setIsLoading(true);
             try {
-                const response = await axios.get(`${process.env.RAMP_API_URL}/api/ramp/history`, {
+                const response = await axios.get(`${process.env.WAGON_API_URL}/api/ramp/history`, {
                     params: {
                         wallet_address: connectedAddress,
                         txType: txType,

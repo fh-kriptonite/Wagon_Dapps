@@ -1,3 +1,4 @@
+import { base, bsc } from '@particle-network/connectkit/chains';
 import ERC20_ABI from '../public/ABI/erc20.json';
 import { ethers } from "ethers";
 
@@ -6,6 +7,7 @@ declare global {
         interface ProcessEnv {
             ALCHEMY_PROVIDER_HTTPS: string;
             PROVIDER_HTTPS_BNB: string;
+            PROVIDER_HTTPS_BASE: string;
             WAG_ADDRESS: string;
             BNB_CHAIN_ID: string;
             WAGON_EXCHANGER: string;
@@ -15,6 +17,7 @@ declare global {
 
 const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
 const providerBnb = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
+const providerBase = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BASE);
 const contractAddress = process.env.WAG_ADDRESS;
 const wagContract = new ethers.Contract(contractAddress, ERC20_ABI, provider);
 
@@ -35,10 +38,13 @@ async function getTokenToUsdRate(priceUrl: string, chainId: number): Promise<num
     }
 }
 
-export const getErc20BalanceService = async (chainId: number, account: string, erc20Address: string): Promise<bigint> => {
-    let providerUrl = process.env.ALCHEMY_PROVIDER_HTTPS;
+export const getErc20BalanceService = async (chainId: number, account: string, erc20Address: string): Promise<number> => {
+    let providerUrl;
+    
     if (chainId === Number(process.env.BNB_CHAIN_ID)) {
         providerUrl = process.env.PROVIDER_HTTPS_BNB;
+    } else if (chainId === Number(process.env.BASE_CHAIN_ID)) {
+        providerUrl = process.env.PROVIDER_HTTPS_BASE;
     }
 
     const provider = new ethers.JsonRpcProvider(providerUrl);
@@ -46,7 +52,9 @@ export const getErc20BalanceService = async (chainId: number, account: string, e
     
     try {
         const balance = await erc20Contract.balanceOf(account);
-        return balance;
+        const decimals = await erc20Contract.decimals();
+        return parseFloat(ethers.formatUnits(balance, decimals));
+
     } catch (error) {
         throw error;
     }
@@ -123,7 +131,8 @@ export const tokenToUsd = async (amount: number, priceUrl: string, chainId: numb
 
 export const getCoinPriceService = async (name: string): Promise<any> => {
     try {
-        const response = await fetch('../../api/cache/getCoinPrice/?name=' + name);
+        const response = await fetch(process.env.WAGON_API_URL + '/api/coin-prices/' + name + '/latest');
+        
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }
@@ -159,10 +168,15 @@ export const getWagAllowance = async (address: string, spender: string): Promise
     }
 };
 
-export const getErc20Allowance = async (address: string, spender: string, erc20Address: string): Promise<bigint> => {
+export const getErc20Allowance = async (address: string, spender: string, erc20Address: string, network_id: number): Promise<any> => {
     try {
-        const contract = new ethers.Contract(erc20Address, ERC20_ABI, providerBnb);
-        return await contract.allowance(address, spender);
+        if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+            const contract = new ethers.Contract(erc20Address, ERC20_ABI, providerBnb);
+            return await contract.allowance(address, spender);
+        } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+            const contract = new ethers.Contract(erc20Address, ERC20_ABI, providerBase);
+            return await contract.allowance(address, spender);
+        }
     } catch (error) {
         console.log(error);
         throw error;

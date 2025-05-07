@@ -2,13 +2,8 @@ import { ethers } from "ethers";
 import lendingAbi from "../public/ABI/lending.json";
 import erc1155Abi from "../public/ABI/lendingErc1155.json";
 import erc20Abi from "../public/ABI/erc20.json";
-
-// Interfaces
-export interface Pool {
-  status: string;
-  collectionTermEnd: string;
-  [key: string]: any;
-}
+import { Pool, UserPool } from "@/components/lend/types";
+import { base, bsc } from "viem/chains";
 
 interface PoolFee {
   [key: string]: any;
@@ -18,14 +13,8 @@ interface PoolActivity {
   [key: string]: any;
 }
 
-interface UserPool {
-  [key: string]: any;
-}
-
 interface UserBalance {
-  tvlWag: number;
-  tvlIdrt: number;
-  interestIdrt: number;
+  tvlIdr: number;
 }
 
 interface ApiResponse<T> {
@@ -36,8 +25,7 @@ interface ApiResponse<T> {
 const requiredEnvVars = {
   PROVIDER_HTTPS_BNB: process.env.PROVIDER_HTTPS_BNB,
   LENDING_ADDRESS_BNB: process.env.LENDING_ADDRESS_BNB,
-  ERC1155_ADDRESS_BNB: process.env.ERC1155_ADDRESS_BNB,
-  BNB_STABLE_COIN_ADDRESS_1: process.env.BNB_STABLE_COIN_ADDRESS_1
+  ERC1155_ADDRESS_BNB: process.env.ERC1155_ADDRESS_BNB
 };
 
 Object.entries(requiredEnvVars).forEach(([key, value]) => {
@@ -48,6 +36,10 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
 const provider = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
 const contract = new ethers.Contract(process.env.LENDING_ADDRESS_BNB!, lendingAbi, provider);
 const contract1155 = new ethers.Contract(process.env.ERC1155_ADDRESS_BNB!, erc1155Abi, provider);
+
+const provider_base = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BASE);
+const contract_base = new ethers.Contract(process.env.LENDING_ADDRESS_BASE!, lendingAbi, provider_base);
+const contract1155_base = new ethers.Contract(process.env.ERC1155_ADDRESS_BASE!, erc1155Abi, provider_base);
 
 // Helper function for API calls
 async function fetchApi<T>(url: string): Promise<ApiResponse<T>> {
@@ -66,10 +58,10 @@ const contractFunctions = {
   getWagLocked: async (address: string, poolId: string): Promise<bigint> => 
     await contract.wagLocked(poolId, address),
 
-  getPoolDetail: async (poolId: string): Promise<Pool> => 
+  getPoolDetail: async (poolId: number): Promise<Pool> => 
     await contract.pools(poolId),
 
-  getPoolFees: async (poolId: string): Promise<PoolFee> => 
+  getPoolFees: async (poolId: number): Promise<PoolFee> => 
     await contract.fees(poolId),
 
   getUserInterest: async (address: string, poolId: string): Promise<bigint> => {
@@ -111,7 +103,7 @@ const contractFunctions = {
 // Service Functions
 export const services = {
   // Pool Services
-  getPool: async (poolId: string): Promise<Pool> => {
+  getPool: async (poolId: number): Promise<Pool> => {
     try {
       return await contractFunctions.getPoolDetail(poolId);
     } catch (error) {
@@ -120,36 +112,52 @@ export const services = {
     }
   },
 
-  getActivePool: async (poolId: string): Promise<Pool> => {
+  getActivePool: async (poolId: number, network_id: number): Promise<any> => {
     try {
-      return await contract.activePools(poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contract.activePools(poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract_base.activePools(poolId);
+      }
     } catch (error) {
       console.error('Error in getActivePool:', error);
       throw error;
     }
   },
 
-  getPoolFee: async (poolId: string): Promise<PoolFee> => {
+  getPoolFee: async (poolId: number, network_id: number): Promise<any> => {
     try {
-      return await contractFunctions.getPoolFees(poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contractFunctions.getPoolFees(poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract_base.getPoolFees(poolId);
+      }
     } catch (error) {
       console.error('Error in getPoolFee:', error);
       throw error;
     }
   },
 
-  getPoolMaxSupply: async (poolId: string): Promise<bigint> => {
+  getPoolMaxSupply: async (poolId: number, network_id: number): Promise<any> => {
     try {
-      return await contract1155.tokenMaxSupply(poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contract1155.tokenMaxSupply(poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract1155_base.tokenMaxSupply(poolId);
+      }
     } catch (error) {
       console.error('Error in getPoolMaxSupply:', error);
       throw error;
     }
   },
 
-  getPoolSupply: async (poolId: string): Promise<bigint> => {
+  getPoolSupply: async (poolId: number, network_id: number): Promise<any> => {
     try {
-      return await contract1155.tokenSupply(poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contract1155.tokenSupply(poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract1155_base.tokenSupply(poolId);
+      }
     } catch (error) {
       console.error('Error in getPoolSupply:', error);
       throw error;
@@ -157,18 +165,26 @@ export const services = {
   },
 
   // User Services
-  getUserStableBalance: async (address: string, poolId: string): Promise<bigint> => {
+  getUserStableBalance: async (address: string, poolId: string, network_id: number): Promise<any> => {
     try {
-      return await contractFunctions.get1155Balance(address, poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contractFunctions.get1155Balance(address, poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract1155_base.balanceOf(address, poolId);
+      }
     } catch (error) {
       console.error('Error in getUserStableBalance:', error);
       throw error;
     }
   },
 
-  getWagLocked: async (address: string, poolId: string): Promise<bigint> => {
+  getWagLocked: async (address: string, poolId: string, network_id: number): Promise<any> => {
     try {
-      return await contractFunctions.getWagLocked(address, poolId);
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        return await contractFunctions.getWagLocked(address, poolId);
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        return await contract1155_base.balanceOf(address, poolId);
+      }
     } catch (error) {
       console.error('Error in getWagLocked:', error);
       throw error;
@@ -196,17 +212,17 @@ export const services = {
   // API Services
   getPools: async (status: string): Promise<Pool[]> => {
     try {
-      const response = await fetchApi<Pool[]>(`/api/lending/?id=${status}`);
-      return response.data;
+      const response = await fetchApi(process.env.WAGON_API_URL + '/api/pools/?status=' + status);
+      return response.data as Pool[];
     } catch (error) {
       console.error('Error in getPools:', error);
       throw error;
     }
   },
 
-  getPoolActivities: async (poolId: string, network: string): Promise<PoolActivity[]> => {
+  getPoolActivities: async (poolId: number): Promise<PoolActivity[]> => {
     try {
-      const response = await fetchApi<PoolActivity[]>(`/api/lending/getActivities/?id=${poolId}&network=${network}`);
+      const response = await fetchApi<PoolActivity[]>(process.env.WAGON_API_URL + '/api/pools/activities/' + poolId);
       return response.data;
     } catch (error) {
       console.error('Error in getPoolActivities:', error);
@@ -216,60 +232,27 @@ export const services = {
 
   getUserPools: async (address: string): Promise<UserPool[]> => {
     try {
-      const response = await fetchApi<UserPool[]>(`/api/lending/getUsersPools/?address=${address}`);
-      return response.data;
+      const response = await fetchApi(process.env.WAGON_API_URL + '/api/pools/lending-balances/' + address);
+      return response.data as UserPool[];
     } catch (error) {
       console.error('Error in getUserPools:', error);
       throw error;
     }
   },
 
-  // Overview Services
-  getLendingOverview: async () => {
+  getUserTvlBalances: async (userPools: UserPool[]): Promise<UserBalance> => {
     try {
-      const stableAddress = process.env.BNB_STABLE_COIN_ADDRESS_1!;
-      const [tvlIdrt, totalLoanOriginationIdrt, currentLoansOutstandingIdrt] = await Promise.all([
-        contractFunctions.getTotalValueLocked(stableAddress),
-        contractFunctions.getTotalLoanOrigination(stableAddress),
-        contractFunctions.getCurrentLoansOutstanding(stableAddress)
-      ]);
+      let tvlIDR = 0;
 
+      userPools.map((userPool) => {
+        tvlIDR += Number(userPool.balance) / 10 ** userPool.pool.lending_contract.decimals;
+      })
+      
       return {
-        tvl: tvlIdrt,
-        totalLoanOrigination: totalLoanOriginationIdrt,
-        currentLoansOutstanding: currentLoansOutstandingIdrt
-      };
+        tvlIdr: tvlIDR
+      }
     } catch (error) {
-      console.error('Error in getLendingOverview:', error);
-      throw error;
-    }
-  },
-
-  getUserBalances: async (pools: Pool[], address: string): Promise<UserBalance> => {
-    try {
-      const balances = await Promise.all(
-        pools.map(async (pool) => {
-          const [wagLocked, stableBalance, interestAmount] = await Promise.all([
-            contractFunctions.getWagLocked(address, pool.id),
-            contractFunctions.get1155Balance(address, pool.id),
-            contractFunctions.getInterestAmountShare(address, pool.id)
-          ]);
-
-          return {
-            wagLocked: Number(wagLocked) / 1e18,
-            stableBalance: Number(stableBalance) / 1e18,
-            interestAmount: Number(interestAmount) / 1e18
-          };
-        })
-      );
-
-      return balances.reduce((acc, curr) => ({
-        tvlWag: acc.tvlWag + curr.wagLocked,
-        tvlIdrt: acc.tvlIdrt + curr.stableBalance,
-        interestIdrt: acc.interestIdrt + curr.interestAmount
-      }), { tvlWag: 0, tvlIdrt: 0, interestIdrt: 0 });
-    } catch (error) {
-      console.error('Error in getUserBalances:', error);
+      console.error('Error in getUserTvlBalances:', error);
       throw error;
     }
   },
@@ -295,11 +278,16 @@ export const services = {
     }
   },
 
-  getInterestAmountShareService : async (address: string, poolId: string) => {
+  getInterestAmountShareService : async (address: string, poolId: string, network_id: number) => {
     return new Promise( async (resolve, reject) => {
         try {
-            let response = await contract.getInterestAmountShare(poolId, address);
-            resolve(response);
+            if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+              let response = await contract.getInterestAmountShare(poolId, address);
+              resolve(response);
+            } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+              let response = await contract_base.getInterestAmountShare(poolId, address);
+              resolve(response);
+            }
         } catch (error) {
             console.error('Error:', error);
             reject(error);
@@ -307,11 +295,16 @@ export const services = {
     })
   },
 
-  getLatestInterestClaimedService : async (address: string, poolId: string) => {
+  getLatestInterestClaimedService : async (address: string, poolId: string, network_id: number) => {
     return new Promise( async (resolve, reject) => {
         try {
-            let response = await contract.latestInterestClaimed(poolId, address);
-            resolve(response);
+            if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+              let response = await contract.latestInterestClaimed(poolId, address);
+              resolve(response);
+            } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+              let response = await contract_base.latestInterestClaimed(poolId, address);
+              resolve(response);
+            }
         } catch (error) {
             console.error('Error:', error);
             reject(error);
@@ -319,11 +312,16 @@ export const services = {
     })
   },
 
-  getDeploymentGracePeriod : async (poolId: string) => {
+  getDeploymentGracePeriod : async (poolId: string, network_id: number) => {
     return new Promise( async (resolve, reject) => {
         try {
-            let response = await contract.deploymentGracePeriodDurations(poolId);
-            resolve(response);
+            if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+              let response = await contract.deploymentGracePeriodDurations(poolId);
+              resolve(response);
+            } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+              let response = await contract_base.deploymentGracePeriodDurations(poolId);
+              resolve(response);
+            }
         } catch (error) {
             console.error('Error:', error);
             reject(error);

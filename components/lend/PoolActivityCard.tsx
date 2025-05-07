@@ -3,7 +3,8 @@ import { services } from "../../services/service_lending";
 import { MdOpenInNew } from "react-icons/md";
 import { numberWithCommas, shortenAddress } from "../../util/stringUtility";
 import { Table, Spinner } from "flowbite-react";
-
+import { Pool } from "./types";
+import { base, bsc } from "@particle-network/connectkit/chains";
 interface Activity {
   block: string;
   address: string;
@@ -14,18 +15,17 @@ interface Activity {
 }
 
 interface PoolActivityCardProps {
-  poolId: string;
-  decimal: number;
+  pool: Pool;
 }
 
-export default function PoolActivityCard({ poolId, decimal }: PoolActivityCardProps) {
+export default function PoolActivityCard({ pool }: PoolActivityCardProps) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   async function getPoolActivities() {
     try {
       setIsLoading(true);
-      const data = await services.getPoolActivities(poolId, "BNB_TESTNET");
+      const data = await services.getPoolActivities(pool.id);
       setActivities(data as Activity[]);
       setIsLoading(false);
     } catch (error) {
@@ -35,8 +35,19 @@ export default function PoolActivityCard({ poolId, decimal }: PoolActivityCardPr
   }
 
   useEffect(() => {
-    if (poolId !== undefined) getPoolActivities();
-  }, [poolId]);
+    if (pool) {
+      getPoolActivities();
+    }
+  }, [pool]);
+
+  function getScanExplorer(): string {
+    if(pool.lending_contract.network_id == Number(process.env.BNB_CHAIN_ID)) {
+      return process.env.BNB_EXPLORER || '';
+    } else if(pool.lending_contract.network_id == Number(process.env.BASE_CHAIN_ID)) {
+      return process.env.BASE_EXPLORER || '';
+    }
+    return '';
+  }
   
   return (
     <div className="space-y-4">
@@ -88,11 +99,11 @@ export default function PoolActivityCard({ poolId, decimal }: PoolActivityCardPr
                       </span>
                     </Table.Cell>
                     <Table.Cell className="text-sm text-gray-900 py-4 text-right">
-                      {numberWithCommas(Number(activity.amount) / Math.pow(10, decimal), 2)}
+                      {numberWithCommas(Number(activity.amount) / Math.pow(10, pool.lending_contract.decimals), 2)}
                     </Table.Cell>
                     <Table.Cell className="text-sm py-4">
                       <a 
-                        href={`https://bscscan.com/tx/${activity.transaction_hash}`} 
+                        href={`${getScanExplorer()}tx/${activity.transaction_hash}`} 
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 transition-colors"

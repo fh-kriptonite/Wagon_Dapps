@@ -3,86 +3,72 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import { Badge, Progress } from "flowbite-react";
 import CountdownTimer from "../general/CountdownTimer";
-import { calculateApy, formatTime, getTokenDecimals } from "../../util/lendingUtility";
-import useGetLendingPoolHook from "./utils/useGetLendingPoolHook";
+import { calculateApy, formatTime } from "../../util/lendingUtility";
 import useGetActivePoolHook from "./utils/useGetActivePoolHook";
-import useGetPoolJsonHook from "./utils/useGetPoolJsonHook";
-import useGetPoolMaxSupplyHook from "./utils/useGetPoolMaxSupplyHook";
 import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
 import { MdSecurity, MdOutlineAccessTime } from "react-icons/md";
 import { HiLockClosed, HiCurrencyDollar } from "react-icons/hi2";
-
+import { Pool } from "./types";
 interface PoolCardProps {
-    poolId: string;
+    poolId: number;
+    pool: Pool;    
 }
 
-export default function PoolCard({ poolId }: PoolCardProps) {
+export default function PoolCard({ poolId, pool }: PoolCardProps) {
     const router = useRouter();
 
-    const {isLoading: isLoadingPool, data: pool, fetchData: getPool} = useGetLendingPoolHook();
-    const {data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
-    const {isLoading: isLoadingPoolJson, data: poolJson, fetchData: getPoolJson} = useGetPoolJsonHook();
-    const {isLoading: isLoadingPoolMaxSupply, data: poolMaxSupply, fetchData: getPoolMaxSupply} = useGetPoolMaxSupplyHook();
+    const {isLoading: isLoadingActivePool, data: activePool, fetchData: getActivePool} = useGetActivePoolHook();
     const {isLoading: isLoadingPoolSupply, data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
 
     const [progress, setProgress] = useState<number>(0);
     const [progressSupply, setProgressSupply] = useState<string>("0");
-    const [maxSupplyDecimal, setMaxSupplyDecimal] = useState<number>(0);
 
     useEffect(() => {
-        if (poolId != null) {
-            getPoolJson(poolId);
-            getPool(poolId);
-            getActivePool(poolId);
-            getPoolMaxSupply(poolId);
-            getPoolSupply(poolId);
+        if(pool == null) return;
+
+        if(pool.status >=2 ) {
+            getActivePool(poolId, pool.contract.network_id);
+        } else {
+            getPoolSupply(poolId, pool.contract.network_id);
         }
-    }, [poolId]);
+    }, [pool]);
 
     useEffect(() => {
+        if(pool == null) return;
+
         setProgress(getPoolProgress());
         setProgressSupply(getPoolProgressSupply());
-        setMaxSupplyDecimal(getPoolMaxSupplyDecimal());
-    }, [poolMaxSupply, poolSupply, poolJson]);
+    }, [poolSupply, activePool]);
 
     function getCollectedPrincipalDecimal(): number {
         if(activePool == null) return 0;
-        return parseFloat(activePool[0]) / Math.pow(10, getDecimal());
+        return parseFloat(activePool[0]) / Math.pow(10, pool.lending_contract.decimals);
     }
 
     function getPoolMaxSupplyDecimal(): number {
-        if(poolMaxSupply == null) return 0;
-        return Number(poolMaxSupply) / Math.pow(10, getDecimal());
+        if(pool.target_loan == null) return 0;
+        return Number(pool.target_loan) / Math.pow(10, pool.lending_contract.decimals);
     }
 
     function getPoolSupplyDecimal(): number {
         if(poolSupply == null) return 0;
-        return Number(poolSupply) / Math.pow(10, getDecimal());
+        return Number(poolSupply) / Math.pow(10, pool.lending_contract.decimals);
     }
 
     function getPoolStatus(): number {
         if(pool == null) return 0;
-        return parseFloat(pool.status);
+        return pool.status;
     }
 
     function getPoolProgress(): number {
-        if(getPoolMaxSupplyDecimal() === 0) return 0;
+        const poolMaxSupply = getPoolMaxSupplyDecimal();
+        if(poolMaxSupply === 0) return 0;
 
         if(getPoolStatus() >= 2) {
-            return getCollectedPrincipalDecimal() / getPoolMaxSupplyDecimal() * 100;
+            return getCollectedPrincipalDecimal() / poolMaxSupply * 100;
         } else {
-            return getPoolSupplyDecimal() / getPoolMaxSupplyDecimal() * 100;
+            return getPoolSupplyDecimal() / poolMaxSupply * 100;
         }
-    }
-
-    function getSymbol(): string {
-        if(poolJson == null) return "";
-        return poolJson.properties.currency;
-    }
-
-    function getDecimal(): number {
-        if(poolJson == null) return 0;
-        return getTokenDecimals(poolJson.properties.currency);
     }
 
     function getPoolProgressSupply(): string {
@@ -108,7 +94,7 @@ export default function PoolCard({ poolId }: PoolCardProps) {
 
     function getBadgeString(): string {
         if(getPoolStatus() === 1) return "Open To Lend";
-        if(getPoolStatus() === 2) return "Ongoing Lend";
+        if(getPoolStatus() === 2) return "Active";
         if(getPoolStatus() === 3) return "Done";
 
         return "Disabled";
@@ -122,10 +108,15 @@ export default function PoolCard({ poolId }: PoolCardProps) {
         return "bg-gray-400";
     }
 
+    function isLoadingProgress(): boolean {
+        if(isLoadingActivePool || isLoadingPoolSupply) return true;
+        return false;
+    }
+
     return (
         <>
             {  
-                pool == null || isLoadingPool || poolJson == null || isLoadingPoolJson
+                pool == null
                 ? <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm animate-pulse">
                     <div className="space-y-3 md:space-y-4">
                         <div className="h-5 md:h-6 w-3/4 bg-gray-200 rounded-full"/>
@@ -135,21 +126,21 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                 </div>
                 : <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
                     onClick={() => {
-                        router.push(`/lend/${poolId}`);
+                        router.push(`/lend/${pool.contract.network}/${poolId}`);
                     }}
                 >
                     {/* Header Section */}
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-4 md:mb-6">
                         <div className="flex items-center gap-3 min-w-0">
                             <div className="flex-shrink-0 bg-gray-50 p-2 rounded-xl border border-gray-100">
-                                <img src={poolJson.image} className="h-8 w-8 md:h-10 md:w-10 object-contain" alt="Pool Logo" />
+                                <img src={pool.detail.image} className="h-8 w-8 md:h-10 md:w-10 object-contain" alt="Pool Logo" />
                             </div>
                             <div className="min-w-0">
-                                <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={poolJson.name}>
-                                    {poolJson.name}
+                                <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={pool.detail.name}>
+                                    {pool.detail.name}
                                 </h3>
-                                <p className="text-xs md:text-sm text-gray-500 truncate" title={poolJson.sub_name}>
-                                    {poolJson.sub_name}
+                                <p className="text-xs md:text-sm text-gray-500 truncate" title={pool.detail.sub_name}>
+                                    {pool.detail.sub_name}
                                 </p>
                             </div>
                         </div>
@@ -173,11 +164,11 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                                     <span className="text-xs md:text-sm font-medium text-gray-600">Pool Size</span>
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-xl md:text-2xl font-bold text-gray-900 truncate" title={`${numberWithCommas(maxSupplyDecimal)} ${getSymbol()}`}>
-                                        {numberWithCommas(maxSupplyDecimal)}
+                                    <p className="text-xl md:text-2xl font-bold text-gray-900 truncate">
+                                        {numberWithCommas(parseFloat(pool.target_loan) / Math.pow(10, pool.lending_contract.decimals))}
                                     </p>
                                     <p className="text-xs md:text-sm text-gray-500 truncate">
-                                        {getSymbol()}
+                                        {pool.detail.currency}
                                     </p>
                                 </div>
                             </div>
@@ -200,11 +191,11 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                             </div>
                             <Progress progress={progress} color="blue" size="lg" />
                             <div className="flex justify-between text-xs md:text-sm text-gray-500">
-                                <span className="truncate" title={`${progressSupply} ${getSymbol()}`}>
-                                    {progressSupply} {getSymbol()}
+                                <span className="truncate" title={`${isLoadingProgress() ? "~" : progressSupply} ${pool.detail.currency}`}>
+                                    {isLoadingProgress() ? "~" : progressSupply} {pool.detail.currency}
                                 </span>
-                                <span className="truncate" title={`${numberWithCommas(maxSupplyDecimal)} ${getSymbol()}`}>
-                                    {numberWithCommas(maxSupplyDecimal)} {getSymbol()}
+                                <span className="truncate" title={`${numberWithCommas(pool.target_loan)} ${pool.detail.currency}`}>
+                                    {numberWithCommas(parseFloat(pool.target_loan) / Math.pow(10, pool.lending_contract.decimals))} {pool.detail.currency}
                                 </span>
                             </div>
                         </div>
@@ -217,7 +208,7 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                                     <span className="text-xs md:text-sm font-medium text-gray-600">Loan Term</span>
                                 </div>
                                 <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">
-                                    {formatTime(parseFloat(pool?.loanTerm))}
+                                    {formatTime(pool.loan_term)}
                                 </p>
                             </div>
                             <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
@@ -226,7 +217,7 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                                     <span className="text-xs md:text-sm font-medium text-gray-600">Type</span>
                                 </div>
                                 <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">
-                                    {poolJson.properties.type}
+                                    {pool.detail.type}
                                 </p>
                             </div>
                         </div>
@@ -234,7 +225,7 @@ export default function PoolCard({ poolId }: PoolCardProps) {
                         {/* Countdown Timer */}
                         {getPoolStatus() == 1 && (
                             <div className="bg-yellow-50 p-3 md:p-4 rounded-xl border border-yellow-100">
-                                <CountdownTimer targetEpoch={parseInt(pool?.collectionTermEnd)}/>
+                                <CountdownTimer targetEpoch={pool.collection_term_end}/>
                             </div>
                         )}
                     </div>

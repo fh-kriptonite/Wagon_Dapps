@@ -13,32 +13,35 @@ import { services } from "../../../services/service_lending";
 import ShipmentList from '../../../components/lend/ShipmentList';
 import AboutBorrower from '../../../components/lend/AboutBorrower';
 
-import useGetOffchainPoolJsonHook from '../../../components/lend/utils/useGetOffchainPoolJsonHook';
-import PoolOverviewCardOffchain from '../../../components/lend/PoolOverviewCardOffchain';
 import PoolCustody from '../../../components/lend/PoolCustody';
-import { Asset, PoolJson, Shipment } from '../../../components/lend/types';
+import { Asset, Pool, Shipment } from '../../../components/lend/types';
+import PoolOverviewCard from '@/components/lend/PoolOverviewCard';
 
-export default function Pool() {
+export default function OffchainPool() {
   const router = useRouter();
   const { poolId } = router.query;
+  const [pool, setPool] = useState<Pool | null>(null);
 
-  const {data: poolJson, fetchData: getPoolJson} = useGetOffchainPoolJsonHook();
+  async function getPool() {
+    const response = await fetch(process.env.WAGON_API_URL + '/api/pools/' + poolId);
+    const data = await response.json();
+    setPool(data.data);
+  }
 
   useEffect(() => {
     if (poolId && typeof poolId === 'string') {
-      getPoolJson(poolId);
+      getPool();
     }
   }, [poolId]);
   
   useEffect(() => {
-    if(poolJson != null) {
-      const typedPoolJson = poolJson as unknown as PoolJson;
-      if(typedPoolJson.properties.type === "Asset Leasing") {
+    if(pool != null) {
+      if(pool.detail.type === "Asset Leasing") {
         getShipments();
         getAssetsPool();
       }
     }
-  }, [poolJson]);
+  }, [pool]);
 
   const [assets, setAssets] = useState<Asset[] | null>(null);
   const [isLoadingAsset, setIsLoadingAsset] = useState<boolean>(false);
@@ -74,43 +77,45 @@ export default function Pool() {
     }
   }
 
-  const typedPoolJson = poolJson as unknown as PoolJson | null;
+  const themeSkin = Number(process.env.THEME_SKIN || '0');
 
   return (
     <div className='container mx-auto px-4 md:px-10 space-y-6 pb-4 max-w-7xl'>
       <Head>
         {
-          Number(process.env.THEME_SKIN) === 1
+          themeSkin === 1
           ? <title>Lend-{poolId} | Wagon Network</title>
-          : Number(process.env.THEME_SKIN) === 2
+          : themeSkin === 2
             ? <title>Waresix ABS | Lend-{poolId}</title>
             : <title>Lend-{poolId}</title>
         }
       </Head>
       <Breadcrumb aria-label="Default breadcrumb example">
           <Breadcrumb.Item href="/lend">Pool Explorer</Breadcrumb.Item>
-          <Breadcrumb.Item>{typedPoolJson?.name}</Breadcrumb.Item>
+          <Breadcrumb.Item>{pool?.detail.name}</Breadcrumb.Item>
       </Breadcrumb>
 
       <div className='flex flex-col xl:flex-row gap-4'>
         <div className='flex-1'>
-          {typedPoolJson && (
+          {pool && (
             <PoolDetailCard
-              poolJson={typedPoolJson}
+              pool={pool}
             />
           )}
         </div>
 
         <div className='flex-1'>
           <div className='sticky top-20 space-y-4'>
-            {typedPoolJson && (
-              <PoolOverviewCardOffchain
-                poolJson={typedPoolJson}
+            {pool && (
+              <PoolOverviewCard
+                pool={pool}
+                activePool={null}
+                poolSupply={null}
               />
             )}
-            {typedPoolJson && (
+            {pool && (
               <PoolCustody
-                poolJson={typedPoolJson}
+                pool={pool}
               />
             )}
           </div>
@@ -118,7 +123,7 @@ export default function Pool() {
       </div>
 
       {
-        typedPoolJson?.properties.type === "Asset Leasing" &&
+        pool?.detail.type === "Asset Leasing" &&
         <AssetReports 
           shipments={shipments}
           assets={assets}
@@ -130,19 +135,19 @@ export default function Pool() {
           <Tabs.Item title="Borrowers" icon={PiUserFill}>
               <div className='min-h-60'>
                 <AboutBorrower
-                  content={typedPoolJson?.properties.borrower || ''}
+                  content={pool?.detail.borrower || ''}
                 />
               </div>
           </Tabs.Item>
           <Tabs.Item title="Lenders" icon={IoIosBusiness}>
               <div className='min-h-60'>
                 <AboutBorrower
-                  content={typedPoolJson?.properties.lender || ''}
+                  content={pool?.detail.lender || ''}
                 />
               </div>
           </Tabs.Item>
           {
-            typedPoolJson?.properties.type === "Asset Leasing" &&
+            pool?.detail.type === "Asset Leasing" &&
             <Tabs.Item title="Shipments" icon={PiPackage}>
                 <div className='min-h-60'>
                   <ShipmentList

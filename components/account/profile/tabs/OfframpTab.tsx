@@ -9,6 +9,8 @@ import { Button, Alert } from "flowbite-react";
 import { HistoryDialog } from "./HistoryDialog";
 import ExchangeDialog from "./ExchangeDialog";
 import useRedeemIDRX from "@/components/account/utils/useRedeemIDRX";
+import { base } from "@particle-network/connectkit/chains";
+import { bsc } from "@particle-network/connectkit/chains";
 
 interface BankAccount {
     bankCode: string;
@@ -37,13 +39,14 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
     });
 
     const { connectedAddress } = useConnectedAddress();
-    const {data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook();
+    const {isLoading: isLoadingStableBalance, data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook();
 
     const { isLoading: isBurning, isWaitingApproval: isWaitingApprovalBurn, fetchData: burnIdrx } = useRedeemIDRX();
+    const [chainId, setChainId] = useState<number>(bsc.id);
 
     const getBankAccount = async () => {
         try {
-            const response = await axios.get(`${process.env.RAMP_API_URL}/api/ramp/get_bank`, {
+            const response = await axios.get(`${process.env.WAGON_API_URL}/api/ramp/get_bank`, {
                 params: {
                     wallet_address: connectedAddress,
             }
@@ -57,12 +60,21 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
         }
     };
 
+    function getIDRXAddress() {
+        if(chainId === bsc.id) {
+            return process.env.ONRAMP_IDRX_ADDRESS_BSC || "";
+        } else if(chainId === base.id) {
+            return process.env.ONRAMP_IDRX_ADDRESS_BASE || "";
+        }
+        return "";
+    }
+
     function getBalance() {
         if (connectedAddress) {
             getStableBalance(
-                Number(process.env.BNB_CHAIN_ID), 
+                Number(chainId), 
                 connectedAddress, 
-                process.env.IDRX_ADDRESS || ""
+                getIDRXAddress()
             );
         }
     }
@@ -74,6 +86,10 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
         }
     }, [connectedAddress]);
 
+    useEffect(() => {
+        getBalance();
+    }, [chainId]);
+
     const handleExchange = async () => {
         if (!amount || !selectedBankAccount) return;
         
@@ -83,7 +99,8 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
             const { data: burnData, error: burnError } = await burnIdrx(
                 amount, 
                 selectedBankAccount.bankName,
-                selectedBankAccount.bankAccountNumber
+                selectedBankAccount.bankAccountNumber,
+                chainId
             );
 
             if(burnError) {
@@ -97,10 +114,10 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
                 return;
             }
 
-            const response = await axios.post(`${process.env.RAMP_API_URL}/api/ramp/offramp`, {
+            const response = await axios.post(`${process.env.WAGON_API_URL}/api/ramp/offramp`, {
                 amount: parseInt(amount),
                 txHash: burnData?.hash,
-                networkChainId: Number(process.env.BNB_CHAIN_ID),
+                networkChainId: chainId,
                 bankAccount: selectedBankAccount.bankAccountNumber,
                 bankCode: selectedBankAccount.bankCode,
                 bankName: selectedBankAccount.bankName,
@@ -204,6 +221,19 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
                     <div className="space-y-6 md:space-y-8">
                         <div>
                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                Select Network
+                            </label>
+                            <div className="relative">
+                                <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base md:text-lg"
+                                    onChange={(e) => setChainId(parseInt(e.target.value))}
+                                >
+                                    <option value={bsc.id}>Binance Smart Chain</option>
+                                    <option value={base.id}>Base Network</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                 Amount in IDRX
                             </label>
                             <div className="relative">
@@ -230,7 +260,7 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
                                     <HiArrowPath className="w-3 h-3 md:w-4 md:h-4" />
                                 </Button>
                                 <p className="text-xs text-gray-500">
-                                    Available: {numberWithCommas(Number(stableBalance))} IDRX
+                                    Available: {isLoadingStableBalance ? "~" : numberWithCommas(Number(stableBalance))} IDRX
                                 </p>
                             </div>
                         </div>

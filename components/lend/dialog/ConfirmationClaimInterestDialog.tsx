@@ -53,7 +53,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   useEffect(() => {
     if(pool != null && latestInterestClaimed != null && interestAmountShare != null && decimal != null) {
-      const countClaimable = parseFloat(pool.latestRepayment) - parseFloat(latestInterestClaimed);
+      const countClaimable = pool.latest_repayment - parseFloat(latestInterestClaimed);
       const claimable = countClaimable * parseFloat(interestAmountShare) / Math.pow(10, decimal);
       setTotalClaimable(claimable as any); // Type assertion to fix type error
     }
@@ -72,7 +72,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   function isInterestClaimable(index: number): string {
     if (index < parseFloat(latestInterestClaimed)) return "Claimed";
-    if (index < parseFloat(pool.latestRepayment)) return "Claimable";
+    if (index < pool.latest_repayment) return "Claimable";
     return "Unclaimable";
   }
 
@@ -88,7 +88,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   function getUnlockWagAmount(): string {
     if (pool == null) return "~";
-    if (parseFloat(pool.latestRepayment) == parseFloat(pool.paymentFrequency)) 
+    if (pool.latest_repayment == pool.payment_frequency) 
       return numberWithCommas(parseFloat(wagBalance) / 1e18, 2);
 
     return numberWithCommas(0, 2);
@@ -98,7 +98,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   async function handleClaimInterest() {
     try {
-      const resultClaim = await claimInterest(poolId as string);
+      const resultClaim = await claimInterest(poolId as string, pool.contract.network_id);
       if (resultClaim.error) {
         throw resultClaim.error;
       }
@@ -174,7 +174,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
                             <p className='text-sm text-gray-900 w-10'>{index + 1}</p>
                             <p className='text-sm text-gray-900 flex-1 text-end'>
                               {
-                                (index + 1 === parseFloat(pool.paymentFrequency))
+                                (index + 1 === pool.payment_frequency)
                                   ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10, decimal)) + (parseFloat(interestAmountShare) / Math.pow(10, decimal)), 2)
                                   : numberWithCommas(parseFloat(interestAmountShare) / Math.pow(10, decimal), 2)
                               } {symbol}

@@ -2,11 +2,12 @@ import { useState } from 'react';
 import ERC20_ABI from "../../../public/ABI/erc20.json";
 import { ethers } from 'ethers';
 import { useGetProvider } from '@/util/getProvider';
+import { bsc, base } from '@particle-network/connectkit/chains';
 
 interface UseApproveAllowanceHookResult {
   isLoading: boolean;
   isWaitingApproval: boolean;
-  fetchData: (amount: bigint, erc20Address: string) => Promise<{
+  fetchData: (amount: bigint, erc20Address: string, network_id: number) => Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }>;
@@ -18,7 +19,7 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
   
   const getProvider = useGetProvider();
   
-  const fetchData = async (amount: bigint, erc20Address: string): Promise<{
+  const fetchData = async (amount: bigint, erc20Address: string, network_id: number): Promise<{
     data: ethers.ContractTransactionResponse | null;
     error: string | null;
   }> => {
@@ -28,7 +29,13 @@ const useApproveAllowanceHook = (): UseApproveAllowanceHookResult => {
     let error: string | null = null;
 
     try {
-      const lendingAddress = process.env.LENDING_ADDRESS_BNB;
+      let lendingAddress: string | null = null;
+      if(network_id == Number(process.env.BNB_CHAIN_ID)) {
+        lendingAddress = process.env.LENDING_ADDRESS_BNB || null;
+      } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
+        lendingAddress = process.env.LENDING_ADDRESS_BASE || null;
+      }
+      
       if (!lendingAddress) {
         throw new Error('LENDING_ADDRESS_BNB is not defined');
       }

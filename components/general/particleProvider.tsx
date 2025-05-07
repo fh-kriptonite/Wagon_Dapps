@@ -10,7 +10,7 @@ import { EntryPosition, wallet } from '@particle-network/connectkit/wallet';
 import { aa } from '@particle-network/connectkit/aa';
 // aa end
 // evm start
-import { mainnet, sepolia, bsc, bscTestnet } from '@particle-network/connectkit/chains';
+import { mainnet, sepolia, bsc, bscTestnet, base, baseSepolia } from '@particle-network/connectkit/chains';
 import { evmWalletConnectors } from '@particle-network/connectkit/evm';
 
 const projectId = process.env.PARTICLE_NETWORK_PROJECT_ID as string;
@@ -23,7 +23,12 @@ if (!projectId || !clientKey || !appId) {
 
 const supportChains: Chain[] = [];
 // evm start
-supportChains.push(mainnet, sepolia, bsc, bscTestnet);
+if(process.env.PRODUCTION) {
+  supportChains.push(mainnet, bsc, base);
+} else {
+  supportChains.push(mainnet, sepolia, bsc, bscTestnet, base, baseSepolia);
+}
+
 // evm end
 
 const config = createConfig({

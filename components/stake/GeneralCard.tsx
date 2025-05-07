@@ -38,13 +38,13 @@ export default function GeneralCard({ fetch }: GeneralCardProps) {
     return (
         <div className="bg-white rounded-2xl shadow-sm p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Total Value Stacked */}
+                {/* Total Value Staked */}
                 <div className="bg-blue-50 rounded-xl p-4">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="bg-white p-2 rounded-lg">
                             <HiCurrencyDollar className="w-5 h-5 text-blue-600" />
                         </div>
-                        <h6 className="text-sm font-medium text-gray-600">Total Value Stacked</h6>
+                        <h6 className="text-sm font-medium text-gray-600">Total Value Staked</h6>
                     </div>
                     <h2 className="text-4xl font-semibold text-gray-900">
                         {isLoadingGetTotalStaked ? "~" : numberWithLetter(totalStakedInUsd, 2)}

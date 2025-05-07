@@ -4,7 +4,7 @@ import LendFiatToPoolDialog from './LendFiatToPoolDialog';
 import LendFiatConfirmationDialog from './LendFiatConfirmationDialog';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import axios from 'axios';
-import { Pool, PoolJson, PoolFee } from '../types';
+import { Pool, PoolFee } from '../types';
 import { HiClock } from 'react-icons/hi2';
 import { HistoryDialog } from '@/components/account/profile/tabs/HistoryDialog';
 interface Profile {
@@ -26,10 +26,7 @@ interface OnrampData {
 
 interface LendFiatToPoolButtonProps {
   pool: Pool;
-  poolMaxSupply: bigint;
   poolSupply: bigint;
-  poolJson: PoolJson;
-  symbol: string;
   fees: PoolFee | null;
   poolId: string;
   refreshUser: () => void;
@@ -38,9 +35,6 @@ interface LendFiatToPoolButtonProps {
 export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
   const { connectedAddress: address } = useConnectedAddress();
   const pool = props.pool;
-
-  const poolMaxSupply = props.poolMaxSupply;
-  const poolSupply = props.poolSupply;
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState<boolean>(false);
@@ -59,7 +53,7 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
 
     try {
       // Request Account
-      const response = await axios.get(`/api/account/getAccount?wallet_address=${address}`);
+      const response = await axios.get(process.env.WAGON_API_URL + `/api/accounts/wallet_address/${address}`);
 
       // Handle success response
       if (response.data.error) {
@@ -81,8 +75,8 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
 
   function handleDisableLendButton(): boolean {
     if (isLoading) return true;
-    if (parseFloat(pool.collectionTermEnd) - (Date.now() / 1000) < 0) return true;
-    if (poolSupply === poolMaxSupply) return true;
+    if (pool.collection_term_end - (Date.now() / 1000) < 0) return true;
+    if (props.poolSupply === BigInt(pool.target_loan)) return true;
     return false;
   }
 
@@ -123,8 +117,6 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
         handleLend={handleLend}
         profile={profile}
         pool={pool}
-        poolJson={props.poolJson}
-        symbol={props.symbol}
         fees={props.fees}
         poolId={props.poolId}
       />

@@ -6,6 +6,7 @@ import axios from "axios";
 import PaymentDialog from "./PaymentDialog";
 import { HistoryDialog } from "./HistoryDialog";
 import { Button } from "flowbite-react";
+import { base, bsc } from "@particle-network/connectkit/chains";
 
 interface OnrampTabProps {
     onramp_enabled?: boolean;
@@ -32,7 +33,7 @@ export default function OnrampTab({ onramp_enabled, accountName }: OnrampTabProp
     const [showHistoryDialog, setShowHistoryDialog] = useState<boolean>(false);
     const [paymentDetails, setPaymentDetails] = useState<OnrampResponse | null>(null);
     const { connectedAddress } = useConnectedAddress();
-
+    const [chainId, setChainId] = useState<number>(bsc.id);
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setAmount(value);
@@ -48,9 +49,10 @@ export default function OnrampTab({ onramp_enabled, accountName }: OnrampTabProp
         
         setIsConverting(true);
         try {
-            const response = await axios.post(`${process.env.RAMP_API_URL}/api/ramp/onramp`, {
+            const response = await axios.post(`${process.env.WAGON_API_URL}/api/ramp/onramp`, {
                 amount: parseInt(amount),
-                wallet_address: connectedAddress
+                wallet_address: connectedAddress,
+                chain_id: chainId.toString()
             }, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -122,6 +124,19 @@ export default function OnrampTab({ onramp_enabled, accountName }: OnrampTabProp
             <div className="grid grid-cols-1 gap-4 md:gap-6">
                 <div className="bg-white rounded-xl shadow-sm border p-4 md:p-8">
                     <div className="space-y-6 md:space-y-8">
+                        <div>
+                            <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
+                                Select Network
+                            </label>
+                            <div className="relative">
+                                <select className="w-full px-3 md:px-4 py-2.5 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base md:text-lg"
+                                    onChange={(e) => setChainId(parseInt(e.target.value))}
+                                >
+                                    <option value={bsc.id}>Binance Smart Chain</option>
+                                    <option value={base.id}>Base Network</option>
+                                </select>
+                            </div>
+                        </div>
                         <div>
                             <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                                 Amount in IDR

@@ -149,7 +149,7 @@ export default function VerificationForm({ refreshAccount, closeForm }: Verifica
         }
 
         try {
-            const response = await axios.post(`${process.env.RAMP_API_URL}/api/accounts`, formData, {
+            const response = await axios.post(`${process.env.WAGON_API_URL}/api/accounts`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

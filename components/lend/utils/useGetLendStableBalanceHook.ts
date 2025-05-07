@@ -5,7 +5,7 @@ interface UseGetLendStableBalanceHookResult {
   isLoading: boolean;
   data: bigint | null;
   error: string | null;
-  fetchData: (address: string, poolId: string) => Promise<void>;
+  fetchData: (address: string, poolId: string, network_id: number) => Promise<void>;
 }
 
 const useGetLendStableBalanceHook = (): UseGetLendStableBalanceHookResult => {
@@ -13,11 +13,11 @@ const useGetLendStableBalanceHook = (): UseGetLendStableBalanceHookResult => {
   const [data, setData] = useState<bigint | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async (address: string, poolId: string): Promise<void> => {
+  const fetchData = async (address: string, poolId: string, network_id: number): Promise<void> => {
     setIsLoading(true);
 
     try {
-      const response = await services.getUserStableBalance(address, poolId);
+      const response = await services.getUserStableBalance(address, poolId, network_id);
       setData(response);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred');

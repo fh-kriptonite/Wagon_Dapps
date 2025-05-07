@@ -134,7 +134,7 @@ export default function ProfileTab({
 
     const getBankAccount = async () => {
         try {
-            const response = await axios.get(`${process.env.RAMP_API_URL}/api/ramp/get_bank`, {
+            const response = await axios.get(`${process.env.WAGON_API_URL}/api/ramp/get_bank`, {
                 params: {
                     wallet_address: connectedAddress,
                 }
@@ -150,7 +150,7 @@ export default function ProfileTab({
 
     const handleDeleteAccount = async (bankAccountId: number) => {
         try {
-            const response = await axios.delete(`${process.env.RAMP_API_URL}/api/ramp/delete_bank/${bankAccountId}`, {
+            const response = await axios.delete(`${process.env.WAGON_API_URL}/api/ramp/delete_bank/${bankAccountId}`, {
                 data: {
                     wallet_address: connectedAddress
                 },

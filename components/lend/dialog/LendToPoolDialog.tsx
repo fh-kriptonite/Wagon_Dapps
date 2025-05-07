@@ -6,23 +6,20 @@ import { Button, Checkbox, Label } from 'flowbite-react';
 import useGetStableBalanceHook from '../utils/useGetStableBalanceHook';
 import { useConnectedAddress } from '../../../hooks/useConnectedAddress';
 import Link from 'next/link';
-import { Pool, PoolFee, PoolJson } from '../types';
+import { Pool, PoolFee } from '../types';
+import { useAccount } from '@particle-network/connectkit';
 
 interface LendToPoolDialogProps {
   isOpen: boolean;
   closeModal: () => void;
   pool: Pool | null;
-  poolJson: PoolJson | null;
-  symbol: string;
   fees: PoolFee | null;
-  decimal: number;
-  chainId: number;
   handleLend: (stableNumber: string, wagNumber: string, adminFee: number) => void;
 }
 
 export default function LendToPoolDialog(props: LendToPoolDialogProps) {
   const { connectedAddress: address } = useConnectedAddress();
-  const chainId = props.chainId;
+  const { chainId } = useAccount();
 
   const [stableNumber, setStableNumber] = useState<string>("")
   const [wagNumber, setWagNumber] = useState<string>("")
@@ -31,25 +28,22 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
   const isOpen = props.isOpen;
   const closeModal = props.closeModal;
   const pool = props.pool;
-  const poolJson = props.poolJson;
-  const symbol = props.symbol;
   const fees = props.fees;
-  const decimal = props.decimal;
 
   const {data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook()
   const {data: wagBalance, fetchData: getWagBalance} = useGetStableBalanceHook()
 
   useEffect(()=>{
-    if(isOpen && pool != null) {
-      getStableBalance(chainId, address || "", pool.lendingCurrency);
-      getWagBalance(chainId, address || "", pool.pairingCurrency);
+    if(isOpen && pool && chainId) {
+      getStableBalance(chainId, address || "", pool.lending_contract.address);
+      getWagBalance(chainId, address || "", pool.pairing_contract.address);
     }
     resetModal();
-  }, [pool, isOpen])
+  }, [pool, isOpen, chainId])
 
   function getRatio(): number {
     if(pool == null) return 0;
-    return parseFloat(pool.stabletoPairRate) / Math.pow(10,18);
+    return pool.stable_to_pair_rate / Math.pow(10,18);
   }
 
   function resetModal(): void {
@@ -59,7 +53,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
 
   function getExpectedInterest(): number {
     if(stableNumber === "" || !pool) return 0;
-    return parseFloat(stableNumber) / parseFloat(pool.targetLoan) * parseFloat(pool.targetInterestPerPayment) * parseFloat(pool.paymentFrequency)
+    return parseFloat(stableNumber) / parseFloat(pool.target_loan) * parseFloat(pool.target_interest_per_payment) * pool.payment_frequency
   }
 
   function getAdminFee(): number {
@@ -73,14 +67,9 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
     return true;
   }
 
-  function getStableBalanceWithDecimal(): string {
-    if(stableBalance == null) return "0";
-    return (parseFloat(stableBalance.toString()) / Math.pow(10,decimal)).toString();
-  }
-
   function getWagBalanceWithDecimal(): string {
     if(wagBalance == null) return "0";
-    return (parseFloat(wagBalance.toString()) / Math.pow(10,18)).toString();
+    return wagBalance.toString();
   }
 
   function getTotalStable(): number {
@@ -92,11 +81,9 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
     if(!checkedTnc) return true
     if(stableNumber === "") return true
     if(parseFloat(stableNumber) <= 0) return true
-    const stableBalanceValue = stableBalance ? stableBalance.toString() : "0";
-    const wagBalanceValue = wagBalance ? wagBalance.toString() : "0";
-    if(parseFloat(stableNumber) > parseFloat(stableBalanceValue) / Math.pow(10,decimal)) return true
-    if(parseFloat(wagNumber) > parseFloat(wagBalanceValue) / Math.pow(10,18)) return true
-    if(parseFloat(getStableBalanceWithDecimal()) < getTotalStable()) return true
+    if(parseFloat(stableNumber) > (stableBalance || 0)) return true
+    if(parseFloat(wagNumber) > (wagBalance || 0)) return true
+    if((stableBalance || 0) < getTotalStable()) return true
     return false;
   }
 
@@ -107,7 +94,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
 
   function showWagPair(): boolean {
     if(!pool) return false;
-    if(Number(pool.stabletoPairRate) === 0) return false
+    if(Number(pool.stable_to_pair_rate) === 0) return false
     return true;
   }
 
@@ -166,7 +153,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                         Amount
                       </p>
                       <p className="text-sm font-medium text-gray-600">
-                        Available: {numberWithCommas(getStableBalanceWithDecimal(), 2)} {symbol}
+                        Available: {numberWithCommas(stableBalance || 0, 2)} {pool?.detail.currency}
                       </p>
                     </div>
                     
@@ -177,16 +164,16 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                         onChange={handleChange}
                         placeholder="0" required/>
                       <div className="flex items-center gap-2">
-                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
+                        <img src={pool?.detail.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
-                          {symbol}
+                          {pool?.detail.currency}
                         </p>
                         <Button
                           color="light"
                           size="xs"
                           onClick={() => {
-                            setStableNumber(getStableBalanceWithDecimal())
-                            setWagNumber((parseFloat(getStableBalanceWithDecimal()) * getRatio()).toString())
+                            setStableNumber(stableBalance?.toString() || "0")
+                            setWagNumber((parseFloat(stableBalance?.toString() || "0") * getRatio()).toString())
                           }}
                         >
                           Max
@@ -200,17 +187,17 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                           Admin Fee
                         </p>
                         <p className="text-sm font-semibold text-gray-900">
-                          + {numberWithCommas(getAdminFee(), 2)} {symbol}
+                          + {numberWithCommas(getAdminFee(), 2)} {pool?.detail.currency}
                         </p>
                       </div>
                     )}
                   </div>
 
                   <p 
-                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool?.lendingCurrency}`, `buy${symbol}`);}}
+                    onClick={()=>{window.open(`https://pancakeswap.finance/swap?outputCurrency=${pool?.lending_contract.address}`, `buy${pool?.detail.currency}`);}}
                     className="text-sm text-blue-600 hover:text-blue-700 hover:cursor-pointer w-fit ml-auto mt-2"
                   >
-                    Buy more {symbol}
+                    Buy more {pool?.detail.currency}
                   </p>
                   
                   {showWagPair() && (
@@ -257,7 +244,7 @@ export default function LendToPoolDialog(props: LendToPoolDialogProps) {
                       </div>
 
                       <p 
-                        onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool?.lendingCurrency}&outputCurrency=${pool?.pairingCurrency}`, "buyWAG");}}
+                        onClick={()=>{window.open(`https://pancakeswap.finance/swap?inputCurrency=${pool?.lending_contract.address}&outputCurrency=${pool?.pairing_contract.address}`, "buyWAG");}}
                         className="text-sm text-blue-600 hover:text-blue-700 hover:cursor-pointer w-fit ml-auto mt-2"
                       >
                         Buy more WAG

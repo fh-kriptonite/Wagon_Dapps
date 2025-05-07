@@ -9,7 +9,7 @@ interface UseGetActivePoolHookResult<T> {
   isLoading: boolean;
   data: T | null;
   error: string | null;
-  fetchData: (address: string) => Promise<void>;
+  fetchData: (poolId: number, network_id: number) => Promise<void>;
 }
 
 const useGetActivePoolHook = <T = ActivePool>(): UseGetActivePoolHookResult<T> => {
@@ -17,11 +17,11 @@ const useGetActivePoolHook = <T = ActivePool>(): UseGetActivePoolHookResult<T> =
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async (address: string): Promise<void> => {
+  const fetchData = async (poolId: number, network_id: number): Promise<void> => {
     setIsLoading(true);
 
     try {
-      const response = await services.getActivePool(address);
+      const response = await services.getActivePool(poolId, network_id);
       setData(response as T);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred');

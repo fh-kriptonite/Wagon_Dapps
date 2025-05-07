@@ -34,7 +34,7 @@ export function showPool(filter, poolStatus) {
 }
 
 export function calculateApy(pool) {
-    const apy = parseFloat(pool?.targetInterestPerPayment) / parseFloat(pool?.targetLoan) * 12 * 100
+    const apy = parseFloat(pool?.target_interest_per_payment) / parseFloat(pool?.target_loan) * 12 * 100
     return(apy);
 }
 

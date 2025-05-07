@@ -8,17 +8,13 @@ import LoadingUserLendingStatistic from './LoadingUserLendingStatistic';
 import LendToPoolButton from './LendToPoolButton';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import LendFiatToPoolButton from './fiat/LendFiatToPoolButton';
-import { Pool, PoolJson, PoolFee } from './types';
+import { Pool, PoolFee } from './types';
 
 interface UserLendingStatisticProps {
     pool: Pool | null;
-    poolJson: PoolJson | null;
-    symbol: string;
-    decimal: number;
     stableBalance: string | null;
     wagBalance: string | null;
     fees: PoolFee | null;
-    poolMaxSupply: string | null;
     poolSupply: string | null;
     refresh: () => void;
 }
@@ -29,18 +25,15 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
     const { poolId } = router.query;
 
     const pool = props.pool;
-    const poolJson = props.poolJson;
-    const symbol = props.symbol;
-    const decimal = props.decimal;
-
+    
     const stableBalance = props.stableBalance;
     const wagBalance = props.wagBalance;
     const fees = props.fees;
     
     function getStableString() {
         if(stableBalance == null) return 0;
-        if(decimal == null) return 0;
-        return numberWithCommas(parseFloat(stableBalance) / Math.pow(10, decimal))
+        if(pool == null) return 0;
+        return numberWithCommas(parseFloat(stableBalance) / Math.pow(10, pool.lending_contract.decimals))
     }
 
     function getWagString() {
@@ -50,7 +43,7 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
 
     function getPoolStatus() {
         if(pool == null) return 0;
-        return parseFloat(pool.status);
+        return pool.status;
     }
 
     const [loadingImage, setLoadingImage] = useState(true);
@@ -67,7 +60,14 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
 
     function showWagPair() {
         if(!pool) return false;
-        if(pool.stabletoPairRate == "0") return false;
+        if(pool.stable_to_pair_rate == 0) return false;
+        return true;
+    }
+
+    function showLendFiatToPoolButton() {
+        if(!pool) return false;
+        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BSC) return false;
+        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BASE) return false;
         return true;
     }
 
@@ -88,7 +88,7 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                         <div className='flex items-center gap-3'>
                             <div className="bg-white p-2 rounded-lg shadow-sm">
                                 <img 
-                                    src={poolJson?.properties.currency_logo} 
+                                    src={pool.detail.currency_logo} 
                                     onLoad={handleImageLoaded}
                                     onError={handleImageError} 
                                     className="h-8 w-8 object-contain" 
@@ -101,7 +101,7 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                             <div>
                                 <p className='text-sm font-medium text-gray-600'>Your Lending Balance</p>
                                 <p className='text-xl font-bold text-gray-900'>
-                                    {getStableString()} {symbol}
+                                    {getStableString()} {pool.detail.currency}
                                 </p>
                             </div>
                         </div>
@@ -137,8 +137,6 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                                         <LendToPoolButton 
                                             {...props}
                                             pool={pool!}
-                                            poolJson={poolJson!}
-                                            poolMaxSupply={props.poolMaxSupply!}
                                             poolSupply={props.poolSupply!}
                                             fees={fees}
                                             poolId={poolId as string}
@@ -147,13 +145,11 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
                                             }}
                                         />
                                     </div>
-                                    {pool?.lendingCurrency == process.env.IDRX_ADDRESS && (
+                                    { showLendFiatToPoolButton() && (
                                         <div className='flex-1'>
                                             <LendFiatToPoolButton 
                                                 {...props}
                                                 pool={pool!}
-                                                poolJson={poolJson!}
-                                                poolMaxSupply={BigInt(props.poolMaxSupply || "0")}
                                                 poolSupply={BigInt(props.poolSupply || "0")}
                                                 fees={fees}
                                                 poolId={poolId as string}

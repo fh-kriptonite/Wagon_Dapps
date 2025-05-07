@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { useSwitchChain } from '@particle-network/connectkit';
-import { mainnet, sepolia, bsc, bscTestnet } from "@particle-network/connectkit/chains";
+import { mainnet, sepolia, bsc, bscTestnet, base, baseSepolia } from "@particle-network/connectkit/chains";
 
-type Chain = typeof mainnet | typeof sepolia | typeof bsc | typeof bscTestnet;
+type Chain = typeof mainnet | typeof sepolia | typeof bsc | typeof bscTestnet | typeof base | typeof baseSepolia;
 
 function getChain(chainId: number): Chain | undefined {
-    if(chainId === 1) return mainnet;
-    if(chainId === 11155111) return sepolia;
-    if(chainId === 56) return bsc;
-    if(chainId === 97) return bscTestnet;
+    if(chainId === mainnet.id) return mainnet;
+    if(chainId === sepolia.id) return sepolia;
+    if(chainId === bsc.id) return bsc;
+    if(chainId === bscTestnet.id) return bscTestnet;
+    if(chainId === base.id) return base;
+    if(chainId === baseSepolia.id) return baseSepolia
     return undefined;
 }
 

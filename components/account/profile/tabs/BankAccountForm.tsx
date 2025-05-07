@@ -34,7 +34,7 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
     useEffect(() => {
         const fetchBanks = async () => {
             try {
-                const response = await axios.get(`${process.env.RAMP_API_URL}/api/ramp/transaction/method`, {
+                const response = await axios.get(`${process.env.WAGON_API_URL}/api/ramp/transaction/method`, {
                     params: {
                         wallet_address: connectedAddress,
                     },
@@ -74,7 +74,7 @@ export default function BankAccountForm({ onSuccess }: BankAccountFormProps) {
         try {
             const formData = new FormData(e.target as HTMLFormElement);
             
-            const response = await fetch(`${process.env.RAMP_API_URL}/api/ramp/add_bank`, {
+            const response = await fetch(`${process.env.WAGON_API_URL}/api/ramp/add_bank`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

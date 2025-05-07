@@ -7,7 +7,7 @@ import { Button, Checkbox } from 'flowbite-react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Pool, PoolJson, PoolFee } from '../types';
+import { Pool, PoolFee } from '../types';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 interface Profile {
   id: string;
@@ -23,8 +23,6 @@ interface LendFiatToPoolDialogProps {
   isOpen: boolean;
   closeModal: () => void;
   pool: Pool;
-  poolJson: PoolJson;
-  symbol: string;
   fees: PoolFee | null;
   profile: Profile | null;
   poolId: string;
@@ -39,7 +37,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
   const [checkedTnc, setCheckedTnc] = useState<boolean>(false);
   const [isLoadingRequestOnRamp, setIsLoadingRequestOnRamp] = useState<boolean>(false);
 
-  const { isOpen, closeModal, pool, poolJson, symbol, profile, fees, poolId, handleLend } = props;
+  const { isOpen, closeModal, pool, profile, fees, poolId, handleLend } = props;
 
   function resetModal(): void {
     setStableNumber("");
@@ -48,17 +46,17 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
 
   function getExpectedInterest(): number {
     if (stableNumber === "") return 0;
-    const interestPerTerm = parseFloat(stableNumber) / parseFloat(pool?.targetLoan?.toString() ?? "0") * parseFloat(pool?.targetInterestPerPayment?.toString() ?? "0");
+    const interestPerTerm = parseFloat(stableNumber) / parseFloat(pool?.target_loan?.toString() ?? "0") * parseFloat(pool?.target_interest_per_payment?.toString() ?? "0");
     const protocolFee = interestPerTerm * parseFloat(fees?.protocolFee?.toString() ?? "0") / 10000;
 
     const interestNetPerTerm = interestPerTerm - protocolFee;
 
-    return interestNetPerTerm * parseFloat(pool?.paymentFrequency?.toString() ?? "0");
+    return interestNetPerTerm * parseFloat(pool?.payment_frequency?.toString() ?? "0");
   }
 
   function getPaymentFrequency(): number {
     if (!pool) return 0;
-    return parseFloat(pool.paymentFrequency);
+    return pool.payment_frequency;
   }
 
   function getAdminFee(): number {
@@ -98,7 +96,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
 
       // Request Account
       const response = await axios.post(
-        `${process.env.RAMP_API_URL}/api/ramp/onramp_pool`, 
+        `${process.env.WAGON_API_URL}/api/ramp/onramp_pool`, 
         payload,
         {
           headers: {
@@ -191,7 +189,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
                         required
                       />
                       <div className="flex items-center gap-2">
-                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="IDRT Logo"/>
+                        <img src={pool?.detail.currency_logo} className="h-7" alt="IDRT Logo"/>
                         <p className="text-lg text-gray-500">
                           IDR
                         </p>
@@ -208,7 +206,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
                           Admin Fee
                         </p>
                         <p className="text-sm font-semibold text-gray-900">
-                          + {numberWithCommas(getAdminFee(), 2)} {symbol}
+                          + {numberWithCommas(getAdminFee(), 2)} {pool.detail.currency}
                         </p>
                       </div>
                     )}
@@ -224,7 +222,7 @@ export default function LendFiatToPoolDialog(props: LendFiatToPoolDialogProps) {
                         Loan Term
                       </p>
                       <p className="text-sm font-semibold text-gray-900">
-                        {formatTime(parseFloat(pool?.loanTerm))}
+                        {formatTime(pool?.loan_term)}
                       </p>
                     </div>
 

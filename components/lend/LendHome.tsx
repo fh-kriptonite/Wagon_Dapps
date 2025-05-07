@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import OverviewCard from "./OverviewCard";
 import PoolCard from "./PoolCard";
 import { MdOpenInNew } from "react-icons/md";
-import { services, Pool } from "../../services/service_lending";
+import { services } from "../../services/service_lending";
 import PoolCardComingSoon from "./PoolCardComingSoon";
 import PoolCardOffChain from "./PoolCardOffChain";
 import { HiShieldCheck, HiExclamationCircle } from "react-icons/hi2";
 import { Button } from "flowbite-react";
+import { Pool } from "./types";
 
 interface LendHomeProps {
   [key: string]: any;
@@ -51,24 +52,25 @@ export default function LendHome(props: LendHomeProps) {
                               }
                           </div>
                       </div>
-                      <Button 
-                          color={"dark"} 
-                          size={"sm"} 
-                          className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 backdrop-blur-sm"
-                          onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
-                      >
-                          <MdOpenInNew className="w-4 h-4 md:w-5 md:h-5" />
-                          <span className="font-medium text-sm md:text-base">Smart Contract</span>
-                      </Button>
-                  </div>
-                  <div className="flex flex-col md:flex-row gap-2 items-start md:items-center">
-                      <p className="text-xs md:text-sm text-blue-100">BSC Smart contract:</p>
-                      <div 
-                          className="flex items-center gap-1 font-bold hover:text-blue-800 hover:cursor-pointer w-full md:w-fit"
-                          onClick={()=>{window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank');}}
-                      >
-                          <p className="text-xs md:text-sm truncate overflow-hidden">{process.env.LENDING_ADDRESS_BNB}</p>
-                          <MdOpenInNew size={14} className="md:w-4 md:h-4"/>
+                      <div className="flex flex-col gap-2">
+                        <Button 
+                            color={"dark"} 
+                            size={"sm"} 
+                            className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 backdrop-blur-sm"
+                            onClick={() => window.open(process.env.BNB_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BNB, '_blank')}
+                        >
+                            <MdOpenInNew className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+                            <span className="font-medium text-sm md:text-base">BSC Smart Contract</span>
+                        </Button>
+                        <Button 
+                            color={"dark"} 
+                            size={"sm"} 
+                            className="w-full md:w-auto flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200 backdrop-blur-sm"
+                            onClick={()=>{window.open(process.env.BASE_EXPLORER + "address/" + process.env.LENDING_ADDRESS_BASE, '_blank');}}
+                        >
+                            <MdOpenInNew className="w-4 h-4 md:w-5 md:h-5 mr-1" />
+                            <span className="font-medium text-sm md:text-base">Base Smart Contract</span>
+                        </Button>
                       </div>
                   </div>
               </div>
@@ -118,30 +120,31 @@ export default function LendHome(props: LendHomeProps) {
             pools.length > 0
             ? <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {
-                  pools.map((pool, index) => (
+                  pools.map((pool, index) => {
+                    return (
                     <div 
                       key={`poolCard-${pool.pool_id}-${selectedStatus}`} 
                       id={`poolCard-${pool.pool_id}-${selectedStatus}`}
                       className="transition-all duration-200 hover:scale-[1.02]"
                     >
                       {
-                        (pool.status === "0")
-                        ? <PoolCardComingSoon/>
-                        : (pool.network === "OFFCHAIN")
-                          ? <PoolCardOffChain pool={pool} poolId={pool.pool_id}/>
-                          : <PoolCard poolId={pool.pool_id}/>
+                        (pool.contract.network_id == 0)
+                          ? <PoolCardOffChain pool={pool} poolId={"OFFCHAIN_" + pool.pool_id}/>
+                          : <PoolCard poolId={pool.pool_id} pool={pool}/>
                       }
                     </div>
-                  ))
-                }
+                  )
+                })}
               </div>
-            : <div className="flex flex-col items-center justify-center py-12">
-                <div className="flex flex-col items-center justify-center gap-2">
-                    <HiExclamationCircle className="w-10 h-10 text-gray-500" />
-                    <p className="text-gray-500 text-center">No pools available</p>
-                    <p className="text-gray-500 text-center">Please wait for the next pool to be opened</p>
-                  </div>
-              </div>
+            : (selectedStatus == "1")
+              ? <PoolCardComingSoon/>
+              : <div className="flex flex-col items-center justify-center py-12">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                      <HiExclamationCircle className="w-10 h-10 text-gray-500" />
+                      <p className="text-gray-500 text-center">No pools available</p>
+                      <p className="text-gray-500 text-center">Please wait for the next pool to be opened</p>
+                    </div>
+                </div>
           }
         </div>
       </div>

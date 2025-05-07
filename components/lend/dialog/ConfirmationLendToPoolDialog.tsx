@@ -8,17 +8,14 @@ import useGetAllowanceHook from '../utils/useGetAllowanceHook';
 import { ethers, parseEther } from 'ethers';
 import useLendToPoolHook from '../utils/useLendToPoolHook';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
-import { Pool, PoolJson } from '../types';
+import { Pool } from '../types';
 
 interface ConfirmationLendToPoolDialogProps {
   poolId: string;
   isOpen: boolean;
   pool: Pool;
-  poolJson: PoolJson;
-  symbol: string;
   closeModal: () => void;
   refreshUser: () => void;
-  decimal: number;
   stableNumber: string;
   adminFee: number;
   wagNumber: string;
@@ -31,11 +28,8 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     poolId,
     isOpen,
     pool,
-    poolJson,
-    symbol,
     closeModal,
     refreshUser,
-    decimal,
     stableNumber,
     adminFee,
     wagNumber
@@ -46,8 +40,8 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
 
   useEffect(()=>{
     if (isOpen && address) {
-      getStableAllowance(address, pool.lendingCurrency);
-      getWagAllowance(address, pool.pairingCurrency);
+      getStableAllowance(address, pool.lending_contract.address, pool.contract.network_id);
+      getWagAllowance(address, pool.pairing_contract.address, pool.contract.network_id);
     }
   }, [isOpen, address])
 
@@ -55,13 +49,13 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
 
   async function handleApproveStable() {
     try {
-      const stableAmount = ethers.parseUnits((parseFloat(stableNumber) + adminFee).toString(), decimal);
-      const resultApprove = await approveStable(stableAmount, pool.lendingCurrency)
+      const stableAmount = ethers.parseUnits((parseFloat(stableNumber) + adminFee).toString(), pool.lending_contract.decimals);
+      const resultApprove = await approveStable(stableAmount, pool.lending_contract.address, pool.contract.network_id)
       if (resultApprove.error) {
           throw resultApprove.error
       }
       if (address) {
-        getStableAllowance(address, pool.lendingCurrency);
+        getStableAllowance(address, pool.lending_contract.address, pool.contract.network_id);
       }
     } catch (error) {
       console.log(error)
@@ -71,7 +65,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
   function handleStableApproveButtonDisabled(): boolean {
     if(isLoadingStableAllowance) return true;
     
-    const allowanceWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,decimal) : 0;
+    const allowanceWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,pool.lending_contract.decimals) : 0;
     if( allowanceWithoutDecimal >= parseFloat(stableNumber) + adminFee) return true;
 
     if(isLoadingApproveStable) return true;
@@ -82,7 +76,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
   function handleStableApproveButtonString(): string {
     if(isLoadingStableAllowance) return "Checking Allowance";
 
-    const allowanceWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,decimal) : 0;
+    const allowanceWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,pool.lending_contract.decimals) : 0;
     if( allowanceWithoutDecimal >= parseFloat(stableNumber) + adminFee) return "Approved";
 
     if(isLoadingApproveStable) return "Approving...";
@@ -95,12 +89,12 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
   async function handleApproveWag() {
     try {
       const wagAmount = parseEther(`${wagNumber}`)
-      const resultApprove = await approveWag(wagAmount, pool.pairingCurrency)
+      const resultApprove = await approveWag(wagAmount, pool.pairing_contract.address, pool.contract.network_id)
       if (resultApprove.error) {
           throw resultApprove.error
       }
       if (address) {
-        getWagAllowance(address, pool.pairingCurrency);
+        getWagAllowance(address, pool.pairing_contract.address, pool.contract.network_id);
       }
     } catch (error) {
       console.log(error)
@@ -133,8 +127,8 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
 
   async function handleLend() {
     try {
-      const stableAmount = parseFloat(stableNumber) * Math.pow(10, decimal);
-      const resultLend = await lendToPool(poolId, BigInt(stableAmount))
+      const stableAmount = parseFloat(stableNumber) * Math.pow(10, pool.lending_contract.decimals);
+      const resultLend = await lendToPool(poolId, BigInt(stableAmount), pool.contract.network_id)
       if (resultLend.error) {
           throw resultLend.error
       }
@@ -148,7 +142,7 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
   function handleLendButtonDisabled(): boolean {
     if(isLoadingLendToPool) return true;
     
-    const allowanceStableWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,decimal) : 0;
+    const allowanceStableWithoutDecimal = stableAllowance ? parseFloat(stableAllowance.toString()) / Math.pow(10,pool.lending_contract.decimals) : 0;
     const allowanceWagWithoutDecimal = wagAllowance ? parseFloat(wagAllowance.toString()) / Math.pow(10,18) : 0;
 
     if ( 
@@ -226,9 +220,9 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
                         {numberWithCommas(stableNumber)}
                       </p>
                       <div className="flex items-center gap-2">
-                        <img src={poolJson?.properties.currency_logo} className="h-7" alt="Token Logo"/>
+                        <img src={pool.detail.currency_logo} className="h-7" alt="Token Logo"/>
                         <p className="text-lg text-gray-500">
-                          {symbol}
+                          {pool.detail.currency}
                         </p>
                       </div>
                     </div>
@@ -238,14 +232,14 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
                         Admin Fee
                       </p>
                       <p className="text-sm font-semibold text-gray-900">
-                        + {numberWithCommas(adminFee, 2)} {symbol}
+                        + {numberWithCommas(adminFee, 2)} {pool.detail.currency}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-6">
                     <p className='text-sm text-gray-600 mb-2'>
-                      <span className='font-semibold text-gray-900'>Step 1. </span> Approving contract to spend <span className='font-semibold text-gray-900'>{numberWithCommas(parseFloat(stableNumber) + adminFee, 2)} {symbol}</span>
+                      <span className='font-semibold text-gray-900'>Step 1. </span> Approving contract to spend <span className='font-semibold text-gray-900'>{numberWithCommas(parseFloat(stableNumber) + adminFee, 2)} {pool.detail.currency}</span>
                     </p>
                     <Button
                       color={handleStableApproveButtonString() === "Approved" ? "success" : "dark"}

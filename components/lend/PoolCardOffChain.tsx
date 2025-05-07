@@ -1,30 +1,10 @@
 import { numberWithCommas } from "../../util/stringUtility";
-import { useEffect } from "react";
 import { useRouter } from 'next/router';
 import { Badge, Progress } from "flowbite-react";
 import { MdSecurity } from "react-icons/md";
-import useGetOffchainPoolJsonHook from "./utils/useGetOffchainPoolJsonHook";
 import { HiCurrencyDollar, HiLockClosed } from "react-icons/hi2";
 import { MdOutlineAccessTime } from "react-icons/md";
-
-interface Pool {
-  status: string | number;
-  [key: string]: any;
-}
-
-interface PoolJson {
-  name: string;
-  sub_name: string;
-  image: string;
-  properties: {
-    principal: number;
-    APY: number;
-    term: string;
-    currency: string;
-    rating: number;
-    type: string;
-  };
-}
+import { Pool } from "./types";
 
 interface PoolCardOffChainProps {
   pool: Pool;
@@ -33,27 +13,20 @@ interface PoolCardOffChainProps {
 
 export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps) {
   const router = useRouter();
-  const {isLoading: isLoadingPoolJson, data: poolJson, fetchData: getPoolJson} = useGetOffchainPoolJsonHook();
-
-  useEffect(()=>{
-    if (poolId != null) {
-      getPoolJson(poolId)
-    }
-  }, [poolId])
 
   function getPrincipal(): number {
-    if(poolJson == null) return 0;
-    return (poolJson as PoolJson).properties.principal;
+    if(pool == null) return 0;
+    return Number(pool.detail.principal);
   }
   
   function getApy(): number {
-    if(poolJson == null) return 0;
-    return (poolJson as PoolJson).properties.APY;
+    if(pool == null) return 0;
+    return Number(pool.detail.apy);
   }
 
   function getLoanTerm(): string {
-    if(poolJson == null) return "0";
-    return (poolJson as PoolJson).properties.term;
+    if(pool == null) return "0";
+    return pool.detail.term;
   }
 
   function getPoolStatus(): number {
@@ -61,8 +34,8 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
   }
 
   function getSymbol(): string {
-    if(poolJson == null) return "";
-    return (poolJson as PoolJson).properties.currency;
+    if(pool == null) return "";
+    return pool.detail.currency;
   }
 
   function getBadgeColor(): string {
@@ -75,7 +48,7 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
 
   function getBadgeString(): string {
     if(getPoolStatus() === 1) return "Open To Lend"
-    if(getPoolStatus() === 2) return "Ongoing Lend"
+    if(getPoolStatus() === 2) return "Active"
     if(getPoolStatus() === 3) return "Done"
 
     return "Disabled"
@@ -92,7 +65,7 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
   return (
     <>
       {  
-        poolJson == null || isLoadingPoolJson
+        pool == null
         ? <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm animate-pulse">
             <div className="space-y-3 md:space-y-4">
                 <div className="h-5 md:h-6 w-3/4 bg-gray-200 rounded-full"/>
@@ -102,21 +75,21 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
         </div>
         : <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
             onClick={() => {
-              router.push(`/lend/offchain/${poolId}`);
+              router.push(`/lend/offchain/${pool.id}`);
             }}
           >
             {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-0 mb-4 md:mb-6">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="flex-shrink-0 bg-gray-50 p-2 rounded-xl border border-gray-100">
-                  <img src={(poolJson as PoolJson).image} className="h-8 w-8 md:h-10 md:w-10 object-contain" alt="Pool Logo" />
+                  <img src={pool.detail.image} className="h-8 w-8 md:h-10 md:w-10 object-contain" alt="Pool Logo" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={(poolJson as PoolJson).name}>
-                    {(poolJson as PoolJson).name}
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900 truncate" title={pool.detail.name}>
+                    {pool.detail.name}
                   </h3>
-                  <p className="text-xs md:text-sm text-gray-500 truncate" title={(poolJson as PoolJson).sub_name}>
-                    {(poolJson as PoolJson).sub_name}
+                  <p className="text-xs md:text-sm text-gray-500 truncate" title={pool.detail.sub_name}>
+                    {pool.detail.sub_name}
                   </p>
                 </div>
               </div>
@@ -199,7 +172,7 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
                     <span className="text-xs md:text-sm font-medium text-gray-600">Type</span>
                   </div>
                   <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">
-                    {(poolJson as PoolJson).properties.type}
+                    {pool.detail.type}
                   </p>
                 </div>
               </div>

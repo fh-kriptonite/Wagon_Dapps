@@ -6,7 +6,7 @@ interface UseGetPoolFeeHookResult {
   isLoading: boolean;
   data: PoolFee | null;
   error: string | null;
-  fetchData: (poolId: string) => Promise<void>;
+  fetchData: (poolId: number, network_id: number) => Promise<void>;
 }
 
 const useGetPoolFeeHook = (): UseGetPoolFeeHookResult => {
@@ -14,11 +14,11 @@ const useGetPoolFeeHook = (): UseGetPoolFeeHookResult => {
   const [data, setData] = useState<PoolFee | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async (poolId: string): Promise<void> => {
+  const fetchData = async (poolId: number, network_id: number): Promise<void> => {
     setIsLoading(true);
 
     try {
-      const response = await services.getPoolFee(poolId);
+      const response = await services.getPoolFee(poolId, network_id);
       setData({
         borrowerFee: response.borrowerFee,
         adminFee: response.adminFee,

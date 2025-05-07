@@ -47,9 +47,8 @@ export default function ProfileComponent(props: ProfileComponentProps) {
 
         try {
             // Request Account
-            const response = await axios.get<ApiResponse>(`/api/account/getAccount?wallet_address=${accountAddress}`);
+            const response = await axios.get<ApiResponse>(process.env.WAGON_API_URL + `/api/accounts/wallet_address/${accountAddress}`);
 
-            console.log(response.data)
             // Handle success response
             if(response.data.error) {
                 throw response.data.error

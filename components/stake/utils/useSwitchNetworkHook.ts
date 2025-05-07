@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSwitchChain } from '@particle-network/connectkit';
-import { mainnet, sepolia, bsc, bscTestnet, Chain } from "@particle-network/connectkit/chains";
 
 interface SwitchNetworkResult {
   data: number | null;
@@ -10,14 +9,6 @@ interface SwitchNetworkResult {
 interface UseSwitchNetworkHookResult {
   isLoading: boolean;
   fetchData: (targetChainId: number) => Promise<SwitchNetworkResult>;
-}
-
-function getChain(chainId: number): Chain {
-  if (chainId === 1) return mainnet;
-  if (chainId === 11155111) return sepolia;
-  if (chainId === 56) return bsc;
-  if (chainId === 97) return bscTestnet;
-  throw new Error('Unsupported chain ID');
 }
 
 const useSwitchNetworkHook = (): UseSwitchNetworkHookResult => {

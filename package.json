@@ -14,10 +14,10 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "buildexport": "next build && next export",
+    "build": "NODE_ENV=production next build",
+    "buildexport": "NODE_ENV=production next build && next export",
     "start": "next start -p 3000",
-    "start-dev": "next start -p 3002",
+    "start-dev": "next start -p 3005",
     "start-reskin": "next start -p 3004",
     "lint": "next lint"
   },

@@ -3,21 +3,17 @@ import { useState } from 'react';
 import LendToPoolDialog from './dialog/LendToPoolDialog';
 import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
 import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
-import { Pool, PoolFee, PoolJson } from './types';
+import { Pool, PoolFee } from './types';
 import { useAccount } from '@particle-network/connectkit';
 interface LendToPoolButtonProps {
   pool: Pool;
-  symbol: string;
-  poolMaxSupply: string;
   poolSupply: string;
-  decimal: number;
-  poolJson: PoolJson;
   poolId: string;
   refreshUser: () => void;
   fees: PoolFee | null;
 }
 
-export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupply, decimal, poolJson, poolId, refreshUser, fees }: LendToPoolButtonProps) {
+export default function LendToPoolButton({ pool, poolSupply, poolId, refreshUser, fees }: LendToPoolButtonProps) {
   const { chainId } = useAccount()
 
   const { fetchData: switchNetwork } = useSwitchNetworkHook();
@@ -30,9 +26,9 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
 
   async function openModal() {
     // switch network
-    if (chainId != Number(process.env.BNB_CHAIN_ID)) {
+    if (chainId != pool.contract.network_id) {
       try {
-        const resultSwitchNetwork = await switchNetwork(Number(process.env.BNB_CHAIN_ID));
+        const resultSwitchNetwork = await switchNetwork(pool.contract.network_id);
         if (resultSwitchNetwork.error) {
           throw resultSwitchNetwork.error;
         }
@@ -55,8 +51,8 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
   }
 
   function handleDisableLendButton(): boolean {
-    if (parseFloat(pool.collectionTermEnd) - (Date.now()/1000) < 0) return true;
-    if (poolSupply === poolMaxSupply) return true;
+    if (pool.collection_term_end - (Date.now()/1000) < 0) return true;
+    if (poolSupply === pool.target_loan) return true;
     return false;
   }
 
@@ -77,11 +73,7 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
         pool={pool}
-        poolJson={poolJson}
-        symbol={symbol}
         fees={fees}
-        decimal={decimal}
-        chainId={chainId || 0}
         handleLend={handleLend}
       />
 
@@ -89,11 +81,8 @@ export default function LendToPoolButton({ pool, symbol, poolMaxSupply, poolSupp
         poolId={poolId}
         isOpen={isOpenConfirmation}
         pool={pool}
-        poolJson={poolJson}
-        symbol={symbol}
         closeModal={() => setIsOpenConfirmation(false)}
         refreshUser={refreshUser}
-        decimal={decimal}
         stableNumber={stableNumber}
         adminFee={adminFee}
         wagNumber={wagNumber}

@@ -63,14 +63,11 @@ export function formatDate(dateString) {
     return 'Invalid Date';
   }
 
-  // Format the date object into the desired format "Jan 21, 2024, 10:30 AM"
+  // Format the date object into the desired format "Jan 21, 2024"
   const options = { 
     month: 'short', 
     day: 'numeric', 
-    year: 'numeric', 
-    hour: '2-digit', 
-    minute: '2-digit',
-    hour12: true 
+    year: 'numeric'
   };
   
   return date.toLocaleString('en-US', options);

@@ -8,30 +8,33 @@ interface OverviewCardProps {
     // Add any props here if needed
 }
 
-interface LendingOverview {
-    tvl: bigint;
-    totalLoanOrigination: bigint;
-    currentLoansOutstanding: bigint;
-}
-
 interface CoinPriceResponse {
-    data: Array<{
+    data: {
         usd_price: number;
-    }>;
+    };
 }
 
 export default function OverviewCard(props: OverviewCardProps) {
     const [totalValueLocked, setTotalValueLocked] = useState<number>(0);
     const [totalLoanOrigination, setTotalLoanOrigination] = useState<number>(0);
     const [currentLoanOutstanding, setCurrentLoanOutstanding] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
     async function getLendingOverview() {
-        const lendingOverview = await services.getLendingOverview();
-        const responsePrice: CoinPriceResponse = await getCoinPriceService("IDRT");
-        const idrtPrice = responsePrice.data[0].usd_price;
-        
-        setTotalValueLocked(Number(lendingOverview.tvl) * idrtPrice / 100);
-        setTotalLoanOrigination(Number(lendingOverview.totalLoanOrigination) * idrtPrice / 100);
-        setCurrentLoanOutstanding(Number(lendingOverview.currentLoansOutstanding) * idrtPrice / 100);
+        setIsLoading(true);
+
+        try {
+            const response = await fetch(process.env.WAGON_API_URL + "/api/pools/overview");
+            const responseJson = await response.json();
+            const data = responseJson.data;
+            setTotalValueLocked(Number(data.lending_tvl));
+            setTotalLoanOrigination(Number(data.total_loans_originated));
+            setCurrentLoanOutstanding(Number(data.current_loans_outstanding));
+        } catch (error) {
+            console.error('Error getting lending overview:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     useEffect(() => {
@@ -49,7 +52,7 @@ export default function OverviewCard(props: OverviewCardProps) {
                     <h3 className="text-sm font-medium text-gray-600">Total Value Locked</h3>
                 </div>
                 <p className="text-2xl font-semibold text-gray-900">
-                    ${numberWithCommas(totalValueLocked, 0)}
+                    IDR {numberWithCommas(totalValueLocked, 0)}
                 </p>
             </div>
 
@@ -62,7 +65,7 @@ export default function OverviewCard(props: OverviewCardProps) {
                     <h3 className="text-sm font-medium text-gray-600">Total Loan Originations</h3>
                 </div>
                 <p className="text-2xl font-semibold text-gray-900">
-                    ${numberWithCommas(totalLoanOrigination, 0)}
+                    IDR {numberWithCommas(totalLoanOrigination, 0)}
                 </p>
             </div>
 
@@ -75,7 +78,7 @@ export default function OverviewCard(props: OverviewCardProps) {
                     <h3 className="text-sm font-medium text-gray-600">Current Loans Outstanding</h3>
                 </div>
                 <p className="text-2xl font-semibold text-gray-900">
-                    ${numberWithCommas(currentLoanOutstanding, 0)}
+                    IDR {numberWithCommas(currentLoanOutstanding, 0)}
                 </p>
             </div>
         </div>

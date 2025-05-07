@@ -44,6 +44,9 @@ export default function TimelinePool(props: TimelinePoolProps) {
   const wagBalance = props.wagBalance;
   const fees = props.fees;
   const refresh = props.refresh;
+
+  console.log("stableBalance: ", stableBalance);
+  console.log('decimal: ', decimal);
   
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
@@ -54,23 +57,23 @@ export default function TimelinePool(props: TimelinePoolProps) {
 
   useEffect(() => {
     if (poolId && typeof poolId === 'string' && address) {
-      getInterestAmountShare(address, poolId);
-      getLatestInterestClaimed(address, poolId);
-      getDeploymentGracePeriod(poolId);
+      getInterestAmountShare(address, poolId, pool.contract.network_id);
+      getLatestInterestClaimed(address, poolId, pool.contract.network_id);
+      getDeploymentGracePeriod(poolId, pool.contract.network_id);
     }
   }, []);
 
   useEffect(() => {
     if (poolId && typeof poolId === 'string' && address) {
-      getInterestAmountShare(address, poolId);
-      getLatestInterestClaimed(address, poolId);
-      getDeploymentGracePeriod(poolId);
+      getInterestAmountShare(address, poolId, pool.contract.network_id);
+      getLatestInterestClaimed(address, poolId, pool.contract.network_id);
+      getDeploymentGracePeriod(poolId, pool.contract.network_id);
     }
   }, [address]);
 
   useEffect(()=>{
     if(pool != null) {
-      setRepayments(new Array(parseFloat(pool.paymentFrequency)).fill(null).map((_, index) => ({
+      setRepayments(new Array(pool.payment_frequency).fill(null).map((_, index) => ({
         id: index,
         status: "pending"
       })));
@@ -81,7 +84,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
     if(pool == null) return "~";
 
     if(index < Number(latestInterestClaimed?.toString() || "0")) return "Claimed";
-    if(index < Number(pool.latestRepayment)) return "Claimable";
+    if(index < Number(pool.latest_repayment)) return "Claimable";
     return "Unclaimable";
   }
 
@@ -92,10 +95,10 @@ export default function TimelinePool(props: TimelinePoolProps) {
   async function handleClaimButton(): Promise<void> {
     // switch network
     const chainId = (await getChainId()).data;
-    const bnbChainId = process.env.BNB_CHAIN_ID;
-    if(chainId && bnbChainId && chainId.toString() !== bnbChainId) {
+    const poolNetworkId = pool.contract.network_id;
+    if(chainId && poolNetworkId && chainId !== poolNetworkId) {
       try {
-        const resultSwitchNetwork = await switchNetwork(Number(bnbChainId));
+        const resultSwitchNetwork = await switchNetwork(poolNetworkId);
         if (resultSwitchNetwork.error) {
           throw resultSwitchNetwork.error;
         }
@@ -112,7 +115,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
   function isUnclaimable(): boolean {
     if(pool == null) return true;
     if(parseFloat(stableBalance) == 0) return true;
-    if(Number(latestInterestClaimed?.toString() || "0") < Number(pool.latestRepayment)) return false;
+    if(Number(latestInterestClaimed?.toString() || "0") < Number(pool.latest_repayment)) return false;
     return true;
   }
 
@@ -145,8 +148,9 @@ export default function TimelinePool(props: TimelinePoolProps) {
             <Table.Body className="divide-y">
               {
                 repayments.map((repayment, index) => {
-                  const loanStart = (parseFloat(pool?.termStart || "0") + Number(deploymentGracePeriod || 0)) * 1000;
-                  const durationBetweenPayment = parseFloat(pool?.loanTerm || "0") / parseFloat(pool?.paymentFrequency || "1") * 1000;
+                  const termStart = new Date(pool.term_start);
+                  const loanStart = (termStart.getTime() + Number(deploymentGracePeriod || 0));
+                  const durationBetweenPayment = (pool.loan_term || 0) / (pool.payment_frequency || 1);
                   const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
                   const status = isInterestClaimable(index);
                   
@@ -159,7 +163,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
                       <Table.Cell className="text-sm text-gray-900 py-4">{formatDate(new Date(paymentTime))}</Table.Cell>
                       <Table.Cell className="text-sm text-gray-900 py-4 text-right">
                         {
-                          (index+1 == Number(pool?.paymentFrequency)) 
+                          (index+1 == Number(pool?.payment_frequency)) 
                             ? numberWithCommas((parseFloat(stableBalance) / Math.pow(10,decimal)) + (Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal)), 2) 
                             : numberWithCommas(Number(interestAmountShare?.toString() || "0") / Math.pow(10,decimal), 2)
                         } {symbol}
@@ -194,7 +198,7 @@ export default function TimelinePool(props: TimelinePoolProps) {
           latestInterestClaimed={latestInterestClaimed?.toString() || "0"}
           refreshLatestInterestClaimed={()=>{
             if (poolId && typeof poolId === 'string' && address) {
-              getLatestInterestClaimed(address, poolId);
+              getLatestInterestClaimed(address, poolId, pool.contract.network_id);
             }
           }}
           stableBalance={stableBalance}
