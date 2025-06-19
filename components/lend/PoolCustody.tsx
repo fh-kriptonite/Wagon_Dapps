@@ -1,8 +1,6 @@
 import { IoShieldCheckmarkSharp } from "react-icons/io5";
 import { Pool } from "./types";
-import { HiOutlineShieldCheck, HiOutlineUser, HiOutlineDocumentText, HiOutlineStar, HiOutlineCube } from "react-icons/hi2";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import { shortenAddress } from "@/util/stringUtility";
+import { HiOutlineShieldCheck, HiOutlineCube } from "react-icons/hi2";
 
 interface PoolCustodyProps {
   pool: Pool | null;
@@ -52,14 +50,14 @@ export default function PoolCustody({ pool }: PoolCustodyProps) {
       </div>
       
       {
-        pool.assets.length > 0 &&
+        pool.poolAssets.length > 0 &&
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <HiOutlineCube className="w-5 h-5 text-gray-600" />
             <p className="text-sm font-medium text-gray-900">Assets</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pl-7">
-            {pool.assets.map((asset, index) => (
+            {pool.poolAssets.map((asset, index) => (
               <div 
                 key={`custody-${index}`}
                 className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-blue-200 transition-colors"

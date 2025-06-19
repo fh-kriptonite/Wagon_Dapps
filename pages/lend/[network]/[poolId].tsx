@@ -86,7 +86,7 @@ export default function PoolDetail() {
   // Assets and shipments fetching effect
   useEffect(() => {
     if (pool) {
-      if (pool.detail.type === "Asset Leasing") {
+      if (pool.detail.type === "Asset Financing") {
         getShipments();
         getAssetsPool();
       }
@@ -105,11 +105,12 @@ export default function PoolDetail() {
   }
 
   async function getAssetsPool(): Promise<void> {
-    if (!poolId) return;
+    if (!pool) return;
     setIsLoadingAsset(true);
     try {
-      const data = await services.getOffchainAssetsPool(poolId as string);
-      setAssets(data);
+      const response = await fetch(process.env.WAGON_API_URL + '/api/pools/assets/' + pool.id);
+      const assets = await response.json();
+      setAssets(assets.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -118,11 +119,12 @@ export default function PoolDetail() {
   }
 
   async function getShipments(): Promise<void> {
-    if (!poolId) return;
+    if (!pool) return;
     setIsLoadingShipment(true);
     try {
-      const data = await services.getOffchainShipmentsPool(poolId as string);
-      setShipments(data);
+      const response = await fetch(process.env.WAGON_API_URL + '/api/pools/shipments/' + pool.id);
+      const shipments = await response.json();
+      setShipments(shipments.data);
     } catch (error) {
       console.log(error);
     } finally {
@@ -198,7 +200,7 @@ export default function PoolDetail() {
       </div>
 
       {
-        pool && pool.detail.type === "Asset Leasing" &&
+        pool && pool.detail.type === "Asset Financing" &&
         <AssetReports 
           shipments={shipments as any}
           assets={assets as any} 
@@ -240,7 +242,7 @@ export default function PoolDetail() {
             </Tabs.Item>
           }
           {
-            pool && pool.detail.type == "Asset Leasing" &&
+            pool && pool.detail.type == "Asset Financing" &&
             <Tabs.Item title="Shipments" icon={PiPackage}>
                 <div className='min-h-60'>
                   <ShipmentList
@@ -250,7 +252,7 @@ export default function PoolDetail() {
             </Tabs.Item>
           }
           {
-            pool && pool.detail.type == "Asset Leasing" &&
+            pool && pool.detail.type == "Asset Financing" &&
             <Tabs.Item title="Assets" icon={FaTruckFront}>
                 <div className='min-h-60'>
                   <AssetList

@@ -15,6 +15,15 @@ declare global {
     }
 }
 
+// Memoized providers
+const providers = {
+    [Number(process.env.BNB_CHAIN_ID)]: new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB),
+    [Number(process.env.BASE_CHAIN_ID)]: new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BASE)
+};
+
+// Memoized contracts cache
+const contracts = new Map();
+
 const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
 const providerBnb = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
 const providerBase = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BASE);
@@ -39,23 +48,21 @@ async function getTokenToUsdRate(priceUrl: string, chainId: number): Promise<num
 }
 
 export const getErc20BalanceService = async (chainId: number, account: string, erc20Address: string): Promise<number> => {
-    let providerUrl;
+    const provider = providers[chainId];
+    if (!provider) throw new Error('Invalid chain ID');
     
-    if (chainId === Number(process.env.BNB_CHAIN_ID)) {
-        providerUrl = process.env.PROVIDER_HTTPS_BNB;
-    } else if (chainId === Number(process.env.BASE_CHAIN_ID)) {
-        providerUrl = process.env.PROVIDER_HTTPS_BASE;
+    let contract = contracts.get(erc20Address);
+    if (!contract) {
+        contract = new ethers.Contract(erc20Address, ERC20_ABI, provider);
+        contracts.set(erc20Address, contract);
     }
-
-    const provider = new ethers.JsonRpcProvider(providerUrl);
-    const erc20Contract = new ethers.Contract(erc20Address, ERC20_ABI, provider);
     
     try {
-        const balance = await erc20Contract.balanceOf(account);
-        const decimals = await erc20Contract.decimals();
+        const balance = await contract.balanceOf(account);
+        const decimals = await contract.decimals();
         return parseFloat(ethers.formatUnits(balance, decimals));
-
     } catch (error) {
+        console.error('Error getting ERC20 balance:', error);
         throw error;
     }
 };

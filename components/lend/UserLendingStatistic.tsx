@@ -66,9 +66,9 @@ export default function UserLendingStatistic(props: UserLendingStatisticProps) {
 
     function showLendFiatToPoolButton() {
         if(!pool) return false;
-        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BSC) return false;
-        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BASE) return false;
-        return true;
+        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BSC) return true;
+        if(pool.lending_contract.address == process.env.IDRX_ADDRESS_BASE) return true;
+        return false;
     }
 
     return (

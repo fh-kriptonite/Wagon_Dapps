@@ -36,7 +36,7 @@ export default function OffchainPool() {
   
   useEffect(() => {
     if(pool != null) {
-      if(pool.detail.type === "Asset Leasing") {
+      if(pool.detail.type === "Asset Financing") {
         getShipments();
         getAssetsPool();
       }
@@ -47,15 +47,16 @@ export default function OffchainPool() {
   const [isLoadingAsset, setIsLoadingAsset] = useState<boolean>(false);
 
   async function getAssetsPool() {
-    if (!poolId || typeof poolId !== 'string') return;
+    if (!pool) return;
     
     setIsLoadingAsset(true);
     try {
-      const data = await services.getOffchainAssetsPool(poolId);
-      setAssets(data);
-      setIsLoadingAsset(false);
+      const response = await fetch(process.env.WAGON_API_URL + '/api/pools/assets/' + pool.id);
+      const assets = await response.json();
+      setAssets(assets.data);
     } catch (error) {
       console.error(error);
+    } finally {
       setIsLoadingAsset(false);
     }
   }
@@ -64,15 +65,16 @@ export default function OffchainPool() {
   const [isLoadingShipment, setIsLoadingShipment] = useState<boolean>(false);
 
   async function getShipments() {
-    if (!poolId || typeof poolId !== 'string') return;
+    if (!pool) return;
     
     setIsLoadingShipment(true);
     try {
-      const data = await services.getOffchainShipmentsPool(poolId);
-      setShipments(data);
-      setIsLoadingShipment(false);
+      const response = await fetch(process.env.WAGON_API_URL + '/api/pools/shipments/' + pool.id);
+      const shipments = await response.json();
+      setShipments(shipments.data);
     } catch (error) {
       console.error(error);
+    } finally {
       setIsLoadingShipment(false);
     }
   }
@@ -123,7 +125,7 @@ export default function OffchainPool() {
       </div>
 
       {
-        pool?.detail.type === "Asset Leasing" &&
+        pool?.detail.type === "Asset Financing" &&
         <AssetReports 
           shipments={shipments}
           assets={assets}
@@ -147,7 +149,7 @@ export default function OffchainPool() {
               </div>
           </Tabs.Item>
           {
-            pool?.detail.type === "Asset Leasing" &&
+            pool?.detail.type === "Asset Financing" &&
             <Tabs.Item title="Shipments" icon={PiPackage}>
                 <div className='min-h-60'>
                   <ShipmentList

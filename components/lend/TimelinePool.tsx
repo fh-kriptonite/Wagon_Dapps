@@ -45,9 +45,6 @@ export default function TimelinePool(props: TimelinePoolProps) {
   const fees = props.fees;
   const refresh = props.refresh;
 
-  console.log("stableBalance: ", stableBalance);
-  console.log('decimal: ', decimal);
-  
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
 
@@ -149,11 +146,10 @@ export default function TimelinePool(props: TimelinePoolProps) {
               {
                 repayments.map((repayment, index) => {
                   const termStart = new Date(pool.term_start);
-                  const loanStart = (termStart.getTime() + Number(deploymentGracePeriod || 0));
+                  const loanStart = (termStart.getTime() / 1000 + Number(deploymentGracePeriod || 0));
                   const durationBetweenPayment = (pool.loan_term || 0) / (pool.payment_frequency || 1);
-                  const paymentTime = loanStart + (durationBetweenPayment * (index + 1));
+                  const paymentTime = (loanStart + (durationBetweenPayment * (index + 1)))*1000;
                   const status = isInterestClaimable(index);
-                  
                   return (     
                     <Table.Row 
                       key={`repayment-${index}`}

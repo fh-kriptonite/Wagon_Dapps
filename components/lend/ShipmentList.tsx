@@ -61,8 +61,8 @@ export default function ShipmentList({ shipments = [] }: ShipmentListProps) {
   }
 
   function getDisplayAssetId(shipment: Shipment): string {
-    const id = shipment.asset_id;
-    const timestamp = new Date(shipment.asset_created_at);
+    const id = shipment.truck.id;
+    const timestamp = new Date(shipment.truck.created_at);
 
     const data = `${id}:${timestamp}`; // Combine integer and timestamp
 
@@ -71,9 +71,9 @@ export default function ShipmentList({ shipments = [] }: ShipmentListProps) {
     // Return the first 9 characters
     const shortHash = hash.slice(0, 9);
 
-    if (shipment.asset_type === 'TRL-T') return 'TT-' + shortHash;
+    if (shipment.truck.type === 'TRL-T') return 'TT-' + shortHash;
 
-    if (shipment.asset_type === 'LTANK') return 'LT-' + shortHash;
+    if (shipment.truck.type === 'LTANK') return 'LT-' + shortHash;
 
     return shortHash;
   }

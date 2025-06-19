@@ -11,9 +11,8 @@ export interface Shipment {
   id: number;
   created_at: string;
   date: string;
-  asset_id: number;
-  asset_created_at: string;
-  asset_type: string;
+  truck: Asset;
+  truck_id: number;
   from: string;
   to: string;
   weight: number;
@@ -123,7 +122,7 @@ export interface Pool {
   pairing_contract: TokenContract;
   detail: PoolDetail;
   highlights: Highlight[];
-  assets: PoolAsset[];
+  poolAssets: PoolAsset[];
   contract: Contract;
 } 
 

@@ -26,7 +26,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   useEffect(() => {
-    if (process.env.PRODUCTION) {
+    if (process.env.PRODUCTION == "true") {
       const handleRouteChange = (url: string) => {
         window.gtag('config', process.env.NEXT_PUBLIC_GA_TRACKING_ID || '', {
           page_path: url,
@@ -55,7 +55,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
 
       {
-        process.env.PRODUCTION &&
+        process.env.PRODUCTION == "true" &&
         <>
           <Script strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_TRACKING_ID}`} />
           <Script

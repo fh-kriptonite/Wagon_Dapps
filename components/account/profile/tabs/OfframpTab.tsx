@@ -1,7 +1,7 @@
 import { useConnectedAddress } from "@/hooks/useConnectedAddress";
 import { numberWithCommas } from "@/util/stringUtility";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { HiBanknotes, HiArrowRight, HiClock, HiExclamationCircle, HiInformationCircle, HiArrowPath } from "react-icons/hi2";
 import BankAccountSection from "./BankAccountSection";
 import useGetStableBalanceHook from "@/components/lend/utils/useGetStableBalanceHook";
@@ -26,39 +26,91 @@ interface OfframpTabProps {
 
 export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
     const [amount, setAmount] = useState<string>("");
-    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [selectedBankAccount, setSelectedBankAccount] = useState<BankAccount | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [showExchangeDialog, setShowExchangeDialog] = useState(false);
-    const [showHistoryDialog, setShowHistoryDialog] = useState(false);
-    const [exchangeDetails, setExchangeDetails] = useState<any>(null);
+    const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
     const [alert, setAlert] = useState<{ show: boolean; message: string; type: 'success' | 'failure' }>({
         show: false,
         message: '',
         type: 'success'
     });
-
+    const [showHistory, setShowHistory] = useState<boolean>(false);
+    const [showExchange, setShowExchange] = useState<boolean>(false);
+    const [chainId, setChainId] = useState<number>(Number(process.env.BNB_CHAIN_ID));
     const { connectedAddress } = useConnectedAddress();
-    const {isLoading: isLoadingStableBalance, data: stableBalance, fetchData: getStableBalance} = useGetStableBalanceHook();
-
+    const { data: stableBalance, fetchData: getStableBalance } = useGetStableBalanceHook();
     const { isLoading: isBurning, isWaitingApproval: isWaitingApprovalBurn, fetchData: burnIdrx } = useRedeemIDRX();
-    const [chainId, setChainId] = useState<number>(bsc.id);
 
-    const getBankAccount = async () => {
+    // Memoize the getBalance function
+    const getBalance = useCallback(() => {
+        if (connectedAddress) {
+            getStableBalance(
+                Number(chainId), 
+                connectedAddress, 
+                getIDRXAddress()
+            );
+        }
+    }, [connectedAddress, chainId]);
+
+    // Memoize the getBankAccount function
+    const getBankAccount = useCallback(async () => {
         try {
             const response = await axios.get(`${process.env.WAGON_API_URL}/api/ramp/get_bank`, {
                 params: {
                     wallet_address: connectedAddress,
-            }
-        });
+                }
+            });
 
             if (response.data.status === 'success') {
                 setBankAccounts(response.data.data);
             }
         } catch (error) {
-            console.error(error);
+            console.error('Error fetching bank accounts:', error);
         }
-    };
+    }, [connectedAddress]);
+
+    // Initial data fetch
+    useEffect(() => {
+        let mounted = true;
+
+        const fetchData = async () => {
+            if (connectedAddress && mounted) {
+                await getBankAccount();
+                getBalance();
+            }
+        };
+
+        fetchData();
+
+        return () => {
+            mounted = false;
+        };
+    }, [connectedAddress]);
+
+    // Chain ID change effect
+    useEffect(() => {
+        let mounted = true;
+
+        if (mounted) {
+            getBalance();
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, [connectedAddress, chainId]);
+
+    // Alert cleanup
+    useEffect(() => {
+        if (alert.show) {
+            const timer = setTimeout(() => {
+                setAlert(prev => ({ ...prev, show: false }));
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [alert.show]);
+
+    const [exchangeDetails, setExchangeDetails] = useState<any>(null);
 
     function getIDRXAddress() {
         if(chainId === bsc.id) {
@@ -68,27 +120,6 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
         }
         return "";
     }
-
-    function getBalance() {
-        if (connectedAddress) {
-            getStableBalance(
-                Number(chainId), 
-                connectedAddress, 
-                getIDRXAddress()
-            );
-        }
-    }
-
-    useEffect(() => {
-        if (connectedAddress) {
-            getBankAccount();
-            getBalance();
-        }
-    }, [connectedAddress]);
-
-    useEffect(() => {
-        getBalance();
-    }, [chainId]);
 
     const handleExchange = async () => {
         if (!amount || !selectedBankAccount) return;
@@ -133,7 +164,7 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
 
             if (response.data.status === 'success') {
                 setExchangeDetails(response.data.data);
-                setShowExchangeDialog(true);
+                setShowExchange(true);
                 setAlert({
                     show: true,
                     message: 'Exchange request submitted successfully!',
@@ -159,7 +190,7 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
     };
 
     const handleShowHistory = async () => {
-        setShowHistoryDialog(true);
+        setShowHistory(true);
     };
 
     return (
@@ -260,7 +291,7 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
                                     <HiArrowPath className="w-3 h-3 md:w-4 md:h-4" />
                                 </Button>
                                 <p className="text-xs text-gray-500">
-                                    Available: {isLoadingStableBalance ? "~" : numberWithCommas(Number(stableBalance))} IDRX
+                                    Available: {isLoading ? "~" : numberWithCommas(Number(stableBalance))} IDRX
                                 </p>
                             </div>
                         </div>
@@ -351,15 +382,15 @@ export default function OfframpTab({ offramp_enabled }: OfframpTabProps) {
 
             {/* Exchange Dialog */}
             <ExchangeDialog
-                isOpen={showExchangeDialog}
-                onClose={() => setShowExchangeDialog(false)}
+                isOpen={showExchange}
+                onClose={() => setShowExchange(false)}
                 exchangeDetails={exchangeDetails}
                 selectedBankAccount={selectedBankAccount}
             />
 
             <HistoryDialog
-                isOpen={showHistoryDialog}
-                onClose={() => setShowHistoryDialog(false)}
+                isOpen={showHistory}
+                onClose={() => setShowHistory(false)}
                 txType="BURN"
             />
         </div>

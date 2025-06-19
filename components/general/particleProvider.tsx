@@ -22,14 +22,11 @@ if (!projectId || !clientKey || !appId) {
 }
 
 const supportChains: Chain[] = [];
-// evm start
-if(process.env.PRODUCTION) {
+if(process.env.PRODUCTION == "true") {
   supportChains.push(mainnet, bsc, base);
 } else {
   supportChains.push(mainnet, sepolia, bsc, bscTestnet, base, baseSepolia);
 }
-
-// evm end
 
 const config = createConfig({
   projectId,
