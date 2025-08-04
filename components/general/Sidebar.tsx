@@ -96,7 +96,7 @@ export default function Sidebar(props: SidebarProps) {
                         <div className="flex items-center">
                             <button 
                                 onClick={toggleSidebar}
-                                className="p-2 rounded-lg hover:bg-gray-50 md:hidden"
+                                className="p-2 rounded-lg hover:bg-gray-50 lg:hidden"
                             >
                                 <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -106,13 +106,13 @@ export default function Sidebar(props: SidebarProps) {
                             <Link href='/' className="ml-3">
                                 {Number(process.env.THEME_SKIN) === 2 ? (
                                     <>
-                                        <img src="/logo-title-waresix.png" className="h-6 hidden md:block" alt="Logo" />
-                                        <img src="/logo-waresix-square.png" className="h-8 md:hidden" alt="Logo" />
+                                        <img src="/logo-title-waresix.png" className="h-6 hidden lg:block" alt="Logo" />
+                                        <img src="/logo-waresix-square.png" className="h-8 lg:hidden" alt="Logo" />
                                     </>
                                 ) : (
                                     <>
-                                        <img src="/logo-title.png" className="h-8 hidden md:block" alt="Logo" />
-                                        <img src="/logo_pad.png" className="h-8 md:hidden" alt="Logo" />
+                                        <img src="/logo-title.png" className="h-8 hidden lg:block" alt="Logo" />
+                                        <img src="/logo_pad.png" className="h-8 lg:hidden" alt="Logo" />
                                     </>
                                 )}
                             </Link>
@@ -128,7 +128,7 @@ export default function Sidebar(props: SidebarProps) {
             <aside
                 className={`fixed top-0 left-0 z-40 w-64 h-screen pt-16 transition-transform duration-300 ease-in-out bg-white border-r border-gray-100
                     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                    md:translate-x-0`}
+                    lg:translate-x-0`}
             >    
                 <div className="h-full flex flex-col">
                     <div className="flex-1 overflow-y-auto px-4 py-6">

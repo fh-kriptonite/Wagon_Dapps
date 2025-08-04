@@ -9,6 +9,7 @@ import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
 import { MdSecurity, MdOutlineAccessTime } from "react-icons/md";
 import { HiLockClosed, HiCurrencyDollar } from "react-icons/hi2";
 import { Pool } from "./types";
+import PoolCardComingSoon from "./PoolCardComingSoon";
 interface PoolCardProps {
     poolId: number;
     pool: Pool;    
@@ -124,7 +125,11 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
                         <div className="h-24 md:h-32 bg-gray-200 rounded-xl"/>
                     </div>
                 </div>
-                : <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
+                : 
+                pool.detail == null
+                ? <PoolCardComingSoon />
+                :
+                <div className="bg-white rounded-2xl p-4 md:p-6 border border-gray-200 shadow-md hover:shadow-lg hover:border-gray-300 transition-all duration-200 cursor-pointer"
                     onClick={() => {
                         router.push(`/lend/${pool.contract.network}/${poolId}`);
                     }}

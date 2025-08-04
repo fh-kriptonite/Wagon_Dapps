@@ -1,4 +1,5 @@
 import { HiClock } from "react-icons/hi2";
+import CountdownTimer from "../general/CountdownTimer";
 
 export default function PoolCardComingSoon() {
   return (
@@ -85,6 +86,9 @@ export default function PoolCardComingSoon() {
               </div>
               <p className="text-base md:text-lg font-semibold text-gray-900 mt-1">-</p>
             </div>
+          </div>
+          <div className="bg-yellow-50 p-3 md:p-4 rounded-xl border border-yellow-100">
+            <CountdownTimer targetEpoch={0}/>
           </div>
         </div>
       </div>

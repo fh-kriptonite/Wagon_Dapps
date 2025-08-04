@@ -79,7 +79,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ParticleConnectkit>
           <div className='h-screen flex flex-col'>
             <Sidebar/>
-            <div className="p-2 mt-20 md:ml-56 grow">
+            <div className="p-2 mt-20 lg:ml-56 grow">
               <Component {...pageProps}/>
             </div>
           </div>
