@@ -25,7 +25,7 @@ const nextConfig = {
     '@simplewebauthn/browser',
     '@particle-network/auth-connectors',
     '@particle-network/wallet-plugin',
-    '@particle-network/aa-plugin',
+    // '@particle-network/aa-plugin', // Disabled due to compatibility issues
     '@coinbase/wallet-sdk'
   ],
   webpack: (config, { isServer }) => {

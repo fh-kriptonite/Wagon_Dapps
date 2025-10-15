@@ -7,7 +7,7 @@ import type { Chain } from '@particle-network/connectkit/chains';
 import { wallet } from '@particle-network/connectkit/wallet';
 // embedded wallet end
 // aa start
-import { aa } from '@particle-network/connectkit/aa';
+// import { aa } from '@particle-network/connectkit/aa';
 // aa end
 // evm start
 import { mainnet, sepolia, bsc, bscTestnet, base, baseSepolia } from '@particle-network/connectkit/chains';
@@ -67,10 +67,11 @@ const config = createConfig({
       visible: false,
       widgetIntegration: 'modal'
     }),
-    aa({
-      name: 'BICONOMY',
-      version: '2.0.0',
-    }),
+    // AA plugin disabled due to compatibility issues
+    // aa({
+    //   name: 'BICONOMY',
+    //   version: '2.0.0',
+    // }),
   ],
   chains: supportChains as unknown as readonly [Chain, ...Chain[]],
 });
