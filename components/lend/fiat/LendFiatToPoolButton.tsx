@@ -74,9 +74,9 @@ export default function LendFiatToPoolButton(props: LendFiatToPoolButtonProps) {
   }, [address]);
 
   function handleDisableLendButton(): boolean {
-    if (isLoading) return true;
-    if (pool.collection_term_end - (Date.now() / 1000) < 0) return true;
-    if (props.poolSupply === BigInt(pool.target_loan)) return true;
+    // if (isLoading) return true;
+    // if (pool.collection_term_end - (Date.now() / 1000) < 0) return true;
+    // if (props.poolSupply === BigInt(pool.target_loan)) return true;
     return false;
   }
 

@@ -18,6 +18,10 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
     if(pool == null) return 0;
     return Number(pool.detail.principal);
   }
+
+  function getAvailable(): number {
+    return 0;
+  }
   
   function getApy(): number {
     if(pool == null) return 0;
@@ -130,7 +134,7 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
                 <div className="bg-purple-50 p-3 md:p-4 rounded-xl border border-purple-100">
                   <div className="flex items-center gap-2 mb-1 md:mb-2">
                     <HiLockClosed className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
-                    <span className="text-xs md:text-sm font-medium text-gray-600">Fixed APY</span>
+                    <span className="text-xs md:text-sm font-medium text-gray-600">Expected Yield</span>
                   </div>
                   <p className="text-xl md:text-2xl font-bold text-gray-900">
                     {numberWithCommas(getApy(), 2)}%
@@ -141,16 +145,16 @@ export default function PoolCardOffChain({ pool, poolId }: PoolCardOffChainProps
               {/* Progress Bar */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs md:text-sm">
-                  <span className="text-gray-600">Progress</span>
+                  <span className="text-gray-600">Filled</span>
                   <span className="font-medium text-gray-900">100%</span>
                 </div>
                 <Progress progress={100} color="blue" size="lg" />
                 <div className="flex justify-between text-xs md:text-sm text-gray-500">
-                  <span className="truncate" title={`${numberWithCommas(getPrincipal())} ${getSymbol()}`}>
-                    {numberWithCommas(getPrincipal())} {getSymbol()}
+                  <span>
+                    Available on market:
                   </span>
-                  <span className="truncate" title={`${numberWithCommas(getPrincipal())} ${getSymbol()}`}>
-                    {numberWithCommas(getPrincipal())} {getSymbol()}
+                  <span className="truncate">
+                    {numberWithCommas(getAvailable())} tokens left
                   </span>
                 </div>
               </div>

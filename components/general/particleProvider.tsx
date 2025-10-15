@@ -4,7 +4,7 @@ import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
 import { authWalletConnectors } from '@particle-network/connectkit/auth';
 import type { Chain } from '@particle-network/connectkit/chains';
 // embedded wallet start
-import { EntryPosition, wallet } from '@particle-network/connectkit/wallet';
+import { wallet } from '@particle-network/connectkit/wallet';
 // embedded wallet end
 // aa start
 import { aa } from '@particle-network/connectkit/aa';

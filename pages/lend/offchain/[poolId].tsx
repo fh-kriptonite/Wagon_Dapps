@@ -111,8 +111,6 @@ export default function OffchainPool() {
             {pool && (
               <PoolOverviewCard
                 pool={pool}
-                activePool={null}
-                poolSupply={null}
               />
             )}
             {pool && (

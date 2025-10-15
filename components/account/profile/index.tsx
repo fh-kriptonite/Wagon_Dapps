@@ -107,7 +107,7 @@ export default function ProfileComponent(props: ProfileComponentProps) {
                         <LoadingCard />
                     ) : showVerificationForm ? (
                         <VerificationForm closeForm={handleCloseForm} refreshAccount={getAccount} />
-                    ) : profile == null ? (
+                    ) : profile == null  || profile.status == 0 ? (
                         <UnverifiedProfileCard showForm={handleShowForm} />
                     ) : (
                         <ProfileCard profile={profile} />

@@ -14,15 +14,25 @@ interface LendHomeProps {
 }
 
 export default function LendHome(props: LendHomeProps) {
-  const [selectedStatus, setSelectedStatus] = useState<string>("1")
+  const [selectedStatus, setSelectedStatus] = useState<string>("2")
   const [pools, setPools] = useState<Pool[]>([])
 
   async function getPools(): Promise<void> {
     try {
-      const data = await services.getPools(selectedStatus)
-      setPools(data)
+      console.log('Fetching pools with status:', selectedStatus);
+      const data = await services.getPools(selectedStatus);
+      console.log('Pools loaded successfully:', data);
+      setPools(data || []);
     } catch (error) {
-      console.log(error)
+      console.error('Failed to load pools:', {
+        status: selectedStatus,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
+      // Set empty array to prevent undefined errors and show empty state
+      console.warn('Using empty pools array due to API error');
+      setPools([]);
     }
   }
 
@@ -85,23 +95,13 @@ export default function LendHome(props: LendHomeProps) {
           <div className="flex items-center gap-2 p-1 bg-gray-100 rounded-xl">
             <button 
               className={`flex-1 py-2 px-4 rounded-lg transition-all duration-200 ${
-                selectedStatus === "1" 
-                  ? "bg-white text-blue-600 shadow-sm" 
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-              onClick={() => setSelectedStatus("1")}
-            >
-              <span className="font-medium">Open</span>
-            </button>
-            <button 
-              className={`flex-1 py-2 px-4 rounded-lg transition-all duration-200 ${
                 selectedStatus === "2" 
                   ? "bg-white text-blue-600 shadow-sm" 
                   : "text-gray-500 hover:text-gray-700"
               }`}
               onClick={() => setSelectedStatus("2")}
             >
-              <span className="font-medium">Active</span>
+              <span className="font-medium">Live</span>
             </button>
             <button 
               className={`flex-1 py-2 px-4 rounded-lg transition-all duration-200 ${

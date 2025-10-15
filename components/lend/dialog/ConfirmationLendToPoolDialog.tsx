@@ -159,14 +159,9 @@ export default function ConfirmationLendToPoolDialog(props: ConfirmationLendToPo
     return "Lend To Pool";
   }
 
-  function handleShowButton(): boolean {
-    if(isWaitingApprovalStable || isWaitingApprovalWag || isWaitingApprovalLendToPool) return false;
-    return true;
-  }
-
   return (
     <>
-      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
+      <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
 
           <Transition.Child

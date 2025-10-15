@@ -18,6 +18,7 @@ const useGetLendStableBalanceHook = (): UseGetLendStableBalanceHookResult => {
 
     try {
       const response = await services.getUserStableBalance(address, poolId, network_id);
+      console.log(response);
       setData(response);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'An error occurred');

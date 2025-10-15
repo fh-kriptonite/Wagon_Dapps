@@ -81,11 +81,6 @@ export default function UnstakeDialog(props: UnstakeDialogProps) {
     }
   }
 
-  function handleShowButton(): boolean {
-    if(isWaitingApprovalUnstakeWag) return false;
-    return true;
-  }
-
   return (
     <>
       <div>
@@ -99,7 +94,7 @@ export default function UnstakeDialog(props: UnstakeDialogProps) {
         </Button>
       </div>
 
-      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
+      <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
           <Transition.Child
             as={Fragment}

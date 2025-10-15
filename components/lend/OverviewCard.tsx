@@ -24,14 +24,54 @@ export default function OverviewCard(props: OverviewCardProps) {
         setIsLoading(true);
 
         try {
-            const response = await fetch(process.env.WAGON_API_URL + "/api/pools/overview");
+            if (!process.env.WAGON_API_URL) {
+                console.warn('WAGON_API_URL environment variable is not configured, using default values for lending overview');
+                setTotalValueLocked(0);
+                setTotalLoanOrigination(0);
+                setCurrentLoanOutstanding(0);
+                return;
+            }
+
+            const url = `${process.env.WAGON_API_URL}/api/pools/overview`;
+            console.log('Fetching lending overview from:', url);
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.error('Failed to fetch lending overview:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    url: url
+                });
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const responseJson = await response.json();
+            console.log('Lending overview data:', responseJson);
+            
             const data = responseJson.data;
-            setTotalValueLocked(Number(data.lending_tvl));
-            setTotalLoanOrigination(Number(data.total_loans_originated));
-            setCurrentLoanOutstanding(Number(data.current_loans_outstanding));
+            
+            if (data) {
+                setTotalValueLocked(Number(data.lending_tvl) || 0);
+                setTotalLoanOrigination(Number(data.total_loans_originated) || 0);
+                setCurrentLoanOutstanding(Number(data.current_loans_outstanding) || 0);
+            } else {
+                console.warn('Invalid lending overview data structure, using default values');
+                setTotalValueLocked(0);
+                setTotalLoanOrigination(0);
+                setCurrentLoanOutstanding(0);
+            }
         } catch (error) {
-            console.error('Error getting lending overview:', error);
+            console.error('Error getting lending overview:', {
+                error: error instanceof Error ? error.message : 'Unknown error',
+                stack: error instanceof Error ? error.stack : undefined
+            });
+            
+            // Set default values on error to prevent UI issues
+            console.warn('Using default values for lending overview due to API error');
+            setTotalValueLocked(0);
+            setTotalLoanOrigination(0);
+            setCurrentLoanOutstanding(0);
         } finally {
             setIsLoading(false);
         }

@@ -2,7 +2,6 @@ import { numberWithCommas } from "../../util/stringUtility";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router';
 import { Badge, Progress } from "flowbite-react";
-import CountdownTimer from "../general/CountdownTimer";
 import { calculateApy, formatTime } from "../../util/lendingUtility";
 import useGetActivePoolHook from "./utils/useGetActivePoolHook";
 import useGetPoolSupplyHook from "./utils/useGetPoolSupplyHook";
@@ -22,7 +21,7 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
     const {isLoading: isLoadingPoolSupply, data: poolSupply, fetchData: getPoolSupply} = useGetPoolSupplyHook();
 
     const [progress, setProgress] = useState<number>(0);
-    const [progressSupply, setProgressSupply] = useState<string>("0");
+    const [poolAvailable, setPoolAvailable] = useState<string>("0");
 
     useEffect(() => {
         if(pool == null) return;
@@ -38,7 +37,7 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
         if(pool == null) return;
 
         setProgress(getPoolProgress());
-        setProgressSupply(getPoolProgressSupply());
+        setPoolAvailable(getPoolAvailable());
     }, [poolSupply, activePool]);
 
     function getCollectedPrincipalDecimal(): number {
@@ -72,11 +71,12 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
         }
     }
 
-    function getPoolProgressSupply(): string {
+    function getPoolAvailable(): string {
+        const poolMaxSupply = getPoolMaxSupplyDecimal();
         if(getPoolStatus() >= 2) {
-            return numberWithCommas(getCollectedPrincipalDecimal());
+            return numberWithCommas(poolMaxSupply - getCollectedPrincipalDecimal());
         } else {
-            return numberWithCommas(getPoolSupplyDecimal());
+            return numberWithCommas(poolMaxSupply - getPoolSupplyDecimal());
         }
     }
 
@@ -180,7 +180,7 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
                             <div className="bg-purple-50 p-3 md:p-4 rounded-xl border border-purple-100">
                                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                                     <HiLockClosed className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
-                                    <span className="text-xs md:text-sm font-medium text-gray-600">Fixed APY</span>
+                                    <span className="text-xs md:text-sm font-medium text-gray-600">Expected Yield</span>
                                 </div>
                                 <p className="text-xl md:text-2xl font-bold text-gray-900">
                                     {numberWithCommas(getApy(), 2)}%
@@ -191,16 +191,16 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
                         {/* Progress Bar */}
                         <div className="space-y-2">
                             <div className="flex justify-between text-xs md:text-sm">
-                                <span className="text-gray-600">Progress</span>
+                                <span className="text-gray-600">Filled</span>
                                 <span className="font-medium text-gray-900">{numberWithCommas(progress, 2)}%</span>
                             </div>
                             <Progress progress={progress} color="blue" size="lg" />
                             <div className="flex justify-between text-xs md:text-sm text-gray-500">
-                                <span className="truncate" title={`${isLoadingProgress() ? "~" : progressSupply} ${pool.detail.currency}`}>
-                                    {isLoadingProgress() ? "~" : progressSupply} {pool.detail.currency}
+                                <span>
+                                    Available on market:
                                 </span>
-                                <span className="truncate" title={`${numberWithCommas(pool.target_loan)} ${pool.detail.currency}`}>
-                                    {numberWithCommas(parseFloat(pool.target_loan) / Math.pow(10, pool.lending_contract.decimals))} {pool.detail.currency}
+                                <span className="truncate">
+                                    {isLoadingProgress() ? "~" : poolAvailable} tokens left
                                 </span>
                             </div>
                         </div>
@@ -226,13 +226,6 @@ export default function PoolCard({ poolId, pool }: PoolCardProps) {
                                 </p>
                             </div>
                         </div>
-
-                        {/* Countdown Timer */}
-                        {getPoolStatus() == 1 && (
-                            <div className="bg-yellow-50 p-3 md:p-4 rounded-xl border border-yellow-100">
-                                <CountdownTimer targetEpoch={pool.collection_term_end}/>
-                            </div>
-                        )}
                     </div>
                 </div>
             }

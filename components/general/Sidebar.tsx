@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { BsBank2 } from 'react-icons/bs';
-import { MdHowToVote, MdOutlineQueryStats, MdDashboard } from 'react-icons/md';
+import { MdHowToVote, MdOutlineQueryStats, MdDashboard, MdToken } from 'react-icons/md';
 import { BiTransferAlt } from "react-icons/bi";
 import { FaCoins, FaBook, FaQuestionCircle } from 'react-icons/fa';
 import { AiFillDatabase } from 'react-icons/ai';
 import { useRouter } from 'next/router';
 import { CgProfile } from "react-icons/cg";
 import Link from 'next/link';
-import { ConnectButton, useDisconnect } from '@particle-network/connectkit';
-import { Dropdown } from 'flowbite-react';
+import { ConnectButton, useModal, useDisconnect, useAccount, useWallets } from '@particle-network/connectkit';
+import { Button, Dropdown } from 'flowbite-react';
 import { shortenAddress } from '@/util/stringUtility';
-import { useAccount } from '@particle-network/connectkit';
 import { useConnectedAddress } from '@/hooks/useConnectedAddress';
+
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
@@ -29,46 +29,24 @@ export default function Sidebar(props: SidebarProps) {
     const { asPath } = router;
     const currentPath = router.pathname;
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [connectionComponent, setConnectionComponent] = useState<React.ReactNode>(<ConnectButton label="Login"/>);
 
+    const { isConnected, address, isReconnecting } = useAccount();
+
+    const [primaryWallet] = useWallets();
+    const [isParticleWallet, setIsParticleWallet] = useState(false);
     const { disconnect } = useDisconnect();
-    const { isConnected } = useAccount();
-    const { connectedAddress, userInfo } = useConnectedAddress();
+    const { setOpen } = useModal();
 
-    async function disconnectWallet() {
-        try {
-            await disconnect();
-        } catch (error) {
-            console.error('Failed to disconnect:', error);
-        }
-    }
+    const { connectedAddress } = useConnectedAddress();
 
     useEffect(() => {
-        const updateConnectionStatus = async () => {
-            if (!isConnected) {
-                setConnectionComponent(<ConnectButton label="Login"/>);
-                return;
-            }
-
-            if (userInfo) {
-                setConnectionComponent(<ConnectButton label="Login"/>);
-                return;
-            }
-
-            setConnectionComponent(
-                <Dropdown
-                    label={shortenAddress(connectedAddress || '', 6)}
-                    color="dark"
-                    size="lg"
-                >
-                    <Dropdown.Item onClick={disconnectWallet}>
-                        Disconnect
-                    </Dropdown.Item>
-                </Dropdown>
-            );
-        };
-        updateConnectionStatus();
-    }, [isConnected, userInfo, connectedAddress]);
+        if(primaryWallet?.connector?.walletConnectorType === 'particleAuth') {
+            setIsParticleWallet(true);
+        } else {
+            setIsParticleWallet(false);
+        }
+        
+    }, [isConnected, isReconnecting, primaryWallet]);
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -81,8 +59,8 @@ export default function Sidebar(props: SidebarProps) {
                     ? "bg-blue-50 text-blue-600" 
                     : "text-gray-600 hover:bg-gray-50"
             }`}>
-                <Icon className={`w-5 h-5 ${isActive ? "text-blue-600" : "text-gray-500"}`} />
-                <span className="ml-3 font-medium">{label}</span>
+                <Icon className={`w-4 h-4 ${isActive ? "text-blue-600" : "text-gray-500"}`} />
+                <span className="text-sm ml-3 font-medium">{label}</span>
             </div>
         </Link>
     );
@@ -96,7 +74,7 @@ export default function Sidebar(props: SidebarProps) {
                         <div className="flex items-center">
                             <button 
                                 onClick={toggleSidebar}
-                                className="p-2 rounded-lg hover:bg-gray-50 lg:hidden"
+                                className="p-2 rounded-lg hover:bg-gray-50 xl:hidden"
                             >
                                 <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -106,19 +84,47 @@ export default function Sidebar(props: SidebarProps) {
                             <Link href='/' className="ml-3">
                                 {Number(process.env.THEME_SKIN) === 2 ? (
                                     <>
-                                        <img src="/logo-title-waresix.png" className="h-6 hidden lg:block" alt="Logo" />
-                                        <img src="/logo-waresix-square.png" className="h-8 lg:hidden" alt="Logo" />
+                                        <img src="/logo-title-waresix.png" className="h-6" alt="Logo" />
+                                        {/* <img src="/logo-waresix-square.png" className="h-8 md:hidden" alt="Logo" /> */}
                                     </>
                                 ) : (
                                     <>
-                                        <img src="/logo-title.png" className="h-8 hidden lg:block" alt="Logo" />
-                                        <img src="/logo_pad.png" className="h-8 lg:hidden" alt="Logo" />
+                                        <img src="/logo-title.png" className="h-8" alt="Logo" />
+                                        {/* <img src="/logo_pad.png" className="h-8 md:hidden" alt="Logo" /> */}
                                     </>
                                 )}
                             </Link>
                         </div>
                         <div className="flex items-center">
-                            {connectionComponent}
+                            {
+                                !isConnected? 
+                                    <Button color="dark" size="sm" className="text-white min-w-24" 
+                                        onClick={() => setOpen(true)}>
+                                        Login
+                                    </Button>
+                                : isParticleWallet 
+                                    ? <div>
+                                        <div className="hidden md:block">
+                                            <ConnectButton label="Login" />
+                                        </div>
+                                        <div className="md:hidden">
+                                            <Button color="dark" size="sm" className="text-white min-w-20"
+                                                onClick={() => setOpen(true)}
+                                            >
+                                                {shortenAddress(connectedAddress || '', 6)}
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    : <Dropdown
+                                        label={shortenAddress(address || '', 6)}
+                                        color="dark"
+                                        size="sm"
+                                    >
+                                        <Dropdown.Item onClick={() => disconnect()}>
+                                            Disconnect
+                                        </Dropdown.Item>
+                                    </Dropdown>
+                            }
                         </div>
                     </div>
                 </div>
@@ -126,12 +132,12 @@ export default function Sidebar(props: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 z-40 w-64 h-screen pt-16 transition-transform duration-300 ease-in-out bg-white border-r border-gray-100
+                className={`fixed overflow-y-auto top-0 left-0 z-40 w-56 h-screen pt-16 transition-transform duration-300 ease-in-out bg-white border-r border-gray-100
                     ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-                    lg:translate-x-0`}
+                    xl:translate-x-0`}
             >    
                 <div className="h-full flex flex-col">
-                    <div className="flex-1 overflow-y-auto px-4 py-6">
+                    <div className="flex-1 px-4 py-6">
                         {/* Main Navigation */}
                         <div className="space-y-1">
                             <NavItem 
@@ -145,6 +151,12 @@ export default function Sidebar(props: SidebarProps) {
                                 icon={CgProfile} 
                                 label="Profile" 
                                 isActive={currentPath === '/account/profile'} 
+                            />
+                            <NavItem 
+                                href="/tokenization" 
+                                icon={MdToken} 
+                                label="Tokenization" 
+                                isActive={currentPath === '/tokenization'} 
                             />
                         </div>
 
@@ -212,15 +224,15 @@ export default function Sidebar(props: SidebarProps) {
                                         className="flex items-center p-3 text-gray-600 rounded-xl hover:bg-gray-50 cursor-pointer"
                                         onClick={() => window.open("https://docs.wagon.network/", '_docs')}
                                     >
-                                        <FaBook className="w-5 h-5 text-gray-500" />
-                                        <span className="ml-3 font-medium">Docs</span>
+                                        <FaBook className="w-4 h-4 text-gray-500" />
+                                        <span className="text-sm ml-3 font-medium">Docs</span>
                                     </div>
                                     <div 
                                         className="flex items-center p-3 text-gray-600 rounded-xl hover:bg-gray-50 cursor-pointer"
                                         onClick={() => window.open("https://wagon.network/faq/", '_faq')}
                                     >
-                                        <FaQuestionCircle className="w-5 h-5 text-gray-500" />
-                                        <span className="ml-3 font-medium">FAQ</span>
+                                        <FaQuestionCircle className="w-4 h-4 text-gray-500" />
+                                        <span className="text-sm ml-3 font-medium">FAQ</span>
                                     </div>
                                 </div>
                             </div>

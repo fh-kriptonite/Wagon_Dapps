@@ -58,7 +58,7 @@ export default function ApproveDialog(props: ApproveDialogProps) {
                                 <div className="space-y-6">
                                     {/* Loading Spinner */}
                                     <div className="flex justify-center">
-                                        <Spinner size="xl" color="blue" />
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                                     </div>
 
                                     {/* Transfer Details */}

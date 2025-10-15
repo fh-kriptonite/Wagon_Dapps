@@ -1,59 +1,44 @@
+import { useEffect, useState } from 'react';
 import { useAccount, useSmartAccount, useWallets } from '@particle-network/connectkit';
-import { useParticleAuth } from '@particle-network/connectkit';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 export const useConnectedAddress = () => {
-    // Retrieve the primary wallet from the Particle Wallets
-    const [primaryWallet] = useWallets();
-    const smartAccount = useSmartAccount();
-    const { isConnected, address } = useAccount();
-
-    // Store userInfo in a useState to use it in your app
-    const [userInfo, setUserInfo] = useState<any>(null);
     const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
+    const {address} = useAccount();
+    const smartAccount = useSmartAccount();
+    const [primaryWallet] = useWallets();
     
-    const { getUserInfo } = useParticleAuth();
+    // Determine if it's a Particle wallet internally
+    const isParticleWallet = primaryWallet?.connector?.walletConnectorType === 'particleAuth';
 
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            if(!isConnected) return;
-            // Use walletConnectorType as a condition to avoid account not initialized errors
-            if (primaryWallet?.connector?.walletConnectorType === 'particleAuth') {
-                const userInfo = await getUserInfo();
-                
-                setUserInfo(userInfo);
-
-                if(!userInfo) {
-                    setUserInfo(null);
+        const getAddress = async () => {
+            console.log('useConnectedAddress effect running:', { isParticleWallet, address });
+            
+            if(isParticleWallet) {
+                try {
+                    const smartAddress = await smartAccount?.getAddress();
+                    console.log("smartAddress", smartAddress);
+                    const finalAddress = smartAddress || address || null;
+                    console.log("Setting connectedAddress to:", finalAddress);
+                    setConnectedAddress(finalAddress);
+                } catch (error) {
+                    console.warn('Failed to get smart address, using regular address:', error);
+                    console.log("Setting connectedAddress to address:", address);
                     setConnectedAddress(address || null);
                 }
             } else {
-                setUserInfo(null);
+                console.log("Setting connectedAddress to address:", address);
                 setConnectedAddress(address || null);
             }
-        };
-        fetchUserInfo();
-    }, [isConnected, getUserInfo]);
-
-    useEffect(() => {
-        if(isConnected && userInfo) {
-            getSmartAddress();
         }
-    }, [isConnected, userInfo]);
 
-    const getSmartAddress = async () => {
-        try {
-            const smartAddress = await smartAccount?.getAddress();
-            setConnectedAddress(smartAddress || null);
-        } catch (error) {
-            return null;
-        }
-    };
+        getAddress();
+    }, [isParticleWallet, address, smartAccount]);
+
+    console.log('useConnectedAddress returning:', { connectedAddress, address, isParticleWallet });
 
     return {
-        connectedAddress,
-        userInfo,
-        isSocialLoginActive: userInfo ? true : false
+        connectedAddress: connectedAddress,
+        isParticleWallet
     };
 }; 

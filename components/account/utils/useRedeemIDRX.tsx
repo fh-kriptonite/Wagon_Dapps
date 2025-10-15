@@ -48,9 +48,15 @@ const useRedeemIDRXHook = (): UseRedeemIDRXHookResult => {
       const contractABI = idrxAbi;
 
       // Initialize contract
-      if (!contractAddress) {
-        throw new Error("Contract address is undefined");
+      if (!contractAddress || contractAddress.trim() === '') {
+        throw new Error(`Contract address is undefined for chain ID ${chainId}. Please check environment variables ONRAMP_IDRX_ADDRESS_BSC and ONRAMP_IDRX_ADDRESS_BASE.`);
       }
+      
+      // Validate contract address format
+      if (!ethers.isAddress(contractAddress)) {
+        throw new Error(`Invalid contract address format: ${contractAddress}`);
+      }
+      
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
       
       amount = ethers.parseUnits(amount, decimals).toString();

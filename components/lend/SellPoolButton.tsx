@@ -1,27 +1,27 @@
 import { Button } from 'flowbite-react';
 import { useState } from 'react';
-import LendToPoolDialog from './dialog/LendToPoolDialog';
 import useSwitchNetworkHook from './utils/useSwitchNetworkHook';
-import ConfirmationLendToPoolDialog from './dialog/ConfirmationLendToPoolDialog';
 import { Pool, PoolFee } from './types';
 import { useAccount } from '@particle-network/connectkit';
-interface LendToPoolButtonProps {
+import SellPoolDialog from './dialog/SellPoolDialog';
+import ConfirmationSellPoolDialog from './dialog/ConfirmationSellPoolDialog';
+
+interface SellPoolButtonProps {
   pool: Pool;
   poolSupply: string;
   poolId: string;
   refreshUser: () => void;
   fees: PoolFee | null;
+  stableBalance: string | null;
 }
 
-export default function LendToPoolButton({ pool, poolSupply, poolId, refreshUser, fees }: LendToPoolButtonProps) {
+export default function SellPoolButton({ pool, poolSupply, poolId, refreshUser, fees, stableBalance }: SellPoolButtonProps) {
   const { chainId } = useAccount()
 
   const { fetchData: switchNetwork } = useSwitchNetworkHook();
 
   const [isOpen, setIsOpen] = useState(false);
   const [stableNumber, setStableNumber] = useState("");
-  const [wagNumber, setWagNumber] = useState("");
-  const [adminFee, setAdminFee] = useState(0);
   const [isOpenConfirmation, setIsOpenConfirmation] = useState(false);
 
   async function openModal() {
@@ -42,17 +42,14 @@ export default function LendToPoolButton({ pool, poolSupply, poolId, refreshUser
     }
   }
 
-  function handleLend(stableNumber: string, wagNumber: string, adminFee: number) {
+  function handleSell(stableNumber: string) {
     setIsOpen(false);
     setIsOpenConfirmation(true);
     setStableNumber(stableNumber);
-    setWagNumber(wagNumber);
-    setAdminFee(adminFee);
   }
 
-  function handleDisableLendButton(): boolean {
-    // if (pool.collection_term_end - (Date.now()/1000) < 0) return true;
-    // if (poolSupply === pool.target_loan) return true;
+  function handleDisableSellButton() {
+    if(stableBalance == null || parseFloat(stableBalance) == 0) return true;
     return false;
   }
 
@@ -60,32 +57,31 @@ export default function LendToPoolButton({ pool, poolSupply, poolId, refreshUser
     <div>
       <Button 
         color="dark" 
-        size="sm" 
-        style={{width:"100%"}}
-        disabled={handleDisableLendButton()}
+        size="sm"
+        disabled={handleDisableSellButton()}
+        // disabled={true}
         onClick={openModal}
-        className={`${handleDisableLendButton() ? 'bg-gray-300 hover:bg-gray-300 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
+        className='w-full bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400 disabled:hover:bg-gray-300 disabled:cursor-not-allowed'
       >
-        Lend Your Cryptocurrency
+        List for Sale
       </Button>
 
-      <LendToPoolDialog 
+      <SellPoolDialog 
         isOpen={isOpen}
         closeModal={() => setIsOpen(false)}
         pool={pool}
         fees={fees}
-        handleLend={handleLend}
+        handleSell={handleSell}
+        stableBalance={stableBalance}
       />
 
-      <ConfirmationLendToPoolDialog 
+      <ConfirmationSellPoolDialog 
         poolId={poolId}
         isOpen={isOpenConfirmation}
         pool={pool}
         closeModal={() => setIsOpenConfirmation(false)}
         refreshUser={refreshUser}
         stableNumber={stableNumber}
-        adminFee={adminFee}
-        wagNumber={wagNumber}
       />
     </div>
   );

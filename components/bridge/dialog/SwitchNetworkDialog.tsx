@@ -1,6 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment } from 'react'
-import { Spinner } from 'flowbite-react';
 import { Network } from "../types";
 import { HiShieldCheck } from "react-icons/hi2";
 
@@ -58,7 +57,7 @@ export default function SwitchNetworkDialog(props: SwitchNetworkDialogProps) {
                                 <div className="space-y-6">
                                     {/* Loading Spinner */}
                                     <div className="flex justify-center">
-                                        <Spinner size="xl" color="blue" />
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                                     </div>
 
                                     {/* Transfer Details */}

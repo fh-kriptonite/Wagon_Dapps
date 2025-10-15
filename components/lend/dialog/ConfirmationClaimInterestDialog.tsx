@@ -117,7 +117,7 @@ export default function ConfirmationClaimInterestDialog(props: ConfirmationClaim
 
   return (
     <>
-      <Transition appear show={isOpen && !isWaitingApproval} as={Fragment}>
+      <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
           <Transition.Child
             as={Fragment}

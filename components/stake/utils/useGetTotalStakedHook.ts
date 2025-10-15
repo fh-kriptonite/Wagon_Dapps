@@ -18,16 +18,28 @@ const useGetTotalStakedHook = (): UseGetTotalStakedHookResult => {
 
   const fetchData = async (): Promise<void> => {
     setIsLoading(true);
+    setError(null); // Clear previous errors
 
     try {
       const response = parseFloat((await getStakingTotalStaked()).toString()) / 1e18;
       setData(response);
 
-      const wagPrice = (await getCoinPriceService("WAG")).data[0].usd_price;
-      const responseInUsd = response * wagPrice;
-      setDataInUsd(responseInUsd);
+      const wagPriceData = await getCoinPriceService("WAG");
+      // Handle both possible data structures: data[0].usd_price or data.usd_price
+      const wagPrice = Array.isArray(wagPriceData.data) 
+        ? wagPriceData.data[0]?.usd_price 
+        : wagPriceData.data?.usd_price;
+      
+      if (wagPrice) {
+        const responseInUsd = response * wagPrice;
+        setDataInUsd(responseInUsd);
+      } else {
+        console.warn('WAG price not available, USD conversion skipped');
+      }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'An error occurred');
+      const errorMessage = e instanceof Error ? e.message : 'An error occurred while fetching data';
+      setError(errorMessage);
+      console.error('Error in useGetTotalStakedHook:', e);
     } finally {
       setIsLoading(false);
     }

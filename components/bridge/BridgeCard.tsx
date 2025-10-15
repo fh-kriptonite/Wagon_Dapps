@@ -109,13 +109,11 @@ export default function BridgeCard(props: BridgeCardProps) {
     };
 
     function showApproveDialog(): boolean {
-        if(isWaitingApprovalApproveAllowance) { return false }
         if(isLoadingApproveAllowance) { return true }
         return false;
     }
 
     function showSendBridgeDialog(): boolean {
-        if(isWaitingApprovalSendBridge) { return false }
         if(isLoadingSendBridge) { return true }
         return false;
     }

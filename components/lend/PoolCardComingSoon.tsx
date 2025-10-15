@@ -49,7 +49,7 @@ export default function PoolCardComingSoon() {
             <div className="bg-purple-50 p-3 md:p-4 rounded-xl border border-purple-100">
               <div className="flex items-center gap-2 mb-1 md:mb-2">
                 <div className="w-4 h-4 md:w-5 md:h-5 bg-purple-100 rounded-full" />
-                <span className="text-xs md:text-sm font-medium text-gray-600">Fixed APY</span>
+                <span className="text-xs md:text-sm font-medium text-gray-600">Expected Yield</span>
               </div>
               <div className="text-xl md:text-2xl font-bold text-gray-900">-</div>
             </div>

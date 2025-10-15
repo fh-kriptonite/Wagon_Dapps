@@ -9,7 +9,7 @@ export default function Home(props: HomeProps) {
   const themeSkin = Number(process.env.THEME_SKIN || '0');
 
   return (
-    <div className='container mx-auto px-4 md:px-10 h-full'>
+    <div className='container mx-auto h-full'>
       <Head>
         {
           themeSkin === 1

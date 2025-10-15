@@ -56,7 +56,7 @@ export default function PoolDetail() {
   }
 
   function getNetworkId(): number {
-    if(network == 'BSC') {
+    if(network == 'BSC' || network == 'BNB-TESTNET') {
       return Number(process.env.BNB_CHAIN_ID);
     } else if(network == 'BASE') {
       return Number(process.env.BASE_CHAIN_ID);
@@ -166,12 +166,14 @@ export default function PoolDetail() {
 
         <div className='flex-1'>
           <div className='sticky top-20 space-y-4'>
+
             {pool && (
               <UserLendingStatistic
                 pool={pool}
                 stableBalance={stableBalance?.toString() || null}
                 wagBalance={wagBalance?.toString() || null}
                 fees={fees || null}
+                activePool={activePool}
                 poolSupply={poolSupply?.toString() || null}
                 refresh={() => {
                   getActivePool(Number(poolId), getNetworkId());
@@ -185,8 +187,6 @@ export default function PoolDetail() {
             {pool && (
               <PoolOverviewCard
                 pool={pool}
-                activePool={activePool}
-                poolSupply={poolSupply?.toString() || null}
               />
             )}
 

@@ -5,7 +5,6 @@ import { numberWithCommas, shortenAddress } from "../../../util/stringUtility";
 import { List, Button } from 'flowbite-react';
 import { MdOpenInNew } from 'react-icons/md';
 import { IoIosWarning } from "react-icons/io";
-import { useConnectedAddress } from '@/hooks/useConnectedAddress';
 import { HiArrowRight } from 'react-icons/hi2';
 
 interface Profile {
@@ -34,8 +33,6 @@ interface LendFiatConfirmationDialogProps {
 }
 
 export default function LendFiatConfirmationDialog(props: LendFiatConfirmationDialogProps) {
-  const { connectedAddress: address } = useConnectedAddress();
-  
   const { isOpen, closeModal, stableNumber, profile, onrampData } = props;
 
   const handleProceedToPayment = () => {

@@ -110,11 +110,6 @@ export default function StakeDialog(props: StakeDialogProps) {
     }
   }
 
-  function handleShowButton(): boolean {
-    if(isWaitingApprovalStakeWag || isWaitingApprovalApproveAllowance) return false;
-    return true;
-  }
-
   return (
     <>
       <div>
@@ -128,7 +123,7 @@ export default function StakeDialog(props: StakeDialogProps) {
         </Button>
       </div>
 
-      <Transition appear show={isOpen && handleShowButton()} as={Fragment}>
+      <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={()=>{}}>
           <Transition.Child
             as={Fragment}

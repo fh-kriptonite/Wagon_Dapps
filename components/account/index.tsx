@@ -56,12 +56,36 @@ export default function AccountComponent() {
 
     async function getCoinPrice(coinName: string): Promise<void> {
         try {
-            const coinPriceData = await getCoinPriceService(coinName)
+            console.log(`Fetching ${coinName} price...`);
+            const coinPriceData = await getCoinPriceService(coinName);
+            
             if(coinName === "WAG") {
-                setWagPrice(coinPriceData.data.usd_price)
+                // Check if we have valid data
+                if (!coinPriceData || !coinPriceData.data) {
+                    console.warn('WAG price data is null or invalid, using default value');
+                    setWagPrice(0);
+                    return;
+                }
+                
+                // Handle both possible data structures
+                const wagPrice = Array.isArray(coinPriceData.data) 
+                    ? coinPriceData.data[0]?.usd_price 
+                    : coinPriceData.data?.usd_price;
+                
+                if (wagPrice && wagPrice > 0) {
+                    console.log(`WAG price set to: ${wagPrice}`);
+                    setWagPrice(wagPrice);
+                } else {
+                    console.warn('WAG price not available or invalid, using default value');
+                    setWagPrice(0);
+                }
             }
         } catch (error) {
-            console.log(error)
+            console.error(`Error fetching ${coinName} price:`, error);
+            // Set a fallback value instead of leaving it undefined
+            if(coinName === "WAG") {
+                setWagPrice(0);
+            }
         }
     }
 
@@ -105,16 +129,22 @@ export default function AccountComponent() {
         if(!address) return;
         setIsLoadingPools(true)
         try {
+            console.log('Fetching user pools for address:', address);
             const data = await services.getUserPools(address) as unknown as UserPool[];
             setUserPools(data || [])
-            setIsLoadingPools(false)
+            console.log('User pools loaded successfully:', data);
         } catch (error) {
-            console.log(error)
+            console.error('Failed to load user pools:', error);
+            // Set empty array to prevent undefined errors
+            setUserPools([]);
+            // You might want to show a user-friendly error message here
+        } finally {
             setIsLoadingPools(false)
         }
     }
 
     useEffect(()=>{
+        console.log("account index address", address);
         if(address) {
             getStaking();
             getRewards();
@@ -552,7 +582,7 @@ export default function AccountComponent() {
                                 <p className="text-xs text-gray-500 mt-1">Start by lending to your first pool</p>
                             </div>
                         </div>
-                        : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        : <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                             {
                                 userPools.map((userPool) => (
                                     <div key={userPool.id}>

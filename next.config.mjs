@@ -25,7 +25,8 @@ const nextConfig = {
     '@simplewebauthn/browser',
     '@particle-network/auth-connectors',
     '@particle-network/wallet-plugin',
-    '@particle-network/aa-plugin'
+    '@particle-network/aa-plugin',
+    '@coinbase/wallet-sdk'
   ],
   webpack: (config, { isServer }) => {
     // Handle ESM modules
@@ -40,6 +41,9 @@ const nextConfig = {
       net: false,
       tls: false,
     };
+    
+    // Configure module resolution for ESM packages
+    config.resolve.conditionNames = ['import', 'module', 'browser', 'default'];
     
     // Add a rule to handle ESM modules
     config.module.rules.push({
@@ -79,6 +83,16 @@ const nextConfig = {
           ]
         }
       }
+    });
+
+    // Handle Coinbase wallet SDK ESM modules
+    config.module.rules.push({
+      test: /\.m?js$/,
+      include: /node_modules\/@coinbase\/wallet-sdk/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false,
+      },
     });
     
     return config;

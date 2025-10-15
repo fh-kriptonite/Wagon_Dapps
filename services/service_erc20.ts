@@ -1,4 +1,3 @@
-import { base, bsc } from '@particle-network/connectkit/chains';
 import ERC20_ABI from '../public/ABI/erc20.json';
 import { ethers } from "ethers";
 
@@ -28,7 +27,12 @@ const provider = new ethers.JsonRpcProvider(process.env.ALCHEMY_PROVIDER_HTTPS);
 const providerBnb = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BNB);
 const providerBase = new ethers.JsonRpcProvider(process.env.PROVIDER_HTTPS_BASE);
 const contractAddress = process.env.WAG_ADDRESS;
-const wagContract = new ethers.Contract(contractAddress, ERC20_ABI, provider);
+
+// Only create contract if address is valid
+let wagContract: ethers.Contract | null = null;
+if (contractAddress && ethers.isAddress(contractAddress)) {
+    wagContract = new ethers.Contract(contractAddress, ERC20_ABI, provider);
+}
 
 async function getTokenToUsdRate(priceUrl: string, chainId: number): Promise<number> {
     try {
@@ -138,20 +142,53 @@ export const tokenToUsd = async (amount: number, priceUrl: string, chainId: numb
 
 export const getCoinPriceService = async (name: string): Promise<any> => {
     try {
-        const response = await fetch(process.env.WAGON_API_URL + '/api/coin-prices/' + name + '/latest');
+        if (!process.env.WAGON_API_URL) {
+            console.warn(`WAGON_API_URL environment variable is not configured, returning null for ${name} price`);
+            return { data: null };
+        }
+        
+        const url = `${process.env.WAGON_API_URL}/api/coin-prices/${name}/latest`;
+        console.log(`Fetching coin price for ${name} from:`, url);
+        
+        const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error('Failed to fetch data');
+            console.error(`Failed to fetch coin price for ${name}:`, {
+                status: response.status,
+                statusText: response.statusText,
+                url: url
+            });
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-        return await response.json();
+        
+        const data = await response.json();
+        console.log(`Coin price data for ${name}:`, data);
+        
+        // Ensure consistent response structure
+        if (!data || !data.data) {
+            console.warn(`Invalid response format for ${name}: missing data property`);
+            return { data: null };
+        }
+        
+        return data;
     } catch (error) {
-        console.error('Error fetching JSON:', error);
-        throw error;
+        console.error(`Error fetching coin price for ${name}:`, {
+            name: name,
+            error: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined
+        });
+        
+        // Return null data instead of throwing error to prevent app crashes
+        console.warn(`Returning null for ${name} price due to API error`);
+        return { data: null };
     }
 };
 
 export const getWagTotalSupply = async (): Promise<bigint> => {
     try {
+        if (!wagContract) {
+            throw new Error("WAG contract is not initialized. Please check WAG_ADDRESS environment variable.");
+        }
         return await wagContract.totalSupply();
     } catch (error) {
         throw error;
@@ -160,6 +197,9 @@ export const getWagTotalSupply = async (): Promise<bigint> => {
 
 export const getWagBalanceOf = async (address: string): Promise<bigint> => {
     try {
+        if (!wagContract) {
+            throw new Error("WAG contract is not initialized. Please check WAG_ADDRESS environment variable.");
+        }
         return await wagContract.balanceOf(address);
     } catch (error) {
         throw error;
@@ -168,6 +208,9 @@ export const getWagBalanceOf = async (address: string): Promise<bigint> => {
 
 export const getWagAllowance = async (address: string, spender: string): Promise<bigint> => {
     try {
+        if (!wagContract) {
+            throw new Error("WAG contract is not initialized. Please check WAG_ADDRESS environment variable.");
+        }
         return await wagContract.allowance(address, spender);
     } catch (error) {
         console.log(error);

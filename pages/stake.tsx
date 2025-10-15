@@ -7,7 +7,7 @@ interface StakeProps {
 
 export default function Stake(props: StakeProps) {
   return (
-    <div className='container mx-auto px-4 md:px-10 h-full'>
+    <div className='container mx-auto h-full'>
         <Head>
           <title>Stake | Wagon Network</title>
         </Head>

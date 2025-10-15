@@ -5,6 +5,24 @@ import erc20Abi from "../public/ABI/erc20.json";
 import { Pool, UserPool } from "@/components/lend/types";
 import { base, bsc } from "viem/chains";
 
+// Environment check utility
+const checkEnvironment = () => {
+  console.log('Environment Configuration:');
+  console.log('- WAGON_API_URL:', process.env.WAGON_API_URL ? 'Configured' : 'NOT CONFIGURED');
+  console.log('- BNB_CHAIN_ID:', process.env.BNB_CHAIN_ID);
+  console.log('- BASE_CHAIN_ID:', process.env.BASE_CHAIN_ID);
+  console.log('- LENDING_ADDRESS_BNB:', process.env.LENDING_ADDRESS_BNB ? 'Configured' : 'NOT CONFIGURED');
+  console.log('- LENDING_ADDRESS_BASE:', process.env.LENDING_ADDRESS_BASE ? 'Configured' : 'NOT CONFIGURED');
+  
+  if (!process.env.WAGON_API_URL) {
+    console.warn('⚠️  WAGON_API_URL is not configured. API features will be disabled.');
+    console.warn('   To enable API features, set WAGON_API_URL in your environment variables.');
+  }
+};
+
+// Run environment check on module load
+checkEnvironment();
+
 interface PoolFee {
   [key: string]: any;
 }
@@ -43,9 +61,35 @@ const contract1155_base = new ethers.Contract(process.env.ERC1155_ADDRESS_BASE!,
 
 // Helper function for API calls
 async function fetchApi<T>(url: string): Promise<ApiResponse<T>> {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error('Failed to fetch data');
-  return response.json();
+  try {
+    console.log('Fetching from URL:', url);
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.error('API Response not OK:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: url
+      });
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    console.log('API Response successful:', data);
+    return data;
+  } catch (error) {
+    console.error('Fetch API Error:', {
+      url: url,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    });
+    
+    // Return a default response instead of throwing error
+    console.warn('Returning default response due to fetch error');
+    return {
+      data: [] as T
+    };
+  }
 }
 
 // Contract Functions
@@ -167,6 +211,7 @@ export const services = {
   // User Services
   getUserStableBalance: async (address: string, poolId: string, network_id: number): Promise<any> => {
     try {
+      console.log(address, poolId, network_id);
       if(network_id == Number(process.env.BNB_CHAIN_ID)) {
         return await contractFunctions.get1155Balance(address, poolId);
       } else if(network_id == Number(process.env.BASE_CHAIN_ID)) {
@@ -212,31 +257,59 @@ export const services = {
   // API Services
   getPools: async (status: string): Promise<Pool[]> => {
     try {
+      if (!process.env.WAGON_API_URL) {
+        console.warn('WAGON_API_URL environment variable is not configured, returning empty pools');
+        return [];
+      }
+      
       const response = await fetchApi(process.env.WAGON_API_URL + '/api/pools/?status=' + status);
       return response.data as Pool[];
     } catch (error) {
       console.error('Error in getPools:', error);
-      throw error;
+      console.warn('Returning empty pools due to API error');
+      return [];
     }
   },
 
   getPoolActivities: async (poolId: number): Promise<PoolActivity[]> => {
     try {
+      if (!process.env.WAGON_API_URL) {
+        console.warn('WAGON_API_URL environment variable is not configured, returning empty pool activities');
+        return [];
+      }
+      
       const response = await fetchApi<PoolActivity[]>(process.env.WAGON_API_URL + '/api/pools/activities/' + poolId);
       return response.data;
     } catch (error) {
       console.error('Error in getPoolActivities:', error);
-      throw error;
+      console.warn('Returning empty pool activities due to API error');
+      return [];
     }
   },
 
   getUserPools: async (address: string): Promise<UserPool[]> => {
     try {
-      const response = await fetchApi(process.env.WAGON_API_URL + '/api/pools/lending-balances/' + address);
+      if (!process.env.WAGON_API_URL) {
+        console.warn('WAGON_API_URL environment variable is not configured, returning empty user pools');
+        return [];
+      }
+      
+      const url = `${process.env.WAGON_API_URL}/api/pools/lending-balances/${address}`;
+      console.log('Getting user pools for address:', address);
+      console.log('API URL:', url);
+      
+      const response = await fetchApi(url);
       return response.data as UserPool[];
     } catch (error) {
-      console.error('Error in getUserPools:', error);
-      throw error;
+      console.error('Error in getUserPools:', {
+        address: address,
+        error: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
+      // Return empty array instead of throwing error to prevent app crashes
+      console.warn('Returning empty user pools due to API error');
+      return [];
     }
   },
 
